@@ -19,6 +19,10 @@ Addressables를 쓰는 게임의 번들 이름은 `room10__a259fe9091a05b92773fd
 포기하고 `m_InternalIds` 목록만 쓴다 (그것만으로도 번들·에셋 경로는 읽을 수 있다).
 잘못 푼 매핑으로 이름을 붙이는 건 이름을 안 붙이는 것보다 나쁘다.
 
+`catalog.json`(구형)과 `catalog.bin`(Addressables 1.21+/Unity 2023+)을 모두 읽는다.
+바이너리 쪽은 선택 의존성 `addressablestools` 가 있을 때만 매핑까지 풀고, 없으면
+문자열 목록만 낸다.
+
     cat = load_catalog(apk)
     cat.addresses_for("room10__a259fe9091a05b92773fd5c141a7db0a.bundle")
     cat.remote_bundles           # 카탈로그엔 있지만 APK엔 없는 것 = CDN 배포분
@@ -178,8 +182,11 @@ def load_catalog(input_path, globs=None, log=print):
         raise CatalogUnavailable(f"카탈로그 없음 (탐색: {pats})")
 
     if label.lower().endswith(".bin"):
-        # catalog.bin 은 바이너리 전용 포맷으로 구조가 다르다. 읽을 수 있는 문자열만
-        # 건져 목록으로 낸다 — 매핑은 못 하지만 "뭐가 들어 있나"는 보인다.
+        cat = _binary_catalog(data, label, log)
+        if cat is not None:
+            return cat
+        # 폴백: 읽을 수 있는 문자열만 건져 목록으로 낸다 — 매핑은 못 하지만
+        # "뭐가 들어 있나"는 보인다.
         ids = _strings_from_binary(data)
         note = "catalog.bin(바이너리 포맷) — 문자열만 추출, 주소 매핑 불가"
         log(f"[catalog] {label}: {note}")
@@ -210,6 +217,82 @@ def _bundles(ids):
 
 def _assets(ids):
     return [s for s in ids if s.startswith("Assets/")]
+
+
+def _plain_id(s):
+    """내부 id 에서 런타임 경로 치환자를 떼어 실제 파일 경로만 남긴다.
+
+    바이너리 카탈로그의 번들 id 는
+    `{UnityEngine.AddressableAssets.Addressables.RuntimePath}/Android/x.bundle`
+    처럼 앞에 치환자가 붙어 있다. 이걸 떼야 JSON 카탈로그의 id 와 같은 모양이 되고,
+    `bundle_ids`·`asset_paths` 판정이 두 포맷에서 같게 동작한다.
+    """
+    s = str(s or "")
+    if s.startswith("{"):
+        end = s.find("}")
+        if end != -1:
+            s = s[end + 1:].lstrip("/\\")
+    return s
+
+def _binary_catalog(data, label, log):
+    """catalog.bin (Addressables 바이너리 카탈로그) → Catalog. 못 하면 None.
+
+    JSON 카탈로그와 달리 바이너리 카탈로그는 버전이 여럿(Binv1~v3)이고 오프셋 기반
+    객체 그래프다. 직접 파서를 쓰면 조용히 어긋날 위험이 큰데, 이 저장소 원칙은
+    "잘못 푼 매핑은 이름을 안 붙이는 것보다 나쁘다"다. 그래서 검증된 외부 파서를
+    **선택 의존성**으로 쓴다 — `pip install addressablestools` (MIT, 무의존).
+    없으면 예전처럼 문자열만 건지는 폴백으로 내려간다.
+    """
+    try:
+        import addressablestools
+    except ImportError:
+        log(f"[catalog] {label}: catalog.bin 을 읽으려면 addressablestools 가 필요합니다"
+            " — `pip install addressablestools` (없어도 문자열 목록은 나옵니다)")
+        return None
+    try:
+        parsed = addressablestools.parse_binary(data)
+    except Exception as e:  # noqa: BLE001 - 새 포맷 버전은 폴백으로 넘긴다
+        log(f"[catalog] {label}: catalog.bin 파싱 실패({e!r}) — 문자열 목록으로 폴백")
+        return None
+
+    resources = getattr(parsed, "resources", None) or {}
+    ids, seen, bmap, rtypes = [], set(), {}, set()
+
+    def remember(value):
+        v = _plain_id(value)
+        if v and v not in seen:
+            seen.add(v)
+            ids.append(v)
+        return v
+
+    for key, locs in resources.items():
+        for loc in (locs or ()):
+            iid = remember(getattr(loc, "internal_id", ""))
+            t = getattr(loc, "type", None)
+            if getattr(t, "class_name", ""):
+                rtypes.add(t.class_name)
+            if iid.endswith(".bundle"):
+                continue          # 번들 자체를 가리키는 주소는 매핑에 넣지 않는다
+            if isinstance(key, str):
+                remember(key)
+            # 이 에셋이 어느 번들에 담겼는지는 의존성이 알려준다
+            for dep in (getattr(loc, "dependencies", None) or ()):
+                dep_id = _plain_id(getattr(dep, "internal_id", ""))
+                if dep_id.endswith(".bundle") and isinstance(key, str):
+                    bmap.setdefault(os.path.basename(dep_id), set()).add(key)
+
+    # 검증 — 쓰레기를 경로로 착각하지 않도록. 하나도 경로처럼 안 생겼으면 못 푼 것이다.
+    if not ids or not (_bundles(ids) or _assets(ids)):
+        log(f"[catalog] {label}: catalog.bin 해독 결과가 경로처럼 보이지 않습니다"
+            " — 문자열 목록으로 폴백")
+        return None
+
+    bmap = {k: sorted(v) for k, v in bmap.items()}
+    ver = getattr(parsed, "version", "?")
+    log(f"[catalog] {label}: 번들 {len(_bundles(ids))}개 · 에셋경로 {len(_assets(ids))}개 · "
+        f"주소 매핑 {len(bmap)}개 번들분 해독 (바이너리 v{ver}, addressablestools)")
+    return Catalog(label, ids, sorted(rtypes), bmap, True,
+                   f"catalog.bin (바이너리 v{ver}) — addressablestools 로 해독")
 
 
 def _strings_from_binary(data, min_len=6, limit=4000):

@@ -7,6 +7,9 @@ UnityPy>=1.10
 # .NET 8+ 런타임이 함께 필요하다.
 TypeTreeGeneratorAPI>=0.0.10
 # 선택: 해당 포맷의 게임에서만 필요
+# catalog.bin (Addressables 1.21+ / Unity 2023+) 의 주소 매핑에 필요.
+# 없으면 카탈로그에서 문자열 목록만 나온다 — 런은 죽지 않는다. MIT, 무의존.
+# addressablestools
 # zstandard
 # lz4
 # Brotli

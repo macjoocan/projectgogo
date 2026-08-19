@@ -3,8 +3,11 @@ import base64
 import json
 import os
 import struct
+import sys
 import tempfile
+import types
 import unittest
+from unittest import mock
 
 from levelscope import catalog
 
@@ -155,6 +158,93 @@ class BinaryCatalog(unittest.TestCase):
         self.assertIn("매핑 불가", c.note)
         self.assertIn("Assets/Art/Hero.png", c.internal_ids)
         self.assertIn("hero__abc.bundle", c.internal_ids)
+
+
+class BinaryCatalogDecoded(unittest.TestCase):
+    """catalog.bin — 선택 의존성(addressablestools)이 있을 때의 해독과, 없을 때의 후퇴.
+
+    실제 라이브러리를 요구하지 않도록 sys.modules 에 가짜를 끼운다. 검사하려는 건
+    라이브러리의 파싱이 아니라 **우리 쪽 변환·검증·후퇴** 로직이다.
+    """
+
+    #: catalog.bin 자리에 넣을 바이트. 후퇴 경로에서 문자열이 건져지는지도 같이 본다.
+    BLOB = (bytes([0, 1]) + b"Assets/Art/Hero.png" + bytes([0])
+            + b"hero__abc.bundle" + bytes([0]))
+    PREFIX = "{UnityEngine.AddressableAssets.Addressables.RuntimePath}/Android/"
+
+    def setUp(self):
+        self._td = tempfile.TemporaryDirectory()
+        self.logs = []
+        self.apk = write_zip(os.path.join(self._td.name, "g.apk"),
+                             {"assets/aa/catalog.bin": self.BLOB})
+
+    def tearDown(self):
+        self._td.cleanup()
+
+    def _loc(self, internal_id, deps=(), class_name=""):
+        return types.SimpleNamespace(
+            internal_id=internal_id, dependencies=list(deps),
+            type=types.SimpleNamespace(class_name=class_name) if class_name else None)
+
+    def _fake(self, resources, version=2, error=None):
+        mod = types.ModuleType("addressablestools")
+
+        def parse_binary(_data):
+            if error is not None:
+                raise error
+            return types.SimpleNamespace(resources=resources, version=version)
+
+        mod.parse_binary = parse_binary
+        return mock.patch.dict(sys.modules, {"addressablestools": mod})
+
+    def _load(self):
+        return catalog.load_catalog(self.apk, log=self.logs.append)
+
+    def test_asset_is_mapped_to_the_bundle_it_depends_on(self):
+        bundle = self._loc(self.PREFIX + "hero__abc.bundle")
+        asset = self._loc("Assets/Art/Hero.png", deps=[bundle], class_name="UnityEngine.Sprite")
+        with self._fake({"hero__abc_hash": [bundle], "Assets/Art/Hero.png": [asset]}):
+            c = self._load()
+        self.assertTrue(c.decoded)
+        self.assertEqual(c.addresses_for("hero__abc.bundle"), ["Assets/Art/Hero.png"])
+        self.assertEqual(c.resource_types, ["UnityEngine.Sprite"])
+
+    def test_runtime_path_prefix_is_stripped_so_ids_match_json_shape(self):
+        bundle = self._loc(self.PREFIX + "hero__abc.bundle")
+        asset = self._loc("Assets/Art/Hero.png", deps=[bundle])
+        with self._fake({"a": [bundle], "Assets/Art/Hero.png": [asset]}):
+            c = self._load()
+        self.assertEqual(c.bundle_ids, ["Android/hero__abc.bundle"])
+        self.assertEqual(c.asset_paths, ["Assets/Art/Hero.png"])
+        self.assertEqual(c.missing_bundles(["hero__abc.bundle"]), [])
+
+    def test_bundle_self_reference_is_not_an_address(self):
+        bundle = self._loc(self.PREFIX + "hero__abc.bundle")
+        with self._fake({"hero__abc_hash": [bundle]}):
+            c = self._load()
+        self.assertEqual(c.bundle_map, {})
+
+    def test_missing_library_falls_back_to_strings(self):
+        with mock.patch.dict(sys.modules, {"addressablestools": None}):
+            c = self._load()
+        self.assertFalse(c.decoded)
+        self.assertIn("매핑 불가", c.note)
+        self.assertIn("Assets/Art/Hero.png", c.internal_ids)
+        self.assertTrue(any("addressablestools" in m for m in self.logs))
+
+    def test_parse_error_falls_back_to_strings(self):
+        with self._fake({}, error=ValueError("모르는 카탈로그 버전")):
+            c = self._load()
+        self.assertFalse(c.decoded)
+        self.assertIn("Assets/Art/Hero.png", c.internal_ids)
+
+    def test_result_that_is_not_path_like_is_refused(self):
+        """쓰레기를 경로로 착각해 이름을 붙이면 안 붙이는 것보다 나쁘다."""
+        junk = self._loc(chr(1) + chr(2) + " not a path")
+        with self._fake({"k": [junk]}):
+            c = self._load()
+        self.assertFalse(c.decoded)
+        self.assertIn("매핑 불가", c.note)
 
 
 class Absent(unittest.TestCase):
