@@ -5,6 +5,32 @@
 
 ---
 
+## 1.22.1
+
+**빈 텍스처를 "권한 오류"로 보고하던 것 수정.** PixelFlow 스프라이트 추출에서 14개가
+`PermissionError(13, 'Permission denied')` 로 실패하고 있었다. 파일 권한 문제로 읽히지만
+실제 원인은 전혀 달랐다 — 그 14개는 TextMeshPro 의 동적 폰트 아틀라스라 APK 안에
+**0x0 / 0바이트**로 들어 있다. 런타임에 만들어지는 텍스처라 뽑을 픽셀이 애초에 없다.
+
+경위: UnityPy 는 `m_StreamData` 가 **있기만 하면** `path` 가 빈 문자열이어도 리소스
+파일로 열려 든다. 빈 경로가 현재 작업 폴더로 풀려 폴더를 `open()` 하게 되고, Windows
+에서 `PermissionError(13)` 가 난다. 정작 UnityPy 자신의 이미지 setter 는 `path=""` 를
+"스트리밍 없음" 표시로 쓴다 — 즉 빈 경로는 "데이터 없음"이 맞다.
+
+- `unity.has_pixels(obj)` 추가. 픽셀이 파일 안(`image_data`)에도 밖(`m_StreamData`)에도
+  없으면 False. `sprites.py` 가 `obj.image` 전에 이걸 본다.
+- 실패 사유가 `픽셀 데이터 없음 (0x0 — 런타임 생성 텍스처)` 로 바뀐다. 이 저장소 규칙
+  ("없다"와 "못 읽었다"는 다르다)에 맞춘 것이고, 덤으로 텍스처마다 헛되이 폴더를 열어
+  보던 파일시스템 접근도 사라진다.
+- PixelFlow: 추출 **1,509개 그대로**, 실패 14건의 사유만 정확해졌다(PermissionError 0건).
+  최고 커밋 2.17GB.
+- 테스트 5건 추가(`tests/test_unity_index.py`). 전체 374개 통과.
+
+**UnityPy 업그레이드는 할 수 없었다.** PyPI 최신이 1.25.3(2026-08-01)이고 이미 그걸
+쓰고 있다. 상위 저장소의 그 이후 커밋도 `TypeTreeHelper` 의 TypelessData 배열 수정
+하나뿐이라 메모리·스프라이트와 무관하다. 스프라이트 아틀라스 캐시가 무제한으로 자라는
+문제(`SerializedFile._cache`, v1.21.0 조사에서 확인)는 upstream 에 아직 남아 있다.
+
 ## 1.22.0
 
 **Addressables 바이너리 카탈로그(`catalog.bin`) 해독.** 예전에는 `.bin` 을 만나면

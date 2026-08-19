@@ -1,4 +1,5 @@
 """ObjectIndex — PPtr 해석과 이름 추출, load_bytes 예외 전파."""
+import types
 import unittest
 
 from levelscope import unity
@@ -158,3 +159,30 @@ class LoadBytesErrors(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class HasPixels(unittest.TestCase):
+    """빈 텍스처를 "못 읽었다"가 아니라 "없다"로 가려낸다.
+
+    UnityPy 는 m_StreamData 가 있기만 하면 빈 경로도 파일로 열려 들어
+    PermissionError(13) 를 낸다 — 그 소음을 우리가 먼저 막는다.
+    """
+
+    def _tex(self, image_data=b"", path="", size=0, with_stream=True):
+        sd = types.SimpleNamespace(path=path, size=size, offset=0) if with_stream else None
+        return types.SimpleNamespace(image_data=image_data, m_StreamData=sd)
+
+    def test_inline_pixels(self):
+        self.assertTrue(unity.has_pixels(self._tex(image_data=b"")))
+
+    def test_streamed_pixels(self):
+        self.assertTrue(unity.has_pixels(self._tex(path="CAB-x.resS", size=1024)))
+
+    def test_empty_stream_path_means_no_pixels(self):
+        """TMP 동적 폰트 아틀라스 — 0x0 / 0바이트로 들어 있다."""
+        self.assertFalse(unity.has_pixels(self._tex()))
+
+    def test_stream_path_without_size_is_not_pixels(self):
+        self.assertFalse(unity.has_pixels(self._tex(path="CAB-x.resS", size=0)))
+
+    def test_no_stream_and_no_data(self):
+        self.assertFalse(unity.has_pixels(self._tex(with_stream=False)))

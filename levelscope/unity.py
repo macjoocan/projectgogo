@@ -77,6 +77,25 @@ def read_obj(o):
         return o.read(check_read=False)
 
 
+def has_pixels(obj):
+    """Texture2D 에 실제 픽셀 데이터가 있는지.
+
+    픽셀은 파일 안(`image_data`)이나 밖(`m_StreamData`)에 있다. **둘 다 빈 텍스처가
+    실제로 있다** — TextMeshPro 의 동적 폰트 아틀라스는 런타임에 만들어지므로 APK
+    안에는 0x0 / 0바이트로 들어 있다(PixelFlow 의 `Font Texture` 14개).
+
+    먼저 걸러야 하는 이유: UnityPy 는 `m_StreamData` 가 **있기만 하면** path 가 빈
+    문자열이어도 리소스 파일로 열려 든다. 빈 경로는 현재 작업 폴더로 풀려서 폴더를
+    open 하게 되고, Windows 에서 `PermissionError(13)` 가 난다. 그러면 실패 사유가
+    "권한 문제"로 적혀 엉뚱한 데를 보게 된다 — 진짜 사유는 "픽셀이 없다" 다.
+    정작 UnityPy 자신의 이미지 setter 는 `path=""` 를 "스트리밍 없음" 표시로 쓴다.
+    """
+    if getattr(obj, "image_data", None):
+        return True
+    sd = getattr(obj, "m_StreamData", None)
+    return bool(getattr(sd, "path", "") and getattr(sd, "size", 0))
+
+
 def name_of(o):
     """오브젝트 이름.
 

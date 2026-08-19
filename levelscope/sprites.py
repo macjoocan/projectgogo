@@ -159,6 +159,13 @@ def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budg
                 name = getattr(obj, "m_Name", "") or ""
                 if not _name_matches(name, pats):
                     continue
+                if o.type.name == "Texture2D" and not unity.has_pixels(obj):
+                    # 못 읽은 게 아니라 애초에 픽셀이 없는 텍스처다 (unity.has_pixels)
+                    failures.append(
+                        f"{label}!{name}: 픽셀 데이터 없음 "
+                        f"({getattr(obj, 'm_Width', 0)}x{getattr(obj, 'm_Height', 0)}"
+                        " — 런타임 생성 텍스처)")
+                    continue
                 img = obj.image
                 if img is None:
                     failures.append(f"{label}!{name}: 이미지 없음")
