@@ -1,0 +1,185 @@
+# Royal Match (com.dreamgames.royalmatch) — levelscope 설정
+#
+# 레벨이 FlatBuffers 바이너리로 들어 있다. 이름이 `1`~`14300` 인 TextAsset 14,300개.
+# Royal Kingdom 과 같은 스튜디오(Dream Games)라 형식은 같지만 **열거형이 다르다.**
+#
+# 이 게임은 슬롯 번호가 아니라 원래 필드 이름으로 나온다. 앱 안에 FlatBuffers
+# 생성 코드(`FTiledLevel`·`FTiledGrid`·`FTiledCell`)가 남아 있어서, IL2CppDumper 의
+# dump.cs 에서 tools/fbnames_from_dump.py 로 이름 지도를 뽑았다. 타일·목표 이름도
+# 같은 덤프의 `TiledId`(429개)·`GoalType`(105개) 열거형에서 온 확정값이다.
+#
+# 입력은 XAPK 다 — 레벨은 UnityDataAssetPack.apk 의 datapack.unity3d 에 있다.
+game: RoyalMatch
+
+input:
+  unity:
+    data_file: assets/bin/Data/datapack.unity3d
+    type: TextAsset
+    name_pattern: "[0-9]+"        # 순수 숫자 이름만 = 레벨 (14,300개)
+
+codec: [flatbuffers]
+
+plugin: royalmatch
+
+fields:
+  scalars: {}      # 전 컬럼을 플러그인 level_extras 에서 생성
+  counts: {}
+
+summary:
+  category_col: goal_kinds
+  avg_cols: [moves, cell_count, gimmick_kinds, gimmick_cells, goal_total]
+
+viewer:
+  title: Royal Match 레벨 뷰어
+  subtitle: FlatBuffers 레벨 14,300개 · 타일·목표 이름은 앱 열거형에서 복원
+  render: tiles
+  icon_dir: icons/royalmatch
+  tile_type_pattern: "type{}"
+  tile_span: 1
+  tile_px: 20
+  tile_px_modal: 40
+  card_px: [210, 220]
+  modal_px: [560, 720]
+  tile_inset: 0.06
+  queue_title: 기믹 구성
+  queue_hint: 이 레벨에 배치된 기믹 종류와 칸 수 · 이름은 앱의 TiledId 값
+  card_stats: [name, moves, grid_w, grid_h, cell_count, goal_kinds, goals,
+               gimmick_kinds, bottom_cells, bottoms, cover_cells, covers, scroll]
+  stat_labels: {name: 레벨명, moves: 이동수, grid_w: 가로, grid_h: 세로,
+                cell_count: 셀수, cell_kinds: 셀종류, empty_cells: 빈칸,
+                fill_cells: 빈통로칸, goal_kinds: 목표종류, goal_total: 목표합,
+                goals: 목표, gimmick_kinds: 기믹종류, gimmick_cells: 기믹칸,
+                gimmicks: 주요기믹, bottom_cells: 바텀칸, bottom_kinds: 바텀종류,
+                bottoms: 주요바텀, cover_cells: 커버칸, cover_kinds: 커버종류,
+                covers: 주요커버, chain_count: 사슬수, cage_count: 우리수,
+                scroll: 스크롤, has_hole: 구멍}
+  badges: {}
+  labels: {}
+
+palette:
+  source: static
+  static: ["#2B2B2B","#E8443A","#E8763A","#E8A93A","#D9E83A","#A6E83A","#72E83A","#3AE84B",
+           "#3AE87E","#3AE8B1","#3AE8E4","#3AB1E8","#3A7EE8","#3A4BE8","#4B3AE8","#7E3AE8",
+           "#B13AE8","#E43AE8","#E83AB1","#E83A7E","#E83A4B","#F0846B","#F0A96B","#F0CE6B",
+           "#D7F06B","#A9F06B","#6BF084","#6BF0CE","#6BCEF0","#6B84F0","#A96BF0","#CE6BF0"]
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]   # 아틀라스 원본까지
+  max_count: 20000
+
+# text 는 뺀다 — 이 게임은 레벨이 TextAsset 이라(14,300개) 넣으면 상한을 다 먹고
+# 정작 오디오·머티리얼을 못 연다. 레벨은 levels_decoded.zip 에 따로 들어간다.
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine]
+  max_count: 20000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 400000
+
+notes:
+  - "확인됨: 레벨 14,300개 전부 FlatBuffers 로 해독. 보드 정합성(셀수 = 가로x세로) 14,300/14,300."
+  - "확인됨: 셀 타입 361종이 쓰이는데 전부 이름이 붙었다(미상 0). 앱의 TiledId 429개에서 왔다."
+  - "확인됨: 필드 이름은 앱의 FlatBuffers 생성 클래스에서 왔다 — 슬롯 번호가 아니라 Name/Move/Grid 다."
+  - "확인됨: 목표는 GoalType 이름으로 나온다. 83종 사용 — 잔디 3,576 · 화병 2,077 · 젤리 1,705 …"
+  - "확인됨: 보드 크기 9x11 이 10,203개로 최다. 9x31·9x37 같은 긴(스크롤) 보드도 있다."
+  - "추정: 층 배정(바텀/커버). Royal Kingdom 과 같은 3층 구조로 보되 실제 화면 대조는 아직 못 했다."
+  - "미확정: 아이콘은 스프라이트 이름이 타일 이름과 정확히 맞는 것만 붙인다."
+  - "생성: levelscope 파이프라인"
+
+outputs: [xlsx, html, zip]
+
+flatbuffers:
+  infer_schema: true
+  names:
+    "": ["Name", "Move", "Goals", "Grid", "Predefined", "Sets", "Colors", "Counts", "PotionColors", "LowMatch", "Curtains", "CupShelves", "SoilGroups", "Drills", "LightBulbColorOrder", "ChainCount", "PropellerIgnoresChain", "PouchConfig", "Limits", "PropellerIgnoresDrill", "JellyReceivableCellCount", "HasHoleInGrid", "Treasuremaps", "Slots", "CageCount", "MagnetGroups", "Scroll", "ConveyorBelts", "Coils", "CandyCaneGroups", "TabletItemGroups", "IvyItemGroups", "BlindsGroups", "WaterData", "ShifterGrids", "PorcelainGroups", "MagicGem", "MagicGemColorOrder", "AncientVaults", "ForceFieldGroups", "Logs", "PropellerIgnoresLog", "PinGroups", "Cryptexes", "PowerCubeGroups", "PotionTubeGroups", "CuckooGroups", "Sapphires", "RoyalCapsules", "CapsuleConfig", "BowlingRacks", "MagicLantern", "Pairs", "MetalPlateGroups", "ColorMixers"]
+    "AncientVaults[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "BlindsGroups[]": ["Width", "MagnetCells"]
+    "BlindsGroups[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "BlindsGroups[].MagnetCells[].Cell": ["X", "Y"]
+    "BowlingRacks[]": ["MagnetCells"]
+    "BowlingRacks[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "BowlingRacks[].MagnetCells[].Cell": ["X", "Y"]
+    "CandyCaneGroups[]": ["MagnetCells"]
+    "CandyCaneGroups[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "CandyCaneGroups[].MagnetCells[].Cell": ["X", "Y"]
+    "CapsuleConfig": ["IsAvailableFalling", "LightballRatio", "TntRatio", "RocketHorizontalRatio", "RocketVerticalRatio", "PropellerRatio"]
+    "Coils[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "ColorMixers[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "ConveyorBelts[]": ["MagnetCells"]
+    "ConveyorBelts[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "ConveyorBelts[].MagnetCells[].Cell": ["X", "Y"]
+    "Counts[]": ["Type", "Count", "BoardId"]
+    "Cryptexes[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "CuckooGroups[]": ["Cells"]
+    "CuckooGroups[].Cells[]": ["X", "Y"]
+    "CupShelves[]": ["Cells"]
+    "CupShelves[].Cells[]": ["X", "Y"]
+    "Curtains[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "Drills[]": ["ColorId", "MasterTileId", "MasterPoint", "Order", "Target"]
+    "Drills[].MasterPoint": ["X", "Y"]
+    "ForceFieldGroups[]": ["Cells"]
+    "ForceFieldGroups[].Cells[]": ["X", "Y"]
+    "Goals[]": ["Goal", "Count", "IsFromSettings", "BoardId"]
+    "Grid": ["Items", "Cells", "Width", "Height"]
+    "Grid.Cells[]": ["FillType", "IsPredefined", "Grass", "Honey", "Curtain", "Chain", "Roof", "Jelly", "Treasuremap", "Ceramic", "MushroomSoil", "Blinds", "WaterSoil", "ForceField", "Cryptex", "IceBorder", "MetalPlates"]
+    "IvyItemGroups[]": ["MagnetCells"]
+    "IvyItemGroups[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "IvyItemGroups[].MagnetCells[].Cell": ["X", "Y"]
+    "Limits[]": ["Limit", "Count", "BoardId"]
+    "Logs[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "MagicGem[]": ["Cells"]
+    "MagicGem[].Cells[]": ["X", "Y"]
+    "MagicLantern[]": ["X", "Y"]
+    "MagnetGroups[]": ["MagnetCells"]
+    "MagnetGroups[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "MagnetGroups[].MagnetCells[].Cell": ["X", "Y"]
+    "MetalPlateGroups[]": ["Width", "MagnetCells"]
+    "MetalPlateGroups[].MagnetCells[]": ["Cell", "IsHead", "DirectionTiledId"]
+    "MetalPlateGroups[].MagnetCells[].Cell": ["X", "Y"]
+    "Pairs[]": ["Symbol", "ColorId", "FirstMinX", "FirstMinY", "SecondMinX", "SecondMinY"]
+    "PinGroups[]": ["Cells"]
+    "PinGroups[].Cells[]": ["X", "Y"]
+    "PorcelainGroups[]": ["Cells"]
+    "PorcelainGroups[].Cells[]": ["Point", "Direction"]
+    "PorcelainGroups[].Cells[].Point": ["X", "Y"]
+    "PotionColors[]": ["Colors"]
+    "PotionTubeGroups[]": ["Cells"]
+    "PotionTubeGroups[].Cells[]": ["Point", "Direction"]
+    "PotionTubeGroups[].Cells[].Point": ["X", "Y"]
+    "PouchConfig": ["IsAvailableFalling", "LightballRatio", "TntRatio", "RocketHorizontalRatio", "RocketVerticalRatio", "PropellerRatio"]
+    "PowerCubeGroups[]": ["Cells"]
+    "PowerCubeGroups[].Cells[]": ["X", "Y"]
+    "Predefined[]": ["X", "Y", "Ids"]
+    "RoyalCapsules[]": ["Items", "MinX", "MinY"]
+    "Sapphires[]": ["Id", "ColorId", "Order", "Target", "CellCount", "Width", "Height", "MinX", "MinY"]
+    "Sets[]": ["Name", "Elements", "CanFall", "CreateRatio", "TargetColumns", "BirdMax", "FrogMax", "TargetFills", "TargetFillRatios", "MaxItemCounts"]
+    "Sets[].Elements[]": ["Id", "CreateRatio"]
+    "Sets[].MaxItemCounts[]": ["Id", "MaxCount"]
+    "ShifterGrids[]": ["ItemCells", "StartMasterIndex", "EndMasterIndex", "Start", "TurnPoint", "End"]
+    "ShifterGrids[].End": ["Point", "Direction"]
+    "ShifterGrids[].End.Point": ["X", "Y"]
+    "ShifterGrids[].ItemCells[]": ["X", "Y"]
+    "ShifterGrids[].Start": ["Point", "Direction"]
+    "ShifterGrids[].Start.Point": ["X", "Y"]
+    "ShifterGrids[].TurnPoint": ["Point", "Direction"]
+    "ShifterGrids[].TurnPoint.Point": ["X", "Y"]
+    "Slots[]": ["StartIndex", "HasLightball", "HasRocket", "HasTnt", "HasPropeller"]
+    "SoilGroups[]": ["Cells"]
+    "SoilGroups[].Cells[]": ["X", "Y"]
+    "TabletItemGroups[]": ["Cells"]
+    "TabletItemGroups[].Cells[]": ["X", "Y"]
+    "Treasuremaps[]": ["Cells"]
+    "Treasuremaps[].Cells[]": ["X", "Y"]
+    "WaterData": ["EnterPoints", "WaterPoints", "ExitPoints", "WaterReceivableCellCount", "BoardCount", "SandCellCount"]
+    "WaterData.EnterPoints": ["Cells"]
+    "WaterData.EnterPoints.Cells[]": ["X", "Y"]
+    "WaterData.ExitPoints": ["Cells"]
+    "WaterData.ExitPoints.Cells[]": ["X", "Y"]
+    "WaterData.WaterPoints": ["Cells"]
+    "WaterData.WaterPoints.Cells[]": ["X", "Y"]

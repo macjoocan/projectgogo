@@ -1,0 +1,47 @@
+# FriendsPopcorn — levelscope survey 자동 초안
+#
+# 이 파일은 출발점입니다. 그대로 돌리지 말고 아래를 확인하세요:
+#   1) input.unity.name_pattern 이 정말 레벨 에셋만 고르는지
+#      python -m levelscope inspect --config <이 파일> --input <apk>
+#   2) fields / board 를 실제 JSON 구조에 맞게 채우기
+#   3) codec 이 맞는지 (python -m levelscope detect --input <apk>)
+#
+# 조사 결과: 백엔드 IL2CPP · Unity 2021.3.58f1 · Unity 소스 1471개
+game: friendspopcorn
+
+input:
+  unity:
+    data_file: assets/bin/Data/1848f411deb4fc8449b42a8fd0d33a92
+    type: TextAsset
+    name_pattern: "[0-9]+_Skill_[0-9]+SecAddTime[0-9]+|FishData|[0-9]+_Skill_SunGlassHatBlockGen|[0-9]+_Skill_DelBlockSunGlassesBlockGen|[0-9]+_Skill_GemProduct|TutorialData"
+    # ↑ 이름 계열(숫자를 [0-9]+로 뭉친 것)을 멤버 수 순으로 넣은 초안입니다.
+    #   레벨이 아닌 계열이 섞여 있을 수 있으니 inspect 로 확인하고 지우세요.
+    # 계열: [0-9]+_Skill_[0-9]+SecAddTime[0-9]+×7, FishData×1, [0-9]+_Skill_SunGlassHatBlockGen×1, [0-9]+_Skill_DelBlockSunGlassesBlockGen×1, [0-9]+_Skill_GemProduct×1, TutorialData×1, [0-9]+_Skill_SunGlassBlockGenX[0-9]+×1, KGSharedData×1
+
+codec: ["json"]
+
+fields:
+  scalars: {}       # 예: level_id: id
+  counts: {}        # 예: tile_count: tiles.*
+
+# 리소스·계층은 sources 를 비워 두면 자동 발견합니다 (Addressables 번들 포함).
+sprites:
+  sources: auto
+  types: [Sprite]
+  max_count: 1000
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+
+notes:
+  - "조사: IL2CPP · Unity 2021.3.58f1"
+  - "'CharacterViewInfo' 계열 1개가 디코딩되지 않음 (표본 머리 7b22636861725669) — 커스텀 바이너리 포맷일 수 있음"
+
+outputs: [xlsx, html, zip, sprites, assets, hierarchy]

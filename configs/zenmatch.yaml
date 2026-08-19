@@ -1,0 +1,75 @@
+# Zen Match (com.exoticmatch.game) — levelscope 설정
+# 레벨이 파일이 아니라 Unity TextAsset(Level_<번호>)으로 저장된 게임.
+game: ZenMatch
+
+input:
+  unity:
+    data_file: assets/bin/Data/data.unity3d
+    name_pattern: "Level_(\\d+)"      # 그룹1 = 레벨 번호
+    set_name: main
+
+codec: auto        # TextAsset 내용은 평문 JSON → ['json'] 자동 감지
+
+fields:
+  scalars: {}      # 전 컬럼을 플러그인(level_extras)에서 생성
+  counts: {}
+
+plugin: zenmatch   # board(스택 렌더)·level_extras 제공
+
+summary:
+  category_col: format
+  category_order: ["layered(v1)", "board(v2)", "random"]
+  avg_cols: [tile_count, layer_count, max_stack]
+
+viewer:
+  title: Zen Match 레벨 뷰어
+  subtitle: 게임 원본 타일 스프라이트 렌더 · 모달 슬라이더로 레이어 겹침 확인
+  render: tiles                # 스프라이트 타일 스택 렌더 모드
+  tile_span: 2                 # 타일 1개 = 2×2 좌표 유닛 (반타일 겹침 표현)
+  icon_dir: icons/zenmatch
+  tile_images: {base: tile_base, ice: tile_ice, box: tile_box}   # data.unity3d에서 추출한 원본
+  card_stats: [format, tile_count, layer_count, max_stack, fixed_tiles, ice, box]
+  stat_labels: {format: 포맷, tile_count: 타일, layer_count: 레이어, max_stack: 최대스택,
+                fixed_tiles: 고정타일, ice: 얼음, box: 박스}
+  badges: {}
+  labels: {}
+
+# 리소스 추출 (outputs에 sprites 포함 시 <게임>_sprites.zip 생성)
+
+# 스택 높이 1~16+ 를 표현하는 순차 팔레트 (밝은 민트 → 짙은 남색)
+palette:
+  source: static
+  static: ["#E8F6F3","#C8EAE4","#A8DDD5","#88D0C6","#68C3B7","#4FB3A5","#3FA093","#348D82",
+           "#2A7A71","#216860","#1A564F","#14443F","#0F332F","#0A2220","#061614","#030B0A"]
+  names: [스택1, 스택2, 스택3, 스택4, 스택5, 스택6, 스택7, 스택8,
+          스택9, 스택10, 스택11, 스택12, 스택13, 스택14, 스택15, 스택16+]
+
+notes:
+  - "주: 레벨은 data.unity3d 내 TextAsset(Level_<번호>). 포맷 3종 — layered(v1)/board(v2)/random(시드 랜덤, 보드 없음)."
+  - "주: 뷰어 보드 색 = 해당 좌표의 타일 스택 높이(1~16+). 노란 테두리 = ice/box 타일."
+  - "주: random 레벨은 uniqueItems 합이 tile_count, 보드 이미지는 없음."
+  - "생성: levelscope 파이프라인"
+
+# ── 리소스 추출 ──────────────────────────────────────────────────
+# sources 를 비워 두면 자동 발견한다 (Addressables 번들·확장자 없는 번들 포함).
+# 경로를 하드코딩하면 새 번들이 통째로 빠진다.
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]     # 아틀라스 원본까지
+  max_count: 20000
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine]
+  max_count: 20000
+  # text 는 뺀다 — 이 게임은 레벨이 TextAsset 이라 넣으면 상한을 다 먹고
+  # 정작 오디오·머티리얼을 못 연다. 레벨은 levels_decoded.zip 에 따로 들어간다.
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 400000
+
+outputs: [xlsx, html, zip, sprites, assets, hierarchy]

@@ -1,0 +1,123 @@
+# ── 새 게임용 템플릿 ──────────────────────────────────────────────
+# 먼저 이걸 해보세요 — 이 템플릿을 손으로 채우는 것보다 빠릅니다:
+#     python -m levelscope survey --input <apk> --configs configs
+#   → configs/_suggested_<게임>.yaml 에 레벨 후보·codec·sources 가 채워진 초안이 나옵니다.
+#
+# 사용법:
+#  1) 이 파일을 configs/<게임이름>.yaml 로 복사 (또는 위 초안을 옮겨 씀)
+#  2) python -m levelscope inspect --config configs/<게임>.yaml --input <apk> 로
+#     레벨 JSON 구조를 확인하면서 fields/board를 채운다
+#  3) python -m levelscope run ... 실행
+game: MyGame
+
+input:
+  # 컨테이너(apk/xapk/obb/zip/폴더) 안에서 레벨 파일을 찾는 glob. 목록도 가능:
+  #   levels_glob: ["assets/Levels/*/*.json", "assets/extra/*.dat"]
+  # 내부 경로가 헷갈리면: python -m levelscope ls --input <apk>
+  levels_glob: "assets/Levels/*/*.json"
+  set_from: parent_dir      # 세트 구분: parent_dir | 정규식(그룹1이 세트명)
+  level_id_from: stem       # 레벨 id: stem(파일명) | 정규식(그룹1)
+  # merge_containers: true  # 레벨이 base.apk와 obb에 나뉘어 있으면 합친다
+  #                         # (기본 false = 가장 많이 나온 컨테이너 하나만 사용)
+
+  # 레벨이 파일이 아니라 Unity 에셋 안에 있는 게임은 levels_glob 대신 unity 를 쓴다.
+  # unity:
+  #   data_file: assets/bin/Data/data.unity3d   # 목록·glob 가능("assets/aa/Android/*.bundle")
+  #   type: TextAsset                           # TextAsset | MonoBehaviour
+  #   name_pattern: "Level_(\\d+)"              # 그룹1 = 레벨 id
+  #   set_name: main
+  #   field: levelJson        # MonoBehaviour일 때 값이 담긴 프로퍼티 (생략 시 가장 긴 문자열)
+  #   script_class: LevelData # MonoBehaviour 스크립트 클래스로 한정(선택)
+
+# 파일 → JSON 디코딩. 'auto'면 자동 감지 (압축 7종·base64·hex·접두어·utf16·msgpack 지원).
+# 사전 파악:  python -m levelscope detect --input <apk>
+# 암호화 의심: python -m levelscope detect --input <apk> --xor-scan   ← XOR 키 자동 복구
+# 명시 체인 예:
+#   평문 JSON:              ["strip_bom", "json"]
+#   gzip:접두 + base64+gzip: ["strip_bom", "prefix:gzip:", "base64", "gunzip", "json"]
+#   XOR (키는 --xor-scan 이 찾아준다):        ["xor:5A", "gunzip", "json"]
+#   AES (키·IV는 사용자가 확보해야 함):        ["aes_cbc:<hexkey>:<hexiv>", "json"]
+codec: auto
+
+fields:
+  scalars:                  # 컬럼명: JSON 경로 (점 구분, 값 그대로)
+    Difficulty: Difficulty
+  counts:                   # 컬럼명: 배열 경로 → 원소 수
+    # 래퍼 dict({"Items":[...]}) 안의 유일한 리스트는 '.*' 로 접근
+    # SomeGimmick: SomeGimmick.*
+
+# 보드(그리드)가 있으면 정의 — HTML 뷰어의 그림 렌더에 사용. 없으면 삭제.
+board:
+  width: Board.width
+  height: Board.height
+  pixels: Board.cells        # [{x,y,material,...}] 형태의 배열 경로
+  pixel: {x: x, y: y, material: material}   # area_x/area_y 는 선택(멀티셀 픽셀)
+  overlays: {}               # 벽/열쇠 등: {이름: {path: ..., points: GridPoints, style: wall|outline}}
+
+palette:
+  source: static             # static | unity
+  static: []                 # material 인덱스 순 hex 목록. 비우면 자동 생성 팔레트
+  names: []
+  # source: unity 인 경우:
+  # unity:
+  #   data_file: assets/bin/Data/data.unity3d
+  #   list_class: MaterialDataListSo   # 색 머티리얼 목록을 가진 ScriptableObject 클래스명
+  #   list_name: "..."                 # 그 에셋의 이름
+  #   color_props: ["_BaseColor", "_Color"]
+
+# 게임 고유 로직(엔티티 시트, 파생 컬럼, 뷰어 상세)이 필요하면 플러그인을 만들고
+# 여기에 이름을 적는다. levelscope/plugins/pixelflow.py 참고 (규격은 MANUAL 5장).
+# plugin: mygame
+
+summary:
+  category_col: Difficulty
+  category_order: []
+  avg_cols: [pixel_count]
+
+viewer:
+  title: MyGame 레벨 뷰어
+  difficulty_field: Difficulty
+  difficulty_order: []
+  card_stats: [pixel_count]
+  stat_labels: {pixel_count: 픽셀}
+  icon_dir: ""               # 기믹 아이콘 폴더(선택). badges에서 파일명(확장자 제외) 참조
+  badges: {}
+  labels: {}
+
+# ── 레벨 밖 리소스 (선택) ─────────────────────────────────────────
+# 아래 세 섹션은 레벨 데이터와 무관하게 독립적으로 쓸 수 있다. 설정 없이
+# CLI로 먼저 훑어보는 게 빠르다:
+#   python -m levelscope assets    --input <apk> --out out
+#   python -m levelscope hierarchy --input <apk> --out out
+
+# sources 를 `auto`(또는 생략)로 두면 Unity 소스를 자동 발견한다 —
+# assets/bin/Data/data.unity3d 뿐 아니라 Addressables assets/aa/**/*.bundle 까지.
+# 경로를 직접 적으면 그것만 쓴다.
+
+# 이미지가 아닌 리소스. 오디오 원본이 번들 밖 .resource 에 있어도 알아서 찾는다.
+# assets:
+#   sources: auto
+#   kinds: [audio, material, font, spine, text]   # 생략 시 전체
+#   max_count: 4000
+#   # ⚠️ 레벨이 TextAsset인 게임은 kinds 에서 text 를 빼세요. 안 그러면 레벨 수천 개가
+#   #    max_count 를 다 먹어서 뒤쪽 번들이 아예 안 열립니다 (로그가 짚어 줍니다).
+
+# 씬(level0…)·프리팹의 GameObject 트리를 JSON으로. 컴포넌트 필드 값까지 담으려면
+# IL2CPP 빌드에서는 아래 typetree 가 동작해야 한다 (자동, 보통 손댈 것 없음).
+# hierarchy:
+#   sources: auto
+#   scenes: true
+#   prefabs: true
+#   fields: full        # none 으로 두면 이름·타입만 (빠르고 작다)
+#   max_nodes: 200000
+
+# IL2CPP MonoBehaviour typetree 복원. libil2cpp.so + global-metadata.dat 를
+# APK에서 자동으로 찾고 Unity 버전도 번들에서 감지한다.
+# 백엔드는 앞에서 뒤로 폴백한다 — 하나로는 100%가 안 나온다(실측 82% → 100%).
+# typetree:
+#   backends: [AssetRipper, AssetStudio]
+#   enabled: true
+#   unity_version: null      # 자동 감지 실패 시에만 (예: 2021.3.42f1)
+
+notes: []
+outputs: [xlsx, html, zip]     # + sprites, assets, hierarchy

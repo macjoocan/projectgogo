@@ -1,0 +1,199 @@
+# PixelFlow (Loom Games) — levelscope 설정
+game: PixelFlow
+
+input:
+  levels_glob: "assets/Levels/*/[0-9]*.json"   # 컨테이너(apk/폴더) 내 레벨 파일 패턴
+  set_from: parent_dir                          # 세트 = 상위 폴더명 (또는 정규식, 그룹1)
+  level_id_from: stem                           # 레벨 id = 파일명(확장자 제외)
+
+codec: auto   # 자동 감지 (명시하려면: ["strip_bom","prefix:gzip:","base64","gunzip","json"])
+
+fields:
+  scalars:
+    Difficulty: Difficulty
+    SlotCount: SlotCount
+    ConveyorLimit: ConveyorLimit
+    isValid: isValid
+  counts:            # 컬럼명: 배열 경로 ('.*' = dict 안의 유일한 리스트)
+    SurpriseShooters: SurpriseShooters.*
+    ConnectedShooters: ConnectedShooters.*
+    Locks: Locks.*
+    ShooterPipes: ShooterPipes.*
+    Hammers: Hammers.*
+    ShooterIceBlocks: ShooterIceBlocks.*
+    ChainedShooters: ChainedShooters.*
+    BullTotems: BullTotems.*
+    MusicToyMallets: MusicToyMallets.*
+    SlotCages: SlotCages.*
+    AstronautShooters: AstronautShooters.*
+    keys: PixelImageData.keys.*
+    surprisePixels: PixelImageData.surprisePixels.*
+    pixelPipes: PixelImageData.pixelPipes.*
+    gates: PixelImageData.gates.*
+    walls: PixelImageData.walls.*
+    snakes: PixelImageData.snakes.*
+    eggBoxes: PixelImageData.eggBoxes.*
+    pixelIceBlocks: PixelImageData.pixelIceBlocks.*
+    pixelWoodBlocks: PixelImageData.pixelWoodBlocks.*
+    pixelColorDoors: PixelImageData.pixelColorDoors.*
+    biscuits: PixelImageData.biscuits.*
+    splitObjects: PixelImageData.splitObjects.*
+    ufos: PixelImageData.ufos.*
+    pumpkins: PixelImageData.pumpkins.*
+    curtains: PixelImageData.curtains.*
+    shooterCages: PixelImageData.shooterCages.*
+    coloredShooterCages: PixelImageData.coloredShooterCages.*
+    multiSnakes: PixelImageData.multiSnakes.*
+    beanBoxes: PixelImageData.beanBoxes.*
+    musicToys: PixelImageData.musicToys.*
+    crossbows: PixelImageData.crossbows.*
+    accordions: PixelImageData.accordions.*
+    matryoshkas: PixelImageData.matryoshkas.*
+    spaceships: PixelImageData.spaceships.*
+
+board:
+  width: PixelImageData.width
+  height: PixelImageData.height
+  pixels: PixelImageData.pixels
+  pixel: {x: x, y: y, material: material, area_x: areaX, area_y: areaY}
+  overlays:
+    walls: {path: PixelImageData.walls.*, points: GridPoints, style: wall}
+    keys:  {path: PixelImageData.keys.*,  points: GridPoints, style: outline}
+
+palette:
+  source: unity
+  unity:
+    data_file: assets/bin/Data/data.unity3d
+    list_class: MaterialDataListSo
+    list_name: Main Pixel Unity Materials
+    color_props: ["_BaseColor", "_Color"]
+  # unity 추출 실패 시 사용할 검증된 팔레트 (2026-08 v 기준)
+  static: ["#0073FF","#0E39CC","#2F2F2F","#3FAC1D","#FF6200","#C04983","#7829E1","#A00D0D","#2FAACF","#D2A626","#CCCCCC","#613E23","#046000","#1D6553","#BF83E2","#959D67","#C37B7C","#878EC0","#8D404D","#C4AA70","#B2544A","#888795","#474652","#39205D","#AA1D62","#CF8AB2","#D2914F","#6F0F0F","#7B730A","#5C8782","#9F6A44","#7B4827","#9328A7","#666476"]
+  names: [Blue, DarkBlue, Black, Green, Orange, Pink, Purple, Red, Turquoise, Yellow, White, Brown, DarkGreen, Emerald, Lilac, Sage, Salmon, Lavender, Terracotta, Parmesan, Brick, Gray, DarkGray, DarkPurple, GypsyPink, PowderPink, PastelOrange, Burgundy, Olive, DustyTeal, MilkyBrown, Toffee, NeonPurple, SharkGray]
+
+plugin: pixelflow
+
+summary:
+  category_col: Difficulty
+  category_order: [Easy, Medium, Hard, Very Hard, Ultra Hard]
+  avg_cols: [pixel_count, SlotCount, total_ammo, color_count]
+
+viewer:
+  title: PixelFlow 레벨 뷰어
+  subtitle: levelscope 자동 생성
+  difficulty_field: Difficulty
+  difficulty_order: [Easy, Medium, Hard, Very Hard, Ultra Hard]
+  card_stats: [pixel_count, SlotCount, ConveyorLimit, shooter_count, total_ammo]
+  stat_labels: {pixel_count: 픽셀, SlotCount: 슬롯, ConveyorLimit: 컨베이어, shooter_count: 슈터, total_ammo: 탄}
+  icon_dir: icons/pixelflow      # configs/ 기준 상대경로
+  badges:    # counts 컬럼 -> icon_dir 내 파일명(확장자 제외)
+    SurpriseShooters: FeatureImage_SurpriseShooter
+    ConnectedShooters: FeatureImage_ConnectedShooter
+    Locks: FeatureImage_LockandKey
+    ShooterPipes: FeatureImage_ShooterPipe
+    Hammers: FeatureImage_WoodHammer
+    ShooterIceBlocks: FeatureImage_FrozenShooter
+    ChainedShooters: FeatureImage_Shackles
+    BullTotems: FeatureImage_BullTotem
+    MusicToyMallets: FeatureImage_MusicToy
+    SlotCages: FeatureImage_SlotCage
+    AstronautShooters: FeatureImage_AstroPig
+    keys: FeatureImage_LockandKey
+    surprisePixels: FeatureImage_SurprisePixel
+    pixelPipes: FeatureImage_PixelPipe
+    gates: FeatureImage_Gate
+    walls: FeatureImage_Wall
+    snakes: FeatureImage_Snake
+    eggBoxes: FeatureImage_EggBox
+    pixelIceBlocks: FeatureImage_IceBlock
+    pixelWoodBlocks: FeatureImage_HardPixel
+    pixelColorDoors: FeatureImage_ColorDoor
+    biscuits: FeatureImage_Biscuit
+    splitObjects: FeatureImage_PigCell
+    ufos: FeatureImage_Ufo
+    pumpkins: FeatureImage_Pumpkin
+    curtains: FeatureImage_Curtain
+    shooterCages: FeatureImage_ColoredShooterCage
+    coloredShooterCages: FeatureImage_ColoredShooterCage
+    multiSnakes: FeatureImage_Dragon
+    beanBoxes: FeatureImage_JellyBeans
+    musicToys: FeatureImage_MusicToy
+    crossbows: FeatureImage_Crossbow
+    accordions: FeatureImage_Accordion
+    matryoshkas: FeatureImage_Matryoshka
+    spaceships: FeatureImage_Rocket
+  labels:
+    SurpriseShooters: 서프라이즈 슈터
+    ConnectedShooters: 연결 슈터
+    Locks: 자물쇠 슈터
+    ShooterPipes: 슈터 파이프
+    Hammers: 해머
+    ShooterIceBlocks: 얼음 슈터
+    ChainedShooters: 사슬 슈터
+    BullTotems: 황소 토템
+    MusicToyMallets: 말렛
+    SlotCages: 슬롯 케이지
+    AstronautShooters: 우주 슈터
+    keys: 열쇠
+    surprisePixels: 서프라이즈 픽셀
+    pixelPipes: 픽셀 파이프
+    gates: 게이트
+    walls: 벽
+    snakes: 스네이크
+    eggBoxes: 에그박스
+    pixelIceBlocks: 얼음 블록
+    pixelWoodBlocks: 나무 블록
+    pixelColorDoors: 컬러 도어
+    biscuits: 비스킷
+    splitObjects: 분열체
+    ufos: UFO
+    pumpkins: 호박
+    curtains: 커튼
+    shooterCages: 슈터 케이지
+    coloredShooterCages: 컬러 슈터 케이지
+    multiSnakes: 멀티 스네이크(드래곤)
+    beanBoxes: 젤리빈 박스
+    musicToys: 뮤직 토이
+    crossbows: 석궁
+    accordions: 아코디언
+    matryoshkas: 마트료시카
+    spaceships: 로켓
+  entity_tags:   # 뷰어 슈터 칩 태그코드 -> [이모지, 라벨]
+    S: ["❓", 서프라이즈]
+    L: ["🔒", 자물쇠]
+    H: ["🔨", 해머]
+    A: ["🐷", 우주 슈터]
+    E: ["⤴️", 파이프 출구]
+    C: ["🔗", 연결]
+    X: ["⛓️", 사슬]
+    I: ["🧊", 얼음]
+    T: ["🐂", 황소 토템]
+    M: ["🥁", 말렛]
+
+notes:
+  - "주: set은 assets/Levels/<해시폴더> 원본 폴더명, level은 폴더 내 파일명 번호."
+  - "주: 기믹 개수 = 각 슬롯 배열의 원소 수. 슈터 집계는 파이프 내부 대기열 포함(Shooters 시트 source 열로 구분)."
+  - "주: material 인덱스는 게임 34색 팔레트 기준(data.unity3d에서 자동 추출, 실패 시 static 팔레트)."
+  - "생성: levelscope 파이프라인"
+
+# ── 리소스 추출 ──────────────────────────────────────────────────
+# sources 를 비워 두면 자동 발견한다 (Addressables 번들·확장자 없는 번들 포함).
+# 경로를 하드코딩하면 새 번들이 통째로 빠진다.
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]     # 아틀라스 원본까지
+  max_count: 20000
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 20000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 400000
+
+outputs: [xlsx, html, zip, sprites, assets, hierarchy]

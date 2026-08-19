@@ -1,0 +1,108 @@
+# SheepNSheep (com.game.keepsheep) v1.9.2 — levelscope 설정
+# 레벨이 data.unity3d 안 TextAsset에 들어 있고, 에셋 하나에 맵 여러 개 ×
+# 스테이지 2~3개가 몰려 있다. 플러그인 split_levels 가 스테이지 단위로 펼친다.
+#   레코드 1개 = 스테이지 1개, id = "<mapId>-<스테이지>"
+# APK에는 씨앗 맵만 들어 있다 (일일 맵은 서버에서 받는다).
+game: SheepNSheep
+
+input:
+  unity:
+    data_file: assets/bin/Data/data.unity3d
+    type: TextAsset
+    # 맵 데이터를 담은 TextAsset들. 그룹1이 없으므로 에셋 이름이 그대로 id가 되고,
+    # 그 이름이 플러그인에서 세트명으로 쓰인다.
+    name_pattern: "newMap[0-9]*|newMapLv[0-9]+|PvpMap|AdventureMap|defaultMapData|inviteMap"
+
+codec: auto        # TextAsset 내용은 평문 JSON (일부는 BOM 있음) → 자동 감지
+
+fields:
+  scalars: {}      # 전 컬럼을 플러그인(level_extras)에서 생성
+  counts: {}
+
+plugin: sheepnsheep
+
+summary:
+  category_col: asset
+  category_order: [newMapLv3, inviteMap, PvpMap, defaultMapData,
+                   AdventureMap, newMap1, newMap2, newMap3]
+  avg_cols: [tile_count, layer_count, max_stack, match_sets]
+
+viewer:
+  title: SheepNSheep 레벨 뷰어
+  subtitle: 스테이지 단위(mapId-스테이지) · 게임 원본 타일 스프라이트로 배치·겹침 렌더 · 모달 슬라이더로 레이어 벗겨보기
+  render: tiles                 # 스프라이트 타일 스택 렌더
+  tile_span: 12                 # 타일 1개 = 12×12 좌표 유닛 (반타일 겹침이 이걸로 표현됨)
+  # 이 게임 보드는 5~6타일 폭뿐이라 카드에 꽉 맞추면 타일이 과하게 커진다.
+  # Zen Match 뷰어의 체감 타일 크기(중간값 약 24px)에 맞춰 상한을 둔다.
+  tile_px: 18                   # 카드 썸네일에서 타일 1개 최대 px
+  tile_px_modal: 56             # 모달에서 타일 1개 최대 px
+  card_px: [190, 140]           # 카드 렌더 영역 (타일이 작아진 만큼 카드도 줄여 여백 방지)
+  modal_px: [620, 700]          # 모달 렌더 영역
+  tile_inset: 0.12              # 타일을 자기 칸보다 12% 줄여 그림 → 겹친 경계가 구분된다
+  queue_title: 블록 풀
+  queue_hint: 이 스테이지에 배정되는 블록 종류와 타일 수(세트×3) · 배치는 런타임 랜덤
+  icon_dir: icons/sheepnsheep
+  tile_images: {base: Card_BG}  # 타일 배경 = 게임 원본 Card_BG
+  # 고정 블록의 얼굴 이미지. il2cpp 메타데이터의 "Textures/CardIcon/card{0}" 로
+  # 블록타입 id N ↔ cardN 대응이 확인됐다 (오프셋 없음).
+  tile_type_pattern: "card{}"
+  difficulty_field: stage
+  difficulty_order: [1, 2, 3]
+  card_stats: [asset, stage, tile_count, layer_count, max_stack, match_sets, block_kinds, fixed_tiles]
+  stat_labels: {asset: 에셋, stage: 스테이지, tile_count: 타일, layer_count: 레이어,
+                max_stack: 최대스택, match_sets: 매칭세트, block_kinds: 블록종류,
+                fixed_tiles: 고정블록, cells_used: 점유셀, random_tiles: 랜덤타일}
+  badges: {}
+  labels: {}
+
+# 스택 높이 1~16+ 순차 팔레트 (연한 양털 → 짙은 남색)
+palette:
+  source: static
+  static: ["#FBF7EF","#F0E6D2","#E2D3B4","#D3BE95","#C4A97A","#B39463","#A07E52","#8B6A45",
+           "#75583B","#604733","#4B382B","#3A2C24","#2B211C","#1D1614","#120D0C","#080606"]
+  names: [스택1, 스택2, 스택3, 스택4, 스택5, 스택6, 스택7, 스택8,
+          스택9, 스택10, 스택11, 스택12, 스택13, 스택14, 스택15, 스택16+]
+
+# 블록 이미지 리소스 (card0~card32) — blockTypeData의 블록타입 id에 대응하는 것으로 보인다
+
+# IL2CPP MonoBehaviour typetree 복원 — hierarchy 의 컴포넌트 필드가 여기 달려 있다.
+# 재료 경로·Unity 버전은 자동 탐색/감지되므로 보통 손댈 게 없다.
+# AssetRipper 단독 82.2% → AssetStudio 폴백까지 100% (1659/1659, 실측).
+typetree:
+  backends: [AssetRipper, AssetStudio]
+
+# 이미지가 아닌 리소스. 오디오 원본은 번들 밖 resources.resource 에 있는데
+# 모듈이 알아서 찾아 오프셋만큼 잘라 쓴다.
+
+# 씬(level0·level1)과 Resources 프리팹(57개)의 GameObject 트리
+
+notes:
+  - "주: 레코드 1개 = 스테이지 1개. id는 '<mapId>-<스테이지>', 세트는 담겨 있던 TextAsset 이름."
+  - "주: blockTypeData = {블록타입id: 개수}이고 합×3 = 랜덤 타일 수(3개 맞추기). match_sets가 그 합."
+  - "주: type 0 = 런타임 랜덤 배정 타일(뷰어에 얼굴 없는 빈 타일), 그 외 = 고정 블록(cardN 아이콘)."
+  - "주: 좌표 단위는 타일 폭의 1/12이라 반타일 겹침이 생긴다. 뷰어가 그 겹침을 그대로 그린다."
+  - "주: 블록타입 id N ↔ cardN 대응은 il2cpp 문자열 'Textures/CardIcon/card{0}' 로 확인됨."
+  - "주: APK 수록분은 씨앗 맵뿐 — 일일 맵은 서버 배포라 여기 없다."
+  - "생성: levelscope 파이프라인"
+
+# ── 리소스 추출 ──────────────────────────────────────────────────
+# sources 를 비워 두면 자동 발견한다 (Addressables 번들·확장자 없는 번들 포함).
+# 경로를 하드코딩하면 새 번들이 통째로 빠진다.
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]     # 아틀라스 원본까지
+  max_count: 20000
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 20000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 400000
+
+outputs: [xlsx, html, zip, sprites, assets, hierarchy]
