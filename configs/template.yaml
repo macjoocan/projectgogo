@@ -39,12 +39,22 @@ input:
 #   AES (키·IV는 사용자가 확보해야 함):        ["aes_cbc:<hexkey>:<hexiv>", "json"]
 codec: auto
 
-fields:
-  scalars:                  # 컬럼명: JSON 경로 (점 구분, 값 그대로)
-    Difficulty: Difficulty
-  counts:                   # 컬럼명: 배열 경로 → 원소 수
-    # 래퍼 dict({"Items":[...]}) 안의 유일한 리스트는 '.*' 로 접근
-    # SomeGimmick: SomeGimmick.*
+# 처음 보는 게임·낯선 장르면 이 한 줄로 시작하세요. 표본 200개에서 컬럼을 자동으로
+# 뽑습니다(스칼라는 값, 리스트는 개수, 중첩 dict 은 점 경로). 나중에 필요한 것만
+# 골라 아래 수동 형식으로 옮기면 됩니다.
+fields: auto
+
+# 수동으로 적을 때:
+# fields:
+#   scalars:                # 컬럼명: JSON 경로 (점 구분, 값 그대로)
+#     Difficulty: Difficulty
+#   counts:                 # 컬럼명: 배열 경로 → 원소 수
+#     # 래퍼 dict({"Items":[...]}) 안의 유일한 리스트는 '.*' 로 접근
+#     # SomeGimmick: SomeGimmick.*
+
+# ── 아래 board/palette 는 **보드형(퍼즐·매치3) 게임 전용**이다.
+# RPG·방치형·슈터처럼 그리드가 없는 게임이면 두 절을 통째로 지우고
+# outputs 에서 html 을 빼면 된다 (xlsx + zip + sprites/assets/hierarchy 로 충분하다).
 
 # 보드(그리드)가 있으면 정의 — HTML 뷰어의 그림 렌더에 사용. 없으면 삭제.
 board:

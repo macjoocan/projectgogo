@@ -105,6 +105,47 @@ def _one_level(out, set_name, level_id, data, cfg, hooks):
                         "board_enc": viewer.encode_board(board), "extra_viewer": extra_v})
 
 
+#: `fields: auto` 가 컬럼을 추론할 때 볼 레코드 수
+AUTO_SAMPLE = 200
+
+
+def _resolve_auto_fields(records, cfg, log):
+    """`fields: auto` → 표본에서 뽑은 실제 컬럼 지도. 실패하면 빈 지도.
+
+    표본만 미리 디코딩한다. 전부 들고 있다가 추론하면 레벨 수천 개짜리 게임에서
+    메모리가 다시 문제가 된다 — 앞 200개만 보고 정하고, 본 처리는 그대로 스트리밍한다.
+    """
+    codec_cfg = cfg.get("codec") or ["json"]
+    subset = records[:AUTO_SAMPLE]
+    samples = []
+    auto = decode.AutoCodec(lambda *_a: None) if codec_cfg == "auto" else None
+    for rec in subset:
+        try:
+            data = (auto.decode_capture(rec.raw)[0] if auto
+                    else decode.apply_chain(rec.raw, codec_cfg))
+        except Exception:  # noqa: BLE001 - 표본 실패는 본 처리에서 사유가 보고된다
+            continue
+        if isinstance(data, dict):
+            samples.append(data)
+    if not samples:
+        log("[fields] auto: 표본에서 dict 형태 레벨을 찾지 못해 컬럼을 만들지 못했습니다"
+            " — fields 를 직접 적어야 합니다 (원본 구조는 inspect 로 확인)")
+        return {}
+    fields, dropped, conflicts = schema.infer_fields(samples)
+    n_s, n_c = len(fields["scalars"]), len(fields["counts"])
+    log(f"[fields] auto: 표본 {len(samples)}개에서 컬럼 {n_s + n_c}개 추론 "
+        f"(값 {n_s} · 개수 {n_c})")
+    if conflicts:
+        log(f"[fields] auto: 값 종류가 갈려 {len(conflicts)}개 제외 "
+            f"— {', '.join(conflicts[:5])}{' 등' if len(conflicts) > 5 else ''}"
+            " (레코드마다 스칼라·리스트가 섞이는 경로. 필요하면 fields 를 직접 적으세요)")
+    if dropped:
+        log(f"[fields] auto: 상한({schema.AUTO_MAX_COLS}개)에 걸려 {len(dropped)}개 제외 "
+            f"— {', '.join(dropped[:5])}{' 등' if len(dropped) > 5 else ''}"
+            " (필요하면 fields 를 직접 적으세요)")
+    return fields
+
+
 def _decode_all(records, cfg, plugin, log, on_plain=None):
     """레벨 원본 → 행/뷰어 레코드. on_plain(set, id, bytes) 가 있으면 평문도 넘긴다.
 
@@ -220,8 +261,29 @@ def _suggest_chain(raw, log):
         log(f"[decode] 진단: {xorscan.diagnose(raw)['verdict']}")
 
 
+#: xlsx 셀에 그대로 넣을 수 있는 값
+_CELL_OK = (int, float, str, bool, type(None))
+
+
+def _flatten_cell(v):
+    """xlsx 가 못 받는 값(dict·리스트 등)을 짧은 문자열로 바꾼다.
+
+    안전망이다. 한 셀 때문에 xlsx **전체**가 실패하면 안 된다 — Royal Match 를
+    `fields: auto` 로 돌렸을 때 빈 벡터 dict 하나가 통째로 xlsx 를 죽였다.
+    수동 설정도 dict 을 가리키면 같은 일이 난다. 원본은 zip 에 그대로 있으므로
+    표에서는 길이를 줄여 보여주는 게 맞다.
+    """
+    if isinstance(v, _CELL_OK):
+        return v
+    if isinstance(v, (list, tuple, set)):
+        return len(v)
+    text = str(v)
+    return text if len(text) <= 200 else text[:197] + "..."
+
+
 def _build_dataframe(rows):
     import pandas as pd
+    rows = [{k: _flatten_cell(v) for k, v in r.items()} for r in rows]
     df = pd.DataFrame(rows)
     sort_cols = [c for c in ("set", "level") if c in df.columns]
     if sort_cols:
@@ -269,6 +331,9 @@ def run(args):
         log(f"[input] --limit {args.limit} 적용 — {len(records)}개만 처리")
 
     plugin = _load_plugin(cfg)
+    if schema.is_auto(cfg.get("fields")):
+        # 장르마다 필드 이름이 다르다 — 손으로 적는 대신 표본에서 뽑는다
+        cfg["fields"] = _resolve_auto_fields(records, cfg, log)
     outputs = cfg.get("outputs") or ["xlsx", "html"]
     os.makedirs(args.out, exist_ok=True)
     failed = []

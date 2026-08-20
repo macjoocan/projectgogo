@@ -1,7 +1,12 @@
 # CLAUDE.md — levelscope 작업 지침
 
-이 저장소는 **levelscope**: 모바일 퍼즐 게임 APK/XAPK/OBB에서 레벨 데이터를 추출해
-요약 xlsx · HTML 레벨 뷰어 · 디코딩 JSON zip을 생성하는 설정 기반 파이프라인이다.
+이 저장소는 **levelscope**: 모바일 게임 APK/XAPK/OBB에서 데이터를 추출해
+요약 xlsx · HTML 뷰어 · 디코딩 JSON zip을 생성하는 설정 기반 파이프라인이다.
+
+**장르를 가리지 않는다.** 추출·디코딩·에셋·계층·카탈로그는 전부 장르 무관이고,
+낯선 게임은 `fields: auto` 로 컬럼을 표본에서 자동으로 뽑는다. 다만 `board`/`palette`
+와 HTML 뷰어의 그리드 렌더는 **보드형(퍼즐·매치3) 전용**이다 — 그리드가 없는 게임은
+그 두 절을 빼고 `outputs` 에서 `html` 을 뺀다.
 상세 문서는 `MANUAL.md`(사용법 전체), `README.md`(빠른 시작), `CHANGELOG.md`(버전 이력).
 
 ## 기본 원칙
@@ -157,6 +162,11 @@ tools/verify_baseline.py 실제 APK 기준치 대조
 - **오브젝트 reader 를 오래 들고 있지 말 것.** `ObjectReader` 는 `assets_file`·`reader`
   를 물고 있어 번들 env 전체를 붙잡는다. 색인·레지스트리에는 **값**(이름·ScriptRef 같은
   것)만 남긴다 — `typetree.ScriptRegistry.add_env` 가 그 예다.
+- **낯선 장르는 `fields: auto` 부터.** 컬럼 경로를 손으로 적는 게 새 게임의 최대 병목
+  이었다(퍼즐이면 기믹, RPG면 스탯, 방치형이면 생산·비용처럼 이름이 전부 다르다).
+  `schema.infer_fields` 가 표본 200개에서 뽑는다 — 스칼라는 값, 리스트는 **개수**,
+  중첩 dict 은 점 경로. **리스트 안쪽은 펼치지 않는다**(레벨마다 원소 수가 달라 컬럼이
+  폭발한다). 상한(60컬럼)에 걸려 빠진 경로는 반드시 로그에 남긴다.
 - **표본을 크기순으로 뽑지 말 것.** `survey` 가 그랬다가 Spine `.skel` 이 상위를 다 먹어
   레벨 4,500개짜리 계열을 통째로 놓쳤다. **계열(이름에서 숫자를 뭉친 것) 단위**로 센다.
 - **FlatBuffers는 타입을 안 적어둔다.** 4바이트 값이 정수인지 오프셋인지 버퍼 하나로는
