@@ -17,6 +17,7 @@ CLI 단독 실행:
 """
 import contextlib
 import dataclasses
+import gc
 import io
 import os
 import re
@@ -134,7 +135,7 @@ def _dep_file(input_path, name):
 
 
 def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budget,
-                 deps=(), only_ids=None):
+                 deps=(), only_ids=None, budget_atlas=unity.ATLAS_CACHE_BUDGET):
     """소스 하나에서 스프라이트를 뽑는다.
 
     only_ids 를 주면 **그 오브젝트만** 처리한다 — 재시도에서 쓴다. 이름으로 거르면
@@ -176,6 +177,10 @@ def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budg
                 img.save(buf, "PNG")
                 zf.writestr(f"{key}.png", buf.getvalue())
                 count += 1
+                # UnityPy 는 디코드한 아틀라스를 끝까지 들고 있다 (실측 1.86GB,
+                # 피크의 43%). 상한 밑으로 유지한다 — 산출물은 그대로다.
+                if budget_atlas and count % 16 == 0:
+                    unity.trim_atlas_cache(env, budget_atlas)
             except Exception as e:  # noqa: BLE001 - 개별 에셋 실패는 계속 진행하되 기록
                 failures.append(f"{label}!{getattr(o, 'path_id', '?')}: {e!r}")
                 failed_ids.add(oid)
@@ -183,7 +188,8 @@ def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budg
 
 
 def _retry_with_deps(input_path, label, data, suffix, want_types, pats, zf, seen,
-                     failures, n_before, count, max_count, failed_ids, wanted, log):
+                     failures, n_before, count, max_count, failed_ids, wanted, log,
+                     budget_atlas=unity.ATLAS_CACHE_BUDGET):
     """교차 번들 참조 실패를 **번들 하나씩** 같이 올려 다시 시도한다. 새 count 반환.
 
     한꺼번에 다 올리면 메모리가 터진다(`_dep_names` 독스트링). 하나씩 올리고,
@@ -205,7 +211,7 @@ def _retry_with_deps(input_path, label, data, suffix, want_types, pats, zf, seen
             tries += 1
             retry = _extract_one(data, suffix, label, want_types, pats, zf, seen,
                                  failures, max_count - count, deps=[dep_path],
-                                 only_ids=remaining)
+                                 only_ids=remaining, budget_atlas=budget_atlas)
         count += retry["count"]
         gained += retry["count"]
         remaining = retry["failed_ids"]
@@ -238,7 +244,14 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
     pats = _compile(sprites_cfg.get("include"))
     want_types = set(sprites_cfg.get("types") or ["Sprite"])
     max_count = sprites_cfg.get("max_count", 1000)
+    # 아틀라스 캐시 상한(MB). 0 이면 상한 없음(예전 동작). 낮추면 메모리가 줄고
+    # 같은 아틀라스를 다시 디코드해 느려진다 — 산출물은 어느 쪽이든 같다.
+    mb = sprites_cfg.get("atlas_cache_mb")
+    budget_atlas = (int(mb) * 2**20) if mb is not None else unity.ATLAS_CACHE_BUDGET
     sources = discover.resolve_sources(input_path, sprites_cfg.get("sources"), log=log)
+    # 소스 발견은 후보 번들을 **한 번 다 열어 본다**. 그 메모리가 회수되기 전에 추출이
+    # 같은 번들을 다시 열면 두 벌이 겹친다 — 실측으로 번들 하나가 1.83GB 였다.
+    gc.collect()
     os.makedirs(out_dir, exist_ok=True)
     zpath = os.path.join(out_dir, f"{game}_sprites.zip")
 
@@ -253,7 +266,8 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
             suffix = os.path.splitext(label)[1] or ".unity3d"
             n_before = len(failures)
             missed = _extract_one(data, suffix, label, want_types, pats, zf, seen,
-                                  failures, max_count - count)
+                                  failures, max_count - count,
+                                  budget_atlas=budget_atlas)
             count += missed["count"]
             truncated = truncated or missed["truncated"]
 
@@ -264,7 +278,7 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
                 count = _retry_with_deps(
                     input_path, label, data, suffix, want_types, pats, zf, seen,
                     failures, n_before, count, max_count, missed["failed_ids"],
-                    wanted, log)
+                    wanted, log, budget_atlas=budget_atlas)
             del data                  # 다음 소스를 읽기 전에 이 번들을 놓는다
 
     if not used_sources:

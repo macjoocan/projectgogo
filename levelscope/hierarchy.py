@@ -352,12 +352,10 @@ def extract_hierarchy(input_path, hier_cfg, out_dir, game="game", mono_cfg=None,
                     b = _Builder(index, fname, mono, want_fields, max_nodes - n_nodes)
                     roots = b.roots()
                     if kind == "scene":
-                        doc = {"file": fname, "kind": "scene",
-                               "roots": [r for r in (b.build(tr) for _n, tr in roots) if r]}
                         path = _unique(f"scenes/{_safe(fname)}.json", seen_paths)
-                        zf.writestr(path, _dump(doc))
+                        n_roots = _write_scene(zf, path, fname, b, roots)
                         entries.append({"path": path, "kind": "scene", "file": fname,
-                                        "roots": len(doc["roots"]), "nodes": b.nodes})
+                                        "roots": n_roots, "nodes": b.nodes})
                         n_scenes += 1
                     else:
                         for name, tr in roots:
@@ -396,6 +394,41 @@ def extract_hierarchy(input_path, hier_cfg, out_dir, game="game", mono_cfg=None,
     for f in failures[:5]:
         log(f"  ! {f}")
     return HierarchyResult(zpath, n_scenes, n_prefabs, n_nodes, failures, used, truncated)
+
+
+def _write_scene(zf, path, fname, builder, roots):
+    """씬 JSON을 **루트 하나씩** zip 에 흘려 쓴다. 쓴 루트 수를 반환.
+
+    예전에는 씬 전체를 dict 으로 조립한 뒤 그걸 다시 JSON 문자열로 만들었다. 큰 씬
+    하나에서 dict 과 문자열이 **동시에** 살아 있고, NaN 이 섞이면 `_finite` 사본까지
+    세 벌이 됐다. 노드 11만 개짜리 씬(CookieRun: Crumble)에서 이게 피크의 큰 몫이었다.
+    루트 단위로 쓰면 피크가 "가장 큰 루트 하나"로 줄어든다.
+
+    **산출물은 바이트 단위로 같다.** `json.dumps(..., indent=1)` 이 배열 원소에 주는
+    들여쓰기는 2칸이므로, 각 루트의 `_dump` 결과를 줄마다 2칸씩 밀어 넣는다.
+    `tests/test_hierarchy.py` 가 예전(통째 조립) 방식과의 바이트 일치를 지킨다.
+    """
+    head = ('{\n "file": ' + json.dumps(fname, ensure_ascii=False)
+            + ',\n "kind": "scene",\n "roots": [')
+    n = 0
+    with zf.open(path, "w") as fp:
+        fp.write(head.encode("utf-8"))
+        for _name, tr in roots:
+            doc = builder.build(tr)
+            if doc is None:
+                continue
+            chunk = _indent2(_dump(doc))
+            del doc                      # 문자열로 옮겼으니 트리는 바로 놓는다
+            fp.write((b"," if n else b"") + b"\n" + chunk)
+            del chunk
+            n += 1
+        fp.write(b"\n ]\n}" if n else b"]\n}")
+    return n
+
+
+def _indent2(blob):
+    """`_dump` 결과(bytes)의 모든 줄을 2칸 밀어 배열 원소 자리에 맞춘다."""
+    return b"  " + blob.replace(b"\n", b"\n  ")
 
 
 def _dump(doc):

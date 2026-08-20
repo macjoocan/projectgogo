@@ -1,7 +1,9 @@
 """hierarchy — 좌표 정리, JSON 규격 보장, 씬/프리팹 분류, 트리 복원."""
+import io
 import json
 import math
 import unittest
+import zipfile
 
 from levelscope import hierarchy, typetree, unity
 
@@ -212,3 +214,75 @@ class UniquePath(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SceneStreaming(unittest.TestCase):
+    """씬 JSON을 루트 하나씩 흘려 써도 산출물이 예전(통째 조립)과 바이트 단위로 같다.
+
+    통째 조립은 dict 과 JSON 문자열이 동시에 살아 있어 노드 11만 개짜리 씬에서
+    피크의 큰 몫이었다. 줄이면서 산출물이 바뀌면 뷰어·후속 도구가 깨지므로
+    여기서 바이트 일치를 못 박는다.
+    """
+
+    class _Builder:
+        """`_write_scene` 이 기대하는 최소 인터페이스만 흉내낸다."""
+
+        def __init__(self, docs):
+            self._docs = docs
+            self.nodes = sum(1 for d in docs if d is not None)
+
+        def roots(self):
+            return [(f"root{i}", i) for i in range(len(self._docs))]
+
+        def build(self, tr):
+            return self._docs[tr]
+
+    def _old_way(self, fname, docs):
+        """예전 코드 그대로 — 씬 전체를 조립해 한 번에 덤프."""
+        doc = {"file": fname, "kind": "scene",
+               "roots": [d for d in docs if d]}
+        return hierarchy._dump(doc)
+
+    def _new_way(self, fname, docs):
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            b = self._Builder(docs)
+            n = hierarchy._write_scene(zf, "scenes/x.json", fname, b, b.roots())
+        with zipfile.ZipFile(io.BytesIO(buf.getvalue())) as zf:
+            return zf.read("scenes/x.json"), n
+
+    def _same(self, fname, docs):
+        old = self._old_way(fname, docs)
+        new, n = self._new_way(fname, docs)
+        self.assertEqual(new, old)
+        json.loads(new)                      # 규격에 맞는 JSON 인지도 본다
+        return n
+
+    def test_single_root(self):
+        self.assertEqual(self._same("level0", [{"name": "A", "components": []}]), 1)
+
+    def test_multiple_roots(self):
+        docs = [{"name": "A", "children": [{"name": "A1", "v": 1}]},
+                {"name": "B", "components": [{"type": "Transform", "fields": None}]},
+                {"name": "C", "v": [1, 2, 3]}]
+        self.assertEqual(self._same("level1", docs), 3)
+
+    def test_skipped_roots_are_not_written(self):
+        """build() 가 None 을 준 루트는 빠진다 — 예전 동작과 같다."""
+        docs = [None, {"name": "B"}, None, {"name": "D"}]
+        self.assertEqual(self._same("level2", docs), 2)
+
+    def test_no_roots_at_all(self):
+        self.assertEqual(self._same("empty", [None]), 0)
+
+    def test_non_ascii_and_quotes_in_file_name(self):
+        self.assertEqual(self._same('레벨 "0"/x', [{"name": "가"}]), 1)
+
+    def test_nan_still_becomes_valid_json(self):
+        """RectTransform 에 NaN 이 실제로 들어 있다 — 뷰어의 JSON.parse 가 깨지면 안 된다."""
+        docs = [{"name": "A", "fields": {"x": float("nan"), "y": float("inf")}}]
+        new, n = self._new_way("level3", docs)
+        self.assertEqual(n, 1)
+        self.assertNotIn(b"NaN", new)
+        self.assertEqual(new, self._old_way("level3", docs))
+        json.loads(new)

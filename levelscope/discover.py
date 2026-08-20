@@ -144,6 +144,10 @@ def probe(data, suffix=".unity3d"):
             # 오브젝트 85개를 멀쩡히 읽어낸 판정까지 통째로 버린다 (실제로 그랬다 —
             # 원시 SerializedFile은 내부 키가 int라 문자열 취급이 터졌다).
             files = _inner_files(env)
+            # 버전을 들고 있는 소스에서 배워 둔다. 헤더에 버전이 없는 형제 번들이
+            # 이 값으로 열린다 (`unity.set_fallback_version` 독스트링 참고).
+            if n and not unity.fallback_version():
+                unity.set_fallback_version(unity.detect_version(env))
     except unity.UnityUnavailable:
         raise
     except Exception:  # noqa: BLE001 - 깨진 번들은 그냥 아니라고 본다
@@ -155,6 +159,12 @@ def probe(data, suffix=".unity3d"):
             return kind, 0, {}, files
         return None, 0, {}, []
     return kind, n, counts, files
+
+
+def _looks_bundle(head):
+    """앞 32바이트가 Unity 번들 매직인가."""
+    h = bytes(head or b"")
+    return any(h.startswith(m) for m in BUNDLE_MAGIC)
 
 
 def _inner_files(env):
@@ -186,6 +196,8 @@ def find_sources(input_path, include=None, exclude=None, log=None, max_sources=0
     inc = container.as_list(include)
     exc = container.as_list(exclude)
     found, skipped = [], 0
+    # 버전을 알기 **전에** 실패한 번들 후보. 아래에서 폴백을 얻은 뒤 다시 본다.
+    deferred = []
 
     for c in container.iter_containers(input_path):
         with c:
@@ -212,7 +224,12 @@ def find_sources(input_path, include=None, exclude=None, log=None, max_sources=0
                     continue
                 kind, n, counts, files = probe(data, suffix=_suffix(name))
                 if kind is None:
-                    skipped += 1
+                    # 번들 매직이 확실한데 파싱이 안 된 것은 "버전을 아직 몰라서"일
+                    # 수 있다. 폴백을 얻은 뒤 재시도 대상으로 남긴다.
+                    if _looks_bundle(head) and not unity.fallback_version():
+                        deferred.append(name)
+                    else:
+                        skipped += 1
                     continue
                 src = UnitySource(c.label, name, kind, len(data), n, counts, files)
                 found.append(src)
@@ -221,6 +238,31 @@ def find_sources(input_path, include=None, exclude=None, log=None, max_sources=0
                 if max_sources and len(found) >= max_sources:
                     log(f"[discover] max_sources({max_sources}) 도달로 중단")
                     return found
+
+    if deferred and unity.fallback_version():
+        log(f"[discover] Unity 버전 {unity.fallback_version()} 확보 — 버전이 없어 못 읽던 "
+            f"번들 후보 {len(deferred)}개 재시도")
+        seen_names = {s.name for s in found}
+        for c in container.iter_containers(input_path):
+            with c:
+                for name in [n for n in deferred if n not in seen_names]:
+                    if name not in c.names():
+                        continue
+                    try:
+                        data = c.read(name)
+                    except Exception:  # noqa: BLE001
+                        continue
+                    kind, n, counts, files = probe(data, suffix=_suffix(name))
+                    del data
+                    if kind is None:
+                        skipped += 1
+                        continue
+                    src = UnitySource(c.label, name, kind, 0, n, counts, files)
+                    found.append(src)
+                    seen_names.add(name)
+                    log(f"[discover] {kind:10} {name}  오브젝트 {n:,} (폴백 버전으로 해석)")
+    elif deferred:
+        skipped += len(deferred)
 
     found.sort(key=lambda s: -s.n_objects)
     n_builtin = sum(1 for s in found if s.builtin)

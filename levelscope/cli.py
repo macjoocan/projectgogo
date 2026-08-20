@@ -343,6 +343,12 @@ def run(args):
 
         xlsx를 Excel로 열어둔 채 재실행하는 일이 흔한데, 예전에는 그 PermissionError가
         런 전체를 중단시켜 뷰어·zip까지 못 나왔다.
+
+        **끝나면 반드시 gc 를 돌린다.** 단계가 끝나도 참조가 끊긴 Unity env 가 곧바로
+        회수되지 않아, 다음 단계의 할당과 겹친다. CookieRun: Crumble 실측으로
+        스프라이트(10,443장) 직후 3.63GB 가 남아 있었고, 이어서 에셋을 돌리면
+        최고 커밋이 **5.50GB** 였다. 사이에 gc 를 넣으면 잔여가 0.74GB 로 떨어져
+        **4.51GB** 로 끝난다 — 1.0GB(18%) 차이다.
         """
         try:
             fn()
@@ -353,6 +359,8 @@ def run(args):
             log(f"[{label}] 실패: {e}{hint}")
             failed.append(label)
             return False
+        finally:
+            gc.collect()
 
     zpath = os.path.join(args.out, f"{game}_levels_decoded.zip")
     zf = None
@@ -559,7 +567,16 @@ def ls(args):
 
 
 def sprites_cmd(args):
-    from . import sprites as sprites_mod
+    from . import sprites as sprites_mod, unity
+    unity.set_fallback_version(getattr(args, "unity_version", None))
+    if getattr(args, "split", False):
+        from . import split as split_mod
+        failed = split_mod.run_per_source(
+            "sprites", args.input, args.out, args.game,
+            ["--names", args.names, "--types", args.types, "--max", str(args.max)])
+        if failed:
+            sys.exit(1)
+        return
     cfg = {"sources": [s.strip() for s in args.source.split(",") if s.strip()],
            "include": [n.strip() for n in args.names.split(",") if n.strip()],
            "types": [t.strip() for t in args.types.split(",") if t.strip()],
@@ -567,12 +584,42 @@ def sprites_cmd(args):
     sprites_mod.extract_sprites(args.input, cfg, args.out, game=args.game)
 
 
+def sources_cmd(args):
+    """Unity 소스 이름만 한 줄에 하나씩 낸다.
+
+    `--split` 이 자식으로 이걸 먼저 부른다 — 부모가 직접 발견하면 그 메모리(실측
+    1.8GB)가 부모에 남아 자식 피크와 겹친다. 사람이 쓸 때도 "이 apk 에 Unity 소스가
+    뭐가 있나"를 가장 싸게 보는 방법이다.
+    """
+    from . import discover, unity
+    srcs = discover.find_sources(
+        args.input, log=(print if args.verbose else (lambda *_a: None)))
+    # 헤더로 Unity 버전을 알려 준다. 소스를 하나만 받는 자식은 버전을 배울 데가 없어서
+    # 헤더에 버전이 없는 번들(Unity 6000 대)을 못 읽는다 — `--split` 이 이걸 넘긴다.
+    ver = unity.fallback_version()
+    if ver:
+        print(f"#unity={ver}")
+    for src in srcs:
+        if src.builtin and not args.builtin:
+            continue
+        print(src.name)
+
+
 def _sources_arg(s):
     return [x.strip() for x in (s or "").split(",") if x.strip()]
 
 
 def assets_cmd(args):
-    from . import assets as assets_mod
+    from . import assets as assets_mod, unity
+    unity.set_fallback_version(getattr(args, "unity_version", None))
+    if getattr(args, "split", False):
+        from . import split as split_mod
+        failed = split_mod.run_per_source(
+            "assets", args.input, args.out, args.game,
+            ["--kinds", args.kinds, "--max", str(args.max)])
+        if failed:
+            sys.exit(1)
+        return
     cfg = {"sources": _sources_arg(args.source),
            "kinds": _sources_arg(args.kinds) or None,
            "max_count": args.max}
@@ -596,7 +643,24 @@ def survey_cmd(args):
 
 
 def hierarchy_cmd(args):
-    from . import hierarchy as hier_mod
+    from . import hierarchy as hier_mod, unity
+    unity.set_fallback_version(getattr(args, "unity_version", None))
+    if getattr(args, "split", False):
+        from . import split as split_mod
+        extra = ["--max-nodes", str(args.max_nodes)]
+        for flag, on in (("--scenes-only", args.scenes_only),
+                         ("--prefabs-only", args.prefabs_only),
+                         ("--no-fields", args.no_fields),
+                         ("--no-typetree", args.no_typetree)):
+            if on:
+                extra.append(flag)
+        if args.unity_version:
+            extra += ["--unity-version", args.unity_version]
+        failed = split_mod.run_per_source(
+            "hierarchy", args.input, args.out, args.game, extra)
+        if failed:
+            sys.exit(1)
+        return
     cfg = {"sources": _sources_arg(args.source),
            "scenes": not args.prefabs_only,
            "prefabs": not args.scenes_only,
@@ -652,9 +716,20 @@ def build_parser():
     p.add_argument("--names", default="", help="이름 목록 쉼표 구분, 're:정규식' 지원. 빈값=전체")
     p.add_argument("--types", default="Sprite", help="Sprite,Texture2D")
     p.add_argument("--max", type=int, default=1000)
+    p.add_argument("--unity-version", default=None,
+                   help="번들 헤더에 Unity 버전이 없을 때 쓸 값 (예: 6000.3.11f1). 보통 자동으로 배우지만, 소스를 하나만 주면 배울 데가 없다")
     p.add_argument("--game", default="assets", help="출력 파일명 접두어")
     p.add_argument("--out", default="out")
+    p.add_argument("--split", action="store_true",
+                   help="소스마다 **별 프로세스**로 돌린다. 산출물이 소스별로 나뉘는 대신 메모리 피크가 '가장 무거운 소스 하나'로 내려간다 (실측 4.26GB → 소스별)")
     p.set_defaults(func=sprites_cmd)
+
+    p = sub.add_parser("sources", help="Unity 소스 이름만 한 줄에 하나씩 (--split 이 쓴다)")
+    p.add_argument("--input", required=True, help="apk/xapk/폴더")
+    p.add_argument("--builtin", action="store_true",
+                   help="Unity 내장 리소스(unity default resources)도 포함")
+    p.add_argument("--verbose", action="store_true", help="발견 로그도 함께 출력")
+    p.set_defaults(func=sources_cmd)
 
     p = sub.add_parser("survey", help="처음 보는 APK 프로파일 + 설정 초안 (설정 불필요)")
     p.add_argument("--input", required=True, help="apk/xapk/obb/zip/폴더")
@@ -674,8 +749,12 @@ def build_parser():
     p.add_argument("--kinds", default="",
                    help=f"쉼표 구분. 빈값=전체 ({','.join(_ASSET_KINDS)})")
     p.add_argument("--max", type=int, default=4000)
+    p.add_argument("--unity-version", default=None,
+                   help="번들 헤더에 Unity 버전이 없을 때 쓸 값 (예: 6000.3.11f1). 보통 자동으로 배우지만, 소스를 하나만 주면 배울 데가 없다")
     p.add_argument("--game", default="assets", help="출력 파일명 접두어")
     p.add_argument("--out", default="out")
+    p.add_argument("--split", action="store_true",
+                   help="소스마다 **별 프로세스**로 돌린다. 산출물이 소스별로 나뉘는 대신 메모리 피크가 '가장 무거운 소스 하나'로 내려간다 (실측 4.26GB → 소스별)")
     p.set_defaults(func=assets_cmd)
 
     p = sub.add_parser("hierarchy", help="씬·프리팹 계층을 JSON으로 복원")
@@ -694,6 +773,8 @@ def build_parser():
     p.add_argument("--max-nodes", type=int, default=200000)
     p.add_argument("--game", default="assets", help="출력 파일명 접두어")
     p.add_argument("--out", default="out")
+    p.add_argument("--split", action="store_true",
+                   help="소스마다 **별 프로세스**로 돌린다. 산출물이 소스별로 나뉘는 대신 메모리 피크가 '가장 무거운 소스 하나'로 내려간다 (실측 4.26GB → 소스별)")
     p.set_defaults(func=hierarchy_cmd)
     return ap
 

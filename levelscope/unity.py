@@ -61,6 +61,114 @@ def load_bytes(data, suffix=".unity3d", deps=()):
             pass
 
 
+#: 아틀라스 캐시 기본 상한(바이트). **기본은 상한 없음(0)** 이다.
+#:
+#: 실측(CookieRun: Crumble, 스프라이트 10,443장)에서 이 캐시는 1.86GB 까지 자랐지만
+#: 512MB 로 묶어도 **최고 커밋이 4.34 → 4.40GB 로 안 줄었고 시간만 101 → 158초(+56%)**
+#: 늘었다. 피크는 스프라이트를 뽑는 구간이 아니라 그 **앞**, `discover` 가 큰 번들
+#: (272MB · 오브젝트 597,691개)을 파싱하는 11초 지점에서 이미 찍힌다. 캐시는 그 뒤에
+#: 차오르므로 피크의 원인이 아니다. 그래서 기본은 끄고, 아틀라스가 진짜 피크를 만드는
+#: 게임에서만 `sprites.atlas_cache_mb` 로 켠다.
+ATLAS_CACHE_BUDGET = 0
+
+
+def _cache_dicts(env):
+    """env 안 SerializedFile 들의 `_cache` dict 들."""
+    for f in getattr(env, "files", {}).values():
+        for sf in list(getattr(f, "files", {}).values()) + [f]:
+            c = getattr(sf, "_cache", None)
+            if isinstance(c, dict) and c:
+                yield c
+
+
+def _image_bytes(v):
+    """PIL 이미지의 대략 바이트. 이미지가 아니면 0."""
+    w = getattr(v, "width", None)
+    h = getattr(v, "height", None)
+    if not (w and h):
+        return 0
+    try:
+        return w * h * len(v.getbands())
+    except Exception:  # noqa: BLE001
+        return w * h * 4
+
+
+def atlas_cache_bytes(env):
+    """지금 아틀라스 캐시가 물고 있는 바이트."""
+    return sum(_image_bytes(v) for c in _cache_dicts(env) for v in c.values())
+
+
+def trim_atlas_cache(env, budget=ATLAS_CACHE_BUDGET):
+    """아틀라스 캐시를 상한 밑으로 줄인다. 버린 바이트를 반환.
+
+    UnityPy 의 `SpriteHelper` 는 디코드한 아틀라스 PIL 이미지를
+    `sprite.assets_file._cache` 에 넣고 **끝까지 버리지 않는다**. 같은 아틀라스를
+    쓰는 스프라이트가 여럿이라 캐시 자체는 옳은 설계지만 상한이 없다.
+    CookieRun: Crumble 실측에서 이 캐시만 1.86GB — 피크 4.34GB의 43%였다.
+
+    오래된 것부터 버린다(dict 삽입 순서 = 넣은 순서). 같은 아틀라스를 쓰는
+    스프라이트는 보통 순회에서 붙어 있으므로 상한이 넉넉하면 재디코드가 드물다.
+    버려도 **산출물은 같다** — 다시 필요하면 다시 디코드할 뿐이다.
+    """
+    if not budget:
+        return 0
+    caches = list(_cache_dicts(env))
+    total = sum(_image_bytes(v) for c in caches for v in c.values())
+    if total <= budget:
+        return 0
+    freed = 0
+    for c in caches:
+        for k in list(c):
+            if total - freed <= budget:
+                return freed
+            n = _image_bytes(c[k])
+            if not n:
+                continue          # 이미지가 아닌 값은 건드리지 않는다
+            del c[k]
+            freed += n
+    return freed
+
+
+def set_fallback_version(version):
+    """UnityPy 가 번들 헤더에서 Unity 버전을 못 읽을 때 쓸 폴백을 설정한다.
+
+    Unity 6000 대 번들 일부는 헤더에 버전 문자열이 없다. 그러면 UnityPy 가
+    "No valid Unity version found" 로 **파싱 자체를 포기**하고, `discover` 는 그걸
+    "Unity 파일이 아님"으로 걸러낸다. CookieRun: Crumble 의 콘텐츠 번들
+    (`defaultlocalgroup_assets_all.bundle`, 272MB)이 그렇게 통째로 빠졌다 — 게임
+    콘텐츠 대부분이 거기 있었다.
+
+    같은 빌드 안 다른 소스는 버전을 들고 있으므로(여기선 `data.unity3d` = 6000.3.15f1)
+    그 값을 넣어 주면 열린다. 한 프로세스 전체에 걸리는 전역 설정이다.
+    """
+    if not version:
+        return None
+    UnityPy = _unitypy()
+    UnityPy.config.FALLBACK_UNITY_VERSION = str(version)
+    return str(version)
+
+
+def fallback_version():
+    """지금 설정된 폴백 버전 (없으면 None)."""
+    try:
+        return getattr(_unitypy().config, "FALLBACK_UNITY_VERSION", None)
+    except UnityUnavailable:
+        return None
+
+
+def detect_version(env):
+    """번들 안 SerializedFile 에서 Unity 버전 문자열 (예: '6000.3.15f1')."""
+    for f in getattr(env, "files", {}).values():
+        v = getattr(f, "unity_version", None)
+        if v:
+            return v
+        for sf in getattr(f, "files", {}).values():
+            v = getattr(sf, "unity_version", None)
+            if v:
+                return v
+    return None
+
+
 def iter_objects(env, types=None):
     """env의 오브젝트 중 원하는 타입만. types=None 이면 전부."""
     want = set(types) if types else None

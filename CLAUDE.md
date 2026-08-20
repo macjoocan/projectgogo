@@ -7,7 +7,8 @@
 낯선 게임은 `fields: auto` 로 컬럼을 표본에서 자동으로 뽑는다. 다만 `board`/`palette`
 와 HTML 뷰어의 그리드 렌더는 **보드형(퍼즐·매치3) 전용**이다 — 그리드가 없는 게임은
 그 두 절을 빼고 `outputs` 에서 `html` 을 뺀다.
-상세 문서는 `MANUAL.md`(사용법 전체), `README.md`(빠른 시작), `CHANGELOG.md`(버전 이력).
+상세 문서는 `GUIDE.md`(**처음 보는 게임 뜯는 순서 — 실전 플레이북**), `MANUAL.md`(사용법
+전체), `README.md`(빠른 시작), `CHANGELOG.md`(버전 이력).
 
 ## 기본 원칙
 
@@ -37,6 +38,12 @@ python -m levelscope ls --input <apk> --glob "assets/**/*.json"
 
 # 설정 작성 중 샘플 JSON 구조 확인
 python -m levelscope inspect --config configs/<게임>.yaml --input <입력>
+
+# Unity 소스 목록만 (가장 싼 조회 — --split 이 내부에서 쓴다)
+python -m levelscope sources --input <apk>
+
+# 소스마다 별 프로세스로 (산출물이 소스별 zip 으로 나뉜다)
+python -m levelscope sprites --input <apk> --out out --split
 
 # 레벨 밖 리소스 (둘 다 설정 없이 동작)
 python -m levelscope assets    --input <apk> --out out   # 사운드·머티리얼·폰트·Spine·텍스트
@@ -92,7 +99,8 @@ levelscope/assets.py     사운드(WAV)·머티리얼(JSON)·폰트·Spine·텍�
 levelscope/hierarchy.py  씬·프리팹 GameObject 트리 → JSON zip
 levelscope/typetree.py   IL2CPP MonoBehaviour 필드 복원 (TypeTreeGeneratorAPI 다중 백엔드)
 levelscope/flatbuf.py    스키마 없는 FlatBuffers 해독 (codec: flatbuffers)
-levelscope/cli.py        run / inspect / detect / ls / survey / sprites / assets / hierarchy
+levelscope/cli.py        run / inspect / detect / ls / sources / survey / sprites / assets / hierarchy
+levelscope/split.py      `--split` 드라이버 — 소스마다 별 프로세스로 (산출물이 소스별로 나뉜다)
 levelscope/plugins/      게임 플러그인 (정본 한 벌. v1.3의 양쪽 복사는 없앴다)
 plugins/                 프로젝트 전용 확장 자리 (비어 있어도 됨)
 configs/                 게임 YAML + icons/<게임>/ 뱃지 아이콘
@@ -154,6 +162,13 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   번들에 있는 게임이 있다(Royal Kingdom: 정의 `data.unity3d` / 사용 `datapack.unity3d`).
   `typetree.ScriptRegistry` 가 이걸 푼다 — 없으면 복원률이 14%까지 떨어진다.
   단, 스크립트 전용 번들만 미리 열 것(조건 없이 열면 90MB 번들을 두 번 읽는다).
+- **헤더에 Unity 버전이 없는 번들을 "Unity 파일 아님"으로 버리지 말 것.** UnityPy 는
+  버전을 못 읽으면 `No valid Unity version found` 로 **파싱 자체를 포기**하고, 그러면
+  `discover.probe` 가 후보 탈락으로 처리한다. CookieRun: Crumble(Unity 6000.3)에서
+  272MB·오브젝트 579,681개짜리 콘텐츠 번들이 그렇게 빠져 **게임의 3%만 뽑고 있었다.**
+  같은 빌드의 다른 소스는 버전을 들고 있으므로 `unity.set_fallback_version` 으로 심고,
+  버전을 알기 전에 실패한 번들 후보는 마지막에 다시 본다. 소스를 하나만 주는 경우
+  (`--split`, `--source`)는 배울 데가 없으니 `--unity-version` 으로 넘긴다.
 - **번들 bytes 를 리스트·dict 에 모으지 말 것.** 개수 상한 없이 모으면 Addressables
   게임에서 90MB 번들 수십 개가 동시에 살아 있고, UnityPy 가 풀면 3~5배로 부푼다
   (커밋 54GB 로 PC 가 멈춘 실제 사고. v1.21.0). 하나씩 열고 쓰고 놓는다. 여러 번들을
@@ -209,6 +224,13 @@ tools/verify_baseline.py 실제 APK 기준치 대조
 - 카탈로그 해독은 **검증 후에만** 신뢰한다 (`catalog._parse_buckets`/`_parse_entries` 가
   블롭 크기·인덱스 범위를 확인). 검증 실패 시 매핑 없이 목록만 쓴다 — 잘못 푼 매핑으로
   이름을 붙이는 건 이름을 안 붙이는 것보다 나쁘다.
+- **메모리 피크는 "가장 큰 번들 하나를 여는 값"이다.** 실측(CookieRun: Crumble):
+  `UnityPy.load()` 로 오브젝트 58만 개 번들을 여는 데 1.83GB, 스프라이트 단계 전체가
+  4.26GB. 우리 코드가 그 위에 얹는 건 `ObjectIndex` 0.02GB 뿐이다. 그래서 다음이
+  **효과 없다**(전부 실측으로 확인) — 아틀라스 캐시 상한(피크 4.34→4.40GB, 시간 +56%),
+  `--split`(한 소스가 88%를 차지하면 4.26→4.52GB), 씬 스트리밍(3.19→3.16GB).
+  **효과가 있던 것은 단계 사이 `gc.collect()` 하나다**(5.50→4.51GB). 새 최적화를
+  제안하기 전에 어디가 몇 GB인지 먼저 재라.
 - PixelFlow 기준치(2026-08 v): 레벨 2384(8세트, 메인 3db568… 2100개만 isValid=true),
   슈터 160,313(파이프 포함), 팔레트 34색. 새 버전에서 크게 다르면 사용자에게 보고.
 - Zen Match 기준치(v220000.1.762): TextAsset 4,502(main 4,493 + variant 9),

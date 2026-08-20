@@ -5,6 +5,65 @@
 
 ---
 
+## 1.24.0
+
+**헤더에 Unity 버전이 없는 번들을 통째로 놓치던 것 수정 — 이게 이번 판의 핵심이다.**
+CookieRun: Crumble(Unity 6000.3.15f1) 을 뽑아 보니 스프라이트가 1,229장이었다. 실제로는
+`assets/aa/Android/defaultlocalgroup_assets_all.bundle`(272MB · 오브젝트 **579,681개**)이
+빠져 있었고, **게임의 약 3%만 뽑고 있었다.**
+
+원인: UnityPy 는 번들 헤더에서 Unity 버전을 못 읽으면 `No valid Unity version found` 로
+파싱 자체를 포기한다. 그러면 `discover.probe` 가 그걸 "Unity 파일 아님"으로 처리해
+후보에서 빼 버린다(survey 로그의 "후보였지만 Unity가 아닌 것 3개"가 이거였다).
+
+- `unity.set_fallback_version` / `fallback_version` / `detect_version` 추가.
+  `discover.probe` 가 **버전을 들고 있는 첫 소스에서 배워** 전역 폴백으로 심는다.
+- 순서에 의존하지 않게, 버전을 알기 전에 실패한 **번들 매직이 확실한** 후보는
+  목록 끝에서 다시 본다.
+- 소스를 하나만 주는 경우(`--split`, `--source`)는 배울 데가 없으므로
+  `sprites`/`assets` 에도 `--unity-version` 을 뒀다.
+
+효과(CookieRun: Crumble, 같은 입력):
+
+| | 전 | 후 |
+|---|---|---|
+| Unity 소스 / 오브젝트 | 4개 / 17,125 | **7개 / 597,791** |
+| 스프라이트 | 1,229 | **10,443** |
+| 에셋 | 63 | **322** |
+| 계층 노드 | 2,044 | **112,901** |
+| 컴포넌트 필드 복원 | 8.2% | **98.7%** |
+
+**메모리 안정성 — 측정해서 하나만 남겼다.**
+
+- `cli.emit` 이 산출물마다 `finally: gc.collect()`. 단계가 끝나도 Unity env 가 곧바로
+  회수되지 않아 다음 단계 할당과 겹쳤다. 실측 **5.50 → 4.51GB (−18%)**.
+- 씬 JSON 을 **루트 하나씩** zip 에 흘려 쓴다(`hierarchy._write_scene`). 예전에는 씬
+  전체 dict + JSON 문자열(NaN 있으면 `_finite` 사본까지 세 벌)이 동시에 살아 있었다.
+  산출물은 **바이트 단위로 같다** — `tests/test_hierarchy.py` 가 이걸 지킨다.
+  피크 3.19 → 3.16GB (이 게임들은 노드가 프리팹에 몰려 있어 효과는 작다).
+- 아틀라스 캐시 상한(`sprites.atlas_cache_mb`) 추가하되 **기본은 끔**. 캐시는 1.86 →
+  0.60GB 로 줄지만 피크가 4.34 → 4.40GB 로 **안 내려가고** 시간만 +56% 였다. 큰 블록을
+  해제해도 할당자가 OS 에 즉시 반납하지 않기 때문이다.
+- **남은 피크의 정체:** `UnityPy.load()` 가 오브젝트 58만 개 번들을 파싱하는 1.83GB +
+  거기서 디코드한 이미지. 우리 쪽이 얹는 건 `ObjectIndex` 0.02GB 뿐이다.
+
+**새 명령·옵션**
+
+- `sources` — Unity 소스 이름만 낸다(6초·2.1GB). 배운 Unity 버전을 `#unity=` 헤더로 함께.
+- `sprites`/`assets`/`hierarchy` 에 `--split` — 소스마다 **별 프로세스**로 돌리고 산출물을
+  소스별 zip 으로 나눈다. 검증: 6개 zip 합계 10,443장 = 통짜 실행과 동일.
+  단 **한 소스가 지배하면 피크는 안 내려간다**(이 게임은 한 번들이 88%라 4.26 → 4.52GB).
+  여러 번들에 고르게 퍼진 게임에서 의미가 있다.
+- `sprites`/`assets` 에 `--unity-version`.
+
+테스트 21건 추가(`test_split.py` 15 · `test_hierarchy.py` 6). 전체 **408개 통과**.
+
+**`GUIDE.md` 추가.** 처음 보는 게임을 뜯는 순서를 실전 플레이북으로 정리했다 —
+0단계 패키지 확인 → survey → `fields: auto` 설정 → 추출 → 검증 체크리스트 →
+메모리 기준선(실측) → 자주 막히는 지점(IL2CPP 메타데이터 39·catalog.bin·CDN) →
+산출물 정리. 기존 문서와 역할을 나눴다: `README` 빠른 시작 · `MANUAL` 명령 상세 ·
+`CLAUDE.md` 코드 수정 규칙 · `GUIDE.md` 작업 순서.
+
 ## 1.23.0
 
 **장르 무관 사용을 위한 `fields: auto`.** 낯선 게임을 붙일 때 최대 병목은 컬럼 경로를
