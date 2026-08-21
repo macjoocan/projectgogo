@@ -8,6 +8,7 @@
 #  2) python -m levelscope inspect --config configs/<게임>.yaml --input <apk> 로
 #     레벨 JSON 구조를 확인하면서 fields/board를 채운다
 #  3) python -m levelscope run ... 실행
+
 game: MyGame
 
 input:
@@ -37,11 +38,13 @@ input:
 #   gzip:접두 + base64+gzip: ["strip_bom", "prefix:gzip:", "base64", "gunzip", "json"]
 #   XOR (키는 --xor-scan 이 찾아준다):        ["xor:5A", "gunzip", "json"]
 #   AES (키·IV는 사용자가 확보해야 함):        ["aes_cbc:<hexkey>:<hexiv>", "json"]
+
 codec: auto
 
 # 처음 보는 게임·낯선 장르면 이 한 줄로 시작하세요. 표본 200개에서 컬럼을 자동으로
 # 뽑습니다(스칼라는 값, 리스트는 개수, 중첩 dict 은 점 경로). 나중에 필요한 것만
 # 골라 아래 수동 형식으로 옮기면 됩니다.
+
 fields: auto
 
 # 수동으로 적을 때:
@@ -57,6 +60,7 @@ fields: auto
 # outputs 에서 html 을 빼면 된다 (xlsx + zip + sprites/assets/hierarchy 로 충분하다).
 
 # 보드(그리드)가 있으면 정의 — HTML 뷰어의 그림 렌더에 사용. 없으면 삭제.
+
 board:
   width: Board.width
   height: Board.height
@@ -130,4 +134,5 @@ viewer:
 #   unity_version: null      # 자동 감지 실패 시에만 (예: 2021.3.42f1)
 
 notes: []
+
 outputs: [xlsx, html, zip]     # + sprites, assets, hierarchy

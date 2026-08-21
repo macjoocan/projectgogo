@@ -3,6 +3,7 @@
 # 스테이지 2~3개가 몰려 있다. 플러그인 split_levels 가 스테이지 단위로 펼친다.
 #   레코드 1개 = 스테이지 1개, id = "<mapId>-<스테이지>"
 # APK에는 씨앗 맵만 들어 있다 (일일 맵은 서버에서 받는다).
+
 game: SheepNSheep
 
 input:
@@ -56,6 +57,7 @@ viewer:
   labels: {}
 
 # 스택 높이 1~16+ 순차 팔레트 (연한 양털 → 짙은 남색)
+
 palette:
   source: static
   static: ["#FBF7EF","#F0E6D2","#E2D3B4","#D3BE95","#C4A97A","#B39463","#A07E52","#8B6A45",
@@ -68,6 +70,7 @@ palette:
 # IL2CPP MonoBehaviour typetree 복원 — hierarchy 의 컴포넌트 필드가 여기 달려 있다.
 # 재료 경로·Unity 버전은 자동 탐색/감지되므로 보통 손댈 게 없다.
 # AssetRipper 단독 82.2% → AssetStudio 폴백까지 100% (1659/1659, 실측).
+
 typetree:
   backends: [AssetRipper, AssetStudio]
 
@@ -88,10 +91,19 @@ notes:
 # ── 리소스 추출 ──────────────────────────────────────────────────
 # sources 를 비워 두면 자동 발견한다 (Addressables 번들·확장자 없는 번들 포함).
 # 경로를 하드코딩하면 새 번들이 통째로 빠진다.
+
 sprites:
   sources: auto
   types: [Sprite, Texture2D]     # 아틀라스 원본까지
   max_count: 20000
+  categorize: true
+  # 규칙 근거: 실제 이름의 앞부분 빈도. `card<N>` 은 블록타입 스프라이트다
+  # (CLAUDE.md: 블록타입 id ↔ card* 매핑은 추정이지만 이름 자체는 확실하다).
+  categories:
+    - name: 블록
+      match: ['re:^card\d']
+    - name: 로딩
+      match: ["re:^loading"]
 
 assets:
   sources: auto

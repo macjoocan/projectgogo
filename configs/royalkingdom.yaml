@@ -6,6 +6,7 @@
 #
 # 입력은 APKS 래퍼다 — 바깥 apk 안에 assets/apks/*.apk 가 들어 있고 레벨은
 # UnityDataAssetPack.apk 의 datapack.unity3d 에 있다. 컨테이너가 알아서 훑는다.
+
 game: RoyalKingdom
 
 input:
@@ -18,6 +19,7 @@ codec: [flatbuffers]
 
 # 슬롯 타입을 표본 전체로 확정한다. FlatBuffers는 타입을 안 적어두기 때문에
 # 버퍼 하나만 보면 스칼라와 오프셋이 헷갈린다(전수 검증에서 683개 오차).
+
 flatbuffers:
   infer_schema: true
 
@@ -62,6 +64,7 @@ viewer:
   labels: {}
 
 # 셀 타입 0~31 구분용 순차 팔레트 (0=빈칸 회색)
+
 palette:
   source: static
   static: ["#2B2B2B","#E8443A","#E8763A","#E8A93A","#D9E83A","#A6E83A","#72E83A","#3AE84B",
@@ -115,3 +118,32 @@ notes:
   - "생성: levelscope 파이프라인"
 
 outputs: [xlsx, html, zip]
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 40000
+  categorize: true
+  # 규칙 근거: CLAUDE.md 의 `Items-<이름>-*` / `<이름>_parts-*` / `<이름>_big` 규칙과
+  # 실제 이름 6,826개의 앞부분 빈도. `d1`·`k1`·`pb` 처럼 뜻을 모르는 접두어는
+  # 분류하지 않는다 — 틀린 이름을 붙이는 건 안 붙이는 것보다 나쁘다.
+  categories:
+    - name: 기믹
+      match: ["re:^items[-_]", "re:^parts[-_]", "re:_parts[-_]", "re:_big$"]
+    - name: 팀
+      match: ["re:^teamlogo", "re:^team[-_]"]
+
+    # ↓ 옆 세션의 표본 육안 판정 (기타_판독 문서) + 이 세션의 재확인
+    - name: 이펙트
+      match: ['re:^add[_-]', 're:^additive[_-]']
+    # 이름에 Environment 가 그대로 있고, 잔디·바위·강이 그려진 맵 조각이다
+    - name: 배경
+      match: ['re:^k\d+[_-]']
+    # 금색 난간·기둥·받침대·카펫 = 맵 장식. light-* 는 물가 지형 조각이라
+    # 여기 둔다 — 옆 세션은 텍스처로 봤지만, 텍스처는 노이즈·베이스컬러 같은
+    # 셰이더 맵 자리이고 이건 맵에 깔리는 물 표면이다(표본 직접 확인).
+    - name: 환경
+      match: ['re:^d\d+[_-]', 're:^p[_-]', 're:^pebbles', 're:^stones',
+              're:^light[_-]']
+    - name: 기믹
+      match: ['re:^dragon']

@@ -9,6 +9,7 @@
 # 같은 덤프의 `TiledId`(429개)·`GoalType`(105개) 열거형에서 온 확정값이다.
 #
 # 입력은 XAPK 다 — 레벨은 UnityDataAssetPack.apk 의 datapack.unity3d 에 있다.
+
 game: RoyalMatch
 
 input:
@@ -67,9 +68,37 @@ sprites:
   sources: auto
   types: [Sprite, Texture2D]   # 아틀라스 원본까지
   max_count: 20000
+  categorize: true
+  # 규칙 근거: CLAUDE.md 에 문서화된 이름 규칙(`Items-<이름>Item-<부위>`,
+  # `<이름>_Goal_Icon`)과 실제 이름 7,730개의 앞부분 빈도. 뜻을 모르는 토큰
+  # (layer·top·tail 같은 것)은 억지로 분류하지 않고 기타로 둔다.
+  categories:
+    - name: 기믹
+      match: ["re:^items[-_]", "re:^staticitems", "re:^parts[-_]", "re:_parts[-_]"]
+    - name: 팀
+      match: ["re:^teamlogo", "re:^team[-_]", "re:^league"]
 
+    # ↓ 아래는 옆 세션이 `기타/` 전량을 접두어별로 묶어 **표본 이미지를 눈으로 보고**
+    # 판정한 결과다(D:\99.기타\스프라이트_분류_기타_판독.md · 표본은 기타_판독_표본\).
+    # 이 세션에서 RM light/layer, RK d#, CookieRun m# 네 건을 직접 다시 봐서 확인했다.
+    # 검은 배경 + 흰 글로우·별빛 = 가산 블렌딩 소재
+    - name: 이펙트
+      match: ['re:^add[_-]']
+    # 부위 파편. layer/tail/top/bot/v/h/body/glass 가 전부 같은 성격 (약 667장)
+    # 한 글자 접두어는 구분자까지 묶는다 — 안 그러면 victory·house 가 딸려 온다
+    - name: 조각
+      match: ['re:^layer[ _]', 're:^tail[_-]', 're:^top[_-]', 're:^bot[_-]',
+              're:^v[_-]', 're:^h[_-]', 're:^body[_-]', 're:^glass[_-]']
+    # 보라 부메랑 시퀀스 + 그림자 실루엣
+    - name: 기믹
+      match: ['re:^boomerang']
+    # light_ball_* 는 전구가 박힌 **장식 구슬**이다. 빛 소재가 아니라 물체 —
+    # 이 세션에서 표본을 직접 확인했다. Royal Kingdom 의 light 와 뜻이 다르다.
+    - name: 오브제
+      match: ['re:^light[_-]ball']
 # text 는 뺀다 — 이 게임은 레벨이 TextAsset 이라(14,300개) 넣으면 상한을 다 먹고
 # 정작 오디오·머티리얼을 못 연다. 레벨은 levels_decoded.zip 에 따로 들어간다.
+
 assets:
   sources: auto
   kinds: [audio, material, font, spine]

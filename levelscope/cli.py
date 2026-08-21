@@ -573,15 +573,39 @@ def sprites_cmd(args):
         from . import split as split_mod
         failed = split_mod.run_per_source(
             "sprites", args.input, args.out, args.game,
-            ["--names", args.names, "--types", args.types, "--max", str(args.max)])
+            ["--names", args.names, "--types", args.types, "--max", str(args.max)]
+            + (["--categorize"] if args.categorize else []))
         if failed:
             sys.exit(1)
         return
     cfg = {"sources": [s.strip() for s in args.source.split(",") if s.strip()],
            "include": [n.strip() for n in args.names.split(",") if n.strip()],
            "types": [t.strip() for t in args.types.split(",") if t.strip()],
-           "max_count": args.max}
+           "max_count": args.max,
+           "categorize": args.categorize}
     sprites_mod.extract_sprites(args.input, cfg, args.out, game=args.game)
+
+
+def recategorize_cmd(args):
+    """이미 뽑아 둔 스프라이트 zip 에 분류만 다시 입힌다.
+
+    APK 를 다시 열지 않으므로 몇 초에 끝나고 메모리도 거의 안 쓴다 — 예전에 뽑아 둔
+    산출물을 버리지 않고 분류만 얹을 수 있다. 같은 zip 에 두 번 돌려도 결과가 같다.
+    """
+    from . import categorize
+    extra = None
+    if args.config:
+        cfg = _load_config(args.config)
+        extra = (cfg.get("sprites") or {}).get("categories")
+    rules = categorize.compile_rules(extra)
+    dst = args.out or args.zip
+    tmp = dst + ".tmp"
+    categorize.relabel_zip(args.zip, tmp, rules, log=print)
+    if os.path.exists(dst):
+        os.replace(tmp, dst)          # 같은 파일을 덮어쓰는 경우까지 안전하게
+    else:
+        os.rename(tmp, dst)
+    print(f"[recategorize] 저장: {dst} ({os.path.getsize(dst) / 1e6:.1f}MB)")
 
 
 def sources_cmd(args):
@@ -716,6 +740,10 @@ def build_parser():
     p.add_argument("--names", default="", help="이름 목록 쉼표 구분, 're:정규식' 지원. 빈값=전체")
     p.add_argument("--types", default="Sprite", help="Sprite,Texture2D")
     p.add_argument("--max", type=int, default=1000)
+    p.add_argument("--categorize", action="store_true",
+                   help="이름 앞에 분류를 붙여 저장한다 (아이콘_ · 캐릭터_ · 이펙트_ …). "
+                        "분류별 폴더로도 나뉘어 만 장도 훑을 수 있다. 근거는 zip 안 "
+                        "_categories.json 에 남는다")
     p.add_argument("--unity-version", default=None,
                    help="번들 헤더에 Unity 버전이 없을 때 쓸 값 (예: 6000.3.11f1). 보통 자동으로 배우지만, 소스를 하나만 주면 배울 데가 없다")
     p.add_argument("--game", default="assets", help="출력 파일명 접두어")
@@ -723,6 +751,14 @@ def build_parser():
     p.add_argument("--split", action="store_true",
                    help="소스마다 **별 프로세스**로 돌린다. 산출물이 소스별로 나뉘는 대신 메모리 피크가 '가장 무거운 소스 하나'로 내려간다 (실측 4.26GB → 소스별)")
     p.set_defaults(func=sprites_cmd)
+
+    p = sub.add_parser("recategorize",
+                       help="이미 뽑아 둔 스프라이트 zip 에 분류만 다시 입힌다 (APK 불필요)")
+    p.add_argument("--zip", required=True, help="대상 <게임>_sprites.zip")
+    p.add_argument("--config", default=None,
+                   help="게임 설정 yaml — sprites.categories 의 게임 고유 규칙을 쓴다")
+    p.add_argument("--out", default=None, help="생략하면 원본을 덮어쓴다")
+    p.set_defaults(func=recategorize_cmd)
 
     p = sub.add_parser("sources", help="Unity 소스 이름만 한 줄에 하나씩 (--split 이 쓴다)")
     p.add_argument("--input", required=True, help="apk/xapk/폴더")

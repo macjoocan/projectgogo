@@ -24,7 +24,7 @@ import re
 import tempfile
 import zipfile
 
-from . import container, discover, unity
+from . import categorize, container, discover, unity
 from .container import as_list
 
 
@@ -135,7 +135,8 @@ def _dep_file(input_path, name):
 
 
 def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budget,
-                 deps=(), only_ids=None, budget_atlas=unity.ATLAS_CACHE_BUDGET):
+                 deps=(), only_ids=None, budget_atlas=unity.ATLAS_CACHE_BUDGET,
+                 tally=None):
     """소스 하나에서 스프라이트를 뽑는다.
 
     only_ids 를 주면 **그 오브젝트만** 처리한다 — 재시도에서 쓴다. 이름으로 거르면
@@ -172,7 +173,13 @@ def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budg
                     failures.append(f"{label}!{name}: 이미지 없음")
                     continue
                 safe = re.sub(r'[\\/:*?"<>|]', "_", name)
-                key = _unique_key(f"{o.type.name}/{safe}", seen)
+                if tally is None:
+                    key = _unique_key(f"{o.type.name}/{safe}", seen)
+                else:
+                    # 분류를 폴더로도, 파일명 앞에도 붙인다 — 압축을 풀어 평평하게
+                    # 봐도 묶여 보이게 (만 장을 훑으려면 이게 필요하다)
+                    cat = tally.add(name)
+                    key = _unique_key(f"{cat}/{cat}_{safe}", seen)
                 buf = io.BytesIO()
                 img.save(buf, "PNG")
                 zf.writestr(f"{key}.png", buf.getvalue())
@@ -189,7 +196,7 @@ def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budg
 
 def _retry_with_deps(input_path, label, data, suffix, want_types, pats, zf, seen,
                      failures, n_before, count, max_count, failed_ids, wanted, log,
-                     budget_atlas=unity.ATLAS_CACHE_BUDGET):
+                     budget_atlas=unity.ATLAS_CACHE_BUDGET, tally=None):
     """교차 번들 참조 실패를 **번들 하나씩** 같이 올려 다시 시도한다. 새 count 반환.
 
     한꺼번에 다 올리면 메모리가 터진다(`_dep_names` 독스트링). 하나씩 올리고,
@@ -211,7 +218,8 @@ def _retry_with_deps(input_path, label, data, suffix, want_types, pats, zf, seen
             tries += 1
             retry = _extract_one(data, suffix, label, want_types, pats, zf, seen,
                                  failures, max_count - count, deps=[dep_path],
-                                 only_ids=remaining, budget_atlas=budget_atlas)
+                                 only_ids=remaining, budget_atlas=budget_atlas,
+                                 tally=tally)
         count += retry["count"]
         gained += retry["count"]
         remaining = retry["failed_ids"]
@@ -228,11 +236,19 @@ def _retry_with_deps(input_path, label, data, suffix, want_types, pats, zf, seen
 
 
 def _unique_key(base, seen):
+    """겹치지 않는 zip 키. **대소문자를 무시해서** 비교한다.
+
+    Windows·macOS 파일시스템은 대소문자를 구분하지 않는다. zip 안에서는 다른
+    파일이어도 풀면 나중 것이 앞 것을 덮어써 **조용히 한 장이 사라진다**.
+    원본이 표기를 혼용하는 경우가 실제로 많다 — `IconSnsFacebook` 과
+    `IconSnsFaceBook`, `shadow` 와 `Shadow`. 실측 충돌 수: Zen Match 60 ·
+    Royal Kingdom 58 · Royal Match 31 · CookieRun 1 · PixelFlow 1.
+    """
     key, n = base, 2
-    while key in seen:
+    while key.lower() in seen:
         key = f"{base}_{n}"
         n += 1
-    seen.add(key)
+    seen.add(key.lower())
     return key
 
 
@@ -246,6 +262,11 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
     max_count = sprites_cfg.get("max_count", 1000)
     # 아틀라스 캐시 상한(MB). 0 이면 상한 없음(예전 동작). 낮추면 메모리가 줄고
     # 같은 아틀라스를 다시 디코드해 느려진다 — 산출물은 어느 쪽이든 같다.
+    # 이미지가 만 장 단위면 타입 폴더 하나에 다 들어가 못 본다. 분류를 켜면
+    # `아이콘/아이콘_foo.png` 처럼 나온다. 기본은 꺼 둔다 — 경로가 바뀌면
+    # `tools/build_icons_*.py` 처럼 `Sprite/<이름>.png` 를 그대로 찾는 것이 깨진다.
+    tally = (categorize.Tally(categorize.compile_rules(sprites_cfg.get("categories")))
+             if sprites_cfg.get("categorize") else None)
     mb = sprites_cfg.get("atlas_cache_mb")
     budget_atlas = (int(mb) * 2**20) if mb is not None else unity.ATLAS_CACHE_BUDGET
     sources = discover.resolve_sources(input_path, sprites_cfg.get("sources"), log=log)
@@ -267,7 +288,7 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
             n_before = len(failures)
             missed = _extract_one(data, suffix, label, want_types, pats, zf, seen,
                                   failures, max_count - count,
-                                  budget_atlas=budget_atlas)
+                                  budget_atlas=budget_atlas, tally=tally)
             count += missed["count"]
             truncated = truncated or missed["truncated"]
 
@@ -278,9 +299,19 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
                 count = _retry_with_deps(
                     input_path, label, data, suffix, want_types, pats, zf, seen,
                     failures, n_before, count, max_count, missed["failed_ids"],
-                    wanted, log, budget_atlas=budget_atlas)
+                    wanted, log, budget_atlas=budget_atlas, tally=tally)
             del data                  # 다음 소스를 읽기 전에 이 번들을 놓는다
 
+        if tally is not None and tally.counts:
+            # 어떤 규칙이 몇 개를 잡았는지·못 잡은 이름 표본을 함께 넣는다.
+            # 분류가 마음에 안 들면 이걸 보고 설정을 고치면 된다.
+            zf.writestr("_categories.json", tally.to_json())
+
+    if tally is not None and tally.counts:
+        log(f"[sprites] 분류: {tally.summary_line()}")
+        if tally.unmatched:
+            log(f"[sprites] 분류 못 한 이름 표본: "
+                f"{', '.join(tally.unmatched[:4])} … (_categories.json 참고)")
     if not used_sources:
         log(f"[sprites] 경고: sources {sources} 에 맞는 Unity 파일을 찾지 못했습니다")
     log(f"[sprites] {count}개 추출 → {zpath}"

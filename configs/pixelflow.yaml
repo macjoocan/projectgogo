@@ -1,4 +1,5 @@
 # PixelFlow (Loom Games) — levelscope 설정
+
 game: PixelFlow
 
 input:
@@ -179,10 +180,24 @@ notes:
 # ── 리소스 추출 ──────────────────────────────────────────────────
 # sources 를 비워 두면 자동 발견한다 (Addressables 번들·확장자 없는 번들 포함).
 # 경로를 하드코딩하면 새 번들이 통째로 빠진다.
+
 sprites:
   sources: auto
   types: [Sprite, Texture2D]     # 아틀라스 원본까지
   max_count: 20000
+  categorize: true
+  # 규칙 근거: 실제 이름 1,509개의 앞부분 빈도. 기본 규칙(icon·frame·button·popup)이
+  # 이미 대부분을 잡는다.
+  categories:
+    - name: 기믹
+      match: ["re:^iconpowerup", "re:^powerup", "re:^chest"]
+    - name: 레벨
+      match: ["re:^level", "re:^featureimage"]
+
+    # ↓ 옆 세션의 표본 육안 판정 (기타_판독 문서)
+    - name: UI
+      match: ['re:^arrow', 're:^notification', 're:^tutorial', 're:^label',
+              're:^leaderboard', 're:^plus[_-]', 're:^check[_-]']
 
 assets:
   sources: auto

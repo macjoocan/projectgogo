@@ -72,6 +72,20 @@ def families():
     return out
 
 
+def _read_sprite(z, name):
+    """스프라이트 png 를 zip 레이아웃에 상관없이 찾는다.
+
+    예전에는 `Sprite/<이름>.png` 를 그대로 찾았다. `sprites.categorize` 를 켜면
+    경로가 `아이콘/아이콘_<이름>.png` 로 바뀌어 그 방식이 깨진다 — 이름으로 찾는다.
+    """
+    want = f"{name}.png".lower()
+    for n in z.namelist():
+        base = n.rsplit("/", 1)[-1].lower()
+        if base == want or base.endswith("_" + want):
+            return z.read(n)
+    raise KeyError(f"스프라이트 없음: {name}")
+
+
 def grid(positions):
     """칸 위치들에서 행·열 수를 정한다 — 있는 글자만 쓰므로 2×2도 3×3도 된다."""
     rows = sorted({ROW[p[0]] for p in positions})
@@ -94,7 +108,7 @@ def build(sprites_zip, icon_dir, log=print):
         if not sprite:
             skipped.append(f"{base}({len(parts)}칸)")
             continue
-        raw = Image.open(io.BytesIO(z.read(f"Sprite/{sprite}.png"))).convert("RGBA")
+        raw = Image.open(io.BytesIO(_read_sprite(z, sprite))).convert("RGBA")
         bb = raw.getbbox()
         if bb:
             raw = raw.crop(bb)

@@ -1,0 +1,68 @@
+# CookieRun: Crumble (com.devsisters.cc) — levelscope 설정
+#
+# 주의: **레벨 데이터가 APK 안에 없다.** Addressables 카탈로그가 말하는 콘텐츠 번들이
+# 전부 CDN 배포분이고, APK 에 남은 json 은 AdUnitConfig·settings 같은 설정 파일뿐이다.
+# 그래서 이 설정의 쓸모는 리소스(스프라이트·에셋·계층) 추출에 있다.
+#
+# 엔진: Unity 6000.3.15f1 · IL2CPP (global-metadata 버전 39)
+#   - 버전 39 는 TypeTreeGeneratorAPI 백엔드·Il2CppDumper 모두 아직 미지원이다.
+#     다행히 번들이 타입트리를 자체적으로 품고 있어 기본 읽기로 98.7% 가 복원된다.
+#   - `aa/Android/*.bundle` 은 헤더에 Unity 버전이 없다. discover 가 다른 소스에서
+#     배워 채우지만, 소스를 하나만 줄 때는 `--unity-version 6000.3.11f1` 이 필요하다.
+
+game: CookieRunCrumble
+
+input:
+  levels_glob: "assets/*.json"      # 실제 레벨이 아니라 설정 json 이다 (위 주의 참고)
+  set_from: parent_dir
+  level_id_from: stem
+
+codec: auto
+
+fields: auto
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 40000
+  # 만 장이 넘어서 타입 폴더 하나로는 볼 수 없다. 분류를 켜면
+  # `아이콘/아이콘_foo.png` 처럼 나오고 zip 에 _categories.json 이 함께 들어간다.
+  categorize: true
+  # 게임 고유 낱말만 여기 적는다. 일반적인 것(icon·fx·bg·popup·atlas…)은 기본 규칙에 있다.
+  # 규칙은 실제 이름 10,443개를 훑어서 뽑았다 — 상상해서 넣지 않았다.
+  categories:
+    - name: 캐릭터
+      match: ["re:^tex_cookie\\d", "re:^cookie\\d", "re:^mc\\d", "re:^pet\\d",
+              "re:^tex_fx_cookie\\d"]
+    - name: 콘텐츠
+      match: ["re:^tex_clash", "re:^clash", "re:^guild", "re:^mercenaryband",
+              "re:^adventurenote", "re:^dungeon"]
+    - name: 상품
+      match: ["re:^normalpackage", "re:^spotpackage", "re:^pkg", "re:^shop"]
+
+    # ↓ 옆 세션의 표본 육안 판정. m# 는 이 세션에서도 표본을 다시 봤다(캐릭터 얼굴).
+    # cookie0103_die_00 과 액션 접미(die/run/skill)가 동일하다.
+    - name: 캐릭터
+      match: ['re:^m\d{4,}[_-]', 're:^npc[_-]']
+    - name: UI
+      match: ['re:^emoji[_-]', 're:^equiptag']
+    - name: 상품
+      match: ['re:^sweetblessing']
+    - name: 이펙트
+      match: ['re:^water[_-]']
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 40000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 300000
+
+# 보드형 게임이 아니라 board/palette/html 은 두지 않는다.
+
+outputs: [xlsx, zip, sprites, assets, hierarchy]
