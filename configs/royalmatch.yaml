@@ -11,6 +11,7 @@
 # 입력은 XAPK 다 — 레벨은 UnityDataAssetPack.apk 의 datapack.unity3d 에 있다.
 
 game: RoyalMatch
+package: com.dreamgames.royalmatch      # tools/analyze.py 가 이걸로 설정을 고른다
 
 input:
   unity:

@@ -5,6 +5,7 @@
 # APK에는 씨앗 맵만 들어 있다 (일일 맵은 서버에서 받는다).
 
 game: SheepNSheep
+package: com.game.keepsheep      # tools/analyze.py 가 이걸로 설정을 고른다
 
 input:
   unity:

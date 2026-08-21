@@ -11,6 +11,7 @@
 #     배워 채우지만, 소스를 하나만 줄 때는 `--unity-version 6000.3.11f1` 이 필요하다.
 
 game: CookieRunCrumble
+package: com.devsisters.cc      # tools/analyze.py 가 이걸로 설정을 고른다
 
 input:
   levels_glob: "assets/*.json"      # 실제 레벨이 아니라 설정 json 이다 (위 주의 참고)

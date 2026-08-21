@@ -1,6 +1,7 @@
 # PixelFlow (Loom Games) — levelscope 설정
 
 game: PixelFlow
+package: com.loomgames.pixelflow      # tools/analyze.py 가 이걸로 설정을 고른다
 
 input:
   levels_glob: "assets/Levels/*/[0-9]*.json"   # 컨테이너(apk/폴더) 내 레벨 파일 패턴

@@ -8,6 +8,7 @@
 # UnityDataAssetPack.apk 의 datapack.unity3d 에 있다. 컨테이너가 알아서 훑는다.
 
 game: RoyalKingdom
+package: com.dreamgames.royalkingdom      # tools/analyze.py 가 이걸로 설정을 고른다
 
 input:
   unity:
