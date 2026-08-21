@@ -6,4 +6,4 @@
 사용:
     python -m levelscope run --config configs/pixelflow.yaml --input <apk|xapk|folder> --out out/
 """
-__version__ = "1.26.1"
+__version__ = "1.27.0"

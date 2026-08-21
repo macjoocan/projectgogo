@@ -136,8 +136,20 @@ python -m levelscope hierarchy --input <입력> --out out --game <게임> --max-
 - `survey` 가 오브젝트 100만 개 이상을 보고하면 통짜 실행 전에 `--source` 로 번들 하나씩
   나눠 돌리는 걸 먼저 고려한다.
 
-이 도구는 스스로 메모리 상한을 걸지 않는다. 걱정되면 상한 감시를 붙여 실행한다
-(그러면 한계를 넘을 때 PC 가 멈추는 대신 프로세스만 죽는다).
+파이프라인 자체에는 상한이 없다. 처음 보는 게임이 유난히 크거나 여유가 빡빡하면
+**상한을 걸고 돌린다** — 한계를 넘을 때 PC 가 멈추는 대신 프로세스만 죽는다.
+
+```bash
+py tools/watchdog.py --cap 6 -- run --config configs/<게임>.yaml --input <입력> --out out
+py tools/watchdog.py --cap 8 --tree -- sprites --input <입력> --out out --split
+```
+
+`--` 뒤는 `python -m levelscope` 에 그대로 넘어간다. `--tree` 는 `--split` 처럼 자식
+프로세스를 띄울 때 합산해서 본다. 상한을 넉넉히(예: `--cap 100`) 주면 감시 없이
+**최고 커밋만 재는** 용도로도 쓴다 — 새 게임의 메모리 규모를 알고 싶을 때 이렇게 한다.
+
+(`분석하기.bat` 은 시작 전에 여유를 확인해 경고하지만, 실행 중에 막지는 못한다.
+확실히 막아야 하면 위 도구를 쓴다.)
 
 ## 6. 자주 막히는 지점
 

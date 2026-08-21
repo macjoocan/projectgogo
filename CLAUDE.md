@@ -105,6 +105,8 @@ levelscope/plugins/      게임 플러그인 (정본 한 벌. v1.3의 양쪽 복
 plugins/                 프로젝트 전용 확장 자리 (비어 있어도 됨)
 configs/                 게임 YAML + icons/<게임>/ 뱃지 아이콘
 tests/                   합성 데이터 회귀 테스트 (표준 unittest, 무설치)
+tools/analyze.py       원 클릭 진입점 (분석하기.bat 이 부른다) — 게임 인식·설정 선택·survey·확인
+tools/watchdog.py      메모리 상한을 걸고 실행 (넘으면 프로세스만 죽는다). --tree 로 자식 합산
 tools/verify_baseline.py 실제 APK 기준치 대조
 ```
 
