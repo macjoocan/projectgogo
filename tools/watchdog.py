@@ -12,8 +12,11 @@
 `--` 뒤는 `python -m levelscope` 에 그대로 넘어간다. 상한을 넘으면 즉시 죽이고, 어디까지
 갔는지·무엇을 하던 중이었는지 남긴다. 안 넘으면 최고 커밋만 찍고 조용히 끝난다.
 
-**`--tree` 는 `--split` 처럼 자식 프로세스를 띄우는 경우에 쓴다.** 기본은 대상 프로세스
-하나만 본다(자식 합산이 필요 없고 더 싸다).
+**프로세스 트리를 합산해서 본다(기본값).** 가상환경의 `.venv\\Scripts\\python.exe` 는
+리다이렉터 스텁이어서 실제 작업은 손자 프로세스가 한다. 대상 하나만 보면 스텁의 1MB
+만 재고 상한이 영원히 발동하지 않는다 — 실측으로 스텁 0.001GB / 손자 1.125GB 였다.
+`--split` 처럼 자식을 여럿 띄우는 경우도 같은 합산으로 덮인다. 진단용으로 대상 하나만
+보려면 `--no-tree`.
 
 재는 값은 **커밋(private commit, `PagefileUsage`)** 이다. 작업 관리자의 "커밋 크기" 와
 같은 값이고, 이 PC 가 멈춘 기준도 이것이었다(물리 메모리가 아니라 커밋 한도).
@@ -119,8 +122,15 @@ def _kill_tree(pid):
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-def run(cap_gb, argv, tree=False, log=print):
-    """`python -m levelscope <argv>` 를 상한 아래에서 돌린다. (종료코드, 최고커밋)."""
+def run(cap_gb, argv, tree=True, log=print):
+    """`python -m levelscope <argv>` 를 상한 아래에서 돌린다. (종료코드, 최고커밋).
+
+    **`tree` 기본값이 True 인 이유.** 가상환경의 `\\.venv\\Scripts\\python.exe` 는
+    리다이렉터 스텁이라 실제 작업은 **손자 프로세스**가 한다. 대상 하나만 보면
+    스텁의 1MB 만 재고(실측: 스텁 0.001GB / 손자 1.125GB) 상한이 영원히 발동하지
+    않는다 — 감시가 있는 척만 하는 상태가 된다. 트리 합산은 0.3초마다 Toolhelp
+    스냅샷 한 번이라 값싸다. 끄고 싶으면 `tree=False`.
+    """
     cmd = [sys.executable, "-m", "levelscope", *argv]
     env = dict(os.environ)
     env["PYTHONPATH"] = ROOT + os.pathsep + env.get("PYTHONPATH", "")
@@ -172,8 +182,11 @@ def main():
     ap.add_argument("--cap", type=float, default=6.0,
                     help="커밋 상한(GB). 넘으면 즉시 중단. 기본 6 "
                          "(실측 피크가 4~4.5GB 라 그 위 여유값)")
-    ap.add_argument("--tree", action="store_true",
-                    help="자식 프로세스까지 합산해서 본다 (--split 을 쓸 때)")
+    ap.add_argument("--tree", dest="tree", action="store_true", default=True,
+                    help="자식 프로세스까지 합산해서 본다 (기본값)")
+    ap.add_argument("--no-tree", dest="tree", action="store_false",
+                    help="대상 프로세스 하나만 본다. 가상환경(.venv)에서는 스텁만 재게 "
+                         "되므로 상한이 발동하지 않는다 — 진단용으로만 쓸 것")
     ap.add_argument("rest", nargs=argparse.REMAINDER,
                     help="-- 뒤에 levelscope 명령을 그대로 적는다")
     a = ap.parse_args()

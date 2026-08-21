@@ -141,15 +141,22 @@ python -m levelscope hierarchy --input <입력> --out out --game <게임> --max-
 
 ```bash
 py tools/watchdog.py --cap 6 -- run --config configs/<게임>.yaml --input <입력> --out out
-py tools/watchdog.py --cap 8 --tree -- sprites --input <입력> --out out --split
+py tools/watchdog.py --cap 8 -- sprites --input <입력> --out out --split
 ```
 
-`--` 뒤는 `python -m levelscope` 에 그대로 넘어간다. `--tree` 는 `--split` 처럼 자식
-프로세스를 띄울 때 합산해서 본다. 상한을 넉넉히(예: `--cap 100`) 주면 감시 없이
-**최고 커밋만 재는** 용도로도 쓴다 — 새 게임의 메모리 규모를 알고 싶을 때 이렇게 한다.
+`--` 뒤는 `python -m levelscope` 에 그대로 넘어간다. 상한을 넉넉히(예: `--cap 100`) 주면
+감시 없이 **최고 커밋만 재는** 용도로도 쓴다 — 새 게임의 메모리 규모를 알고 싶을 때
+이렇게 한다.
 
-(`분석하기.bat` 은 시작 전에 여유를 확인해 경고하지만, 실행 중에 막지는 못한다.
-확실히 막아야 하면 위 도구를 쓴다.)
+**프로세스 트리를 합산해서 본다(기본값).** 가상환경의 `.venv\Scripts\python.exe` 는
+리다이렉터 스텁이어서 실제 작업은 손자 프로세스가 한다. 대상 하나만 보면 스텁의 1MB
+만 재고 상한이 영원히 발동하지 않는다 — 실측으로 스텁 0.001GB / 손자 1.125GB 였고,
+`최고 커밋 0.00GB` 로 보고했다. `--split` 처럼 자식을 여럿 띄우는 경우도 같은 합산으로
+덮인다. 진단 목적으로 대상 하나만 보려면 `--no-tree`.
+
+`분석하기.bat`(→ `tools/analyze.py`)은 이제 **단계를 나눠 돌리고 각 단계에 상한을
+건다**(기본 `--cap 6`, 끄려면 `--no-cap`). 한 단계가 상한을 넘어도 앞 단계 산출물은
+디스크에 남는다. 상한 없이 통짜로 돌리고 싶을 때만 위 명령을 직접 쓴다.
 
 ## 6. 자주 막히는 지점
 

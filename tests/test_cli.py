@@ -295,14 +295,14 @@ class RunEndToEnd(Tmp):
         return write_zip(self.p("app.xapk"), {"base.apk": make_zip_bytes(
             {f"assets/Levels/set1/{i}.json": self.encoded_level(i) for i in (1, 2, 3)})})
 
-    def run_pipeline(self, cfg=None, **kw):
+    def run_pipeline(self, cfg=None, out_dir=None, **kw):
         cfg = dict(cfg or self.CFG)
         cfg["_config_dir"] = self.tmp
         orig = cli._load_config
         cli._load_config = lambda _p: cfg
         try:
             args = argparse.Namespace(config="x.yaml", input=self.make_apk(),
-                                      out=self.p("out"), limit=0, **kw)
+                                      out=out_dir or self.p("out"), limit=0, **kw)
             buf, old = io.StringIO(), sys.stdout
             sys.stdout = buf
             try:
@@ -446,3 +446,98 @@ class Parser(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ResolveOutputs(unittest.TestCase):
+    """`--only` — 설정의 outputs 를 좁힌다. 넓히지는 않는다."""
+
+    CFG = {"outputs": ["xlsx", "html", "zip", "sprites"]}
+
+    def pick(self, only, cfg=None):
+        msgs = []
+        # `{}` 도 넘길 수 있어야 하므로 `or` 가 아니라 None 검사를 쓴다
+        got = cli._resolve_outputs(dict(self.CFG if cfg is None else cfg),
+                                   only, msgs.append)
+        return got, "\n".join(msgs)
+
+    def test_none_returns_config_outputs(self):
+        got, msgs = self.pick(None)
+        self.assertEqual(got, ["xlsx", "html", "zip", "sprites"])
+        self.assertEqual(msgs, "")                      # 조용하다
+
+    def test_default_when_config_has_no_outputs(self):
+        got, _ = self.pick(None, {})
+        self.assertEqual(got, ["xlsx", "html"])
+
+    def test_narrows_to_selection(self):
+        got, _ = self.pick("zip")
+        self.assertEqual(got, ["zip"])
+
+    def test_keeps_config_order_not_argument_order(self):
+        got, _ = self.pick("sprites,xlsx")
+        self.assertEqual(got, ["xlsx", "sprites"])
+
+    def test_tolerates_spaces_and_empty_items(self):
+        got, _ = self.pick(" zip , , html ")
+        self.assertEqual(got, ["html", "zip"])
+
+    def test_cannot_enable_what_config_omitted(self):
+        """설정에서 뺀 산출물은 --only 로도 살아나지 않고, 빠졌다고 로그에 남는다."""
+        got, msgs = self.pick("zip,hierarchy")
+        self.assertEqual(got, ["zip"])
+        self.assertIn("hierarchy", msgs)
+        self.assertIn("건너뜀", msgs)
+
+    def test_unknown_name_exits(self):
+        with self.assertRaises(SystemExit) as e:
+            self.pick("zipp")
+        self.assertIn("zipp", str(e.exception))
+
+    def test_empty_intersection_exits(self):
+        with self.assertRaises(SystemExit) as e:
+            self.pick("hierarchy")
+        self.assertIn("하나도 없습니다", str(e.exception))
+
+
+class RunOnly(RunEndToEnd):
+    """`--only` 로 단계를 나눠 돌린다 — 커밋 피크를 단계별로 낮추기 위한 것."""
+
+    def test_only_zip_skips_viewer(self):
+        out = self.run_pipeline(only="zip")
+        self.assertIn("[decode] 성공 3 / 실패 0", out)
+        self.assertTrue(os.path.exists(self.p("out", "TestGame_levels_decoded.zip")))
+        self.assertFalse(os.path.exists(self.p("out", "TestGame_viewer.html")))
+
+    def test_only_html_skips_zip(self):
+        self.run_pipeline(only="html")
+        self.assertTrue(os.path.exists(self.p("out", "TestGame_viewer.html")))
+        self.assertFalse(os.path.exists(self.p("out", "TestGame_levels_decoded.zip")))
+
+    def test_non_level_selection_skips_collection_entirely(self):
+        """레벨을 쓰지 않는 산출물만 고르면 수집·디코딩을 아예 안 한다.
+
+        단계를 나눠 돌릴 때 레벨을 단계마다 다시 푸는 낭비를 막는다.
+        """
+        cfg = dict(self.CFG, outputs=["html", "zip", "sprites"])
+        out = self.run_pipeline(cfg, only="sprites")
+        self.assertIn("레벨 단계 생략", out)
+        self.assertNotIn("[input] 레벨 파일", out)
+        self.assertNotIn("[decode]", out)
+        self.assertFalse(os.path.exists(self.p("out", "TestGame_viewer.html")))
+        self.assertFalse(os.path.exists(self.p("out", "TestGame_levels_decoded.zip")))
+
+    def test_stages_split_produce_the_same_files_as_one_run(self):
+        """나눠 돌린 결과가 통짜 실행과 같은 파일을 낸다."""
+        whole = self.p("whole")
+        self.run_pipeline(out_dir=whole)
+        split = self.p("split")
+        self.run_pipeline(only="zip", out_dir=split)
+        self.run_pipeline(only="html", out_dir=split)
+
+        for name in ("TestGame_viewer.html", "TestGame_levels_decoded.zip"):
+            with self.subTest(name=name):
+                self.assertTrue(os.path.exists(os.path.join(split, name)))
+        with zipfile.ZipFile(os.path.join(whole, "TestGame_levels_decoded.zip")) as a, \
+             zipfile.ZipFile(os.path.join(split, "TestGame_levels_decoded.zip")) as b:
+            self.assertEqual(sorted(a.namelist()), sorted(b.namelist()))
+            self.assertEqual(a.read("levels/set1/2.json"), b.read("levels/set1/2.json"))

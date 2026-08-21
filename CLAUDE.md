@@ -105,8 +105,10 @@ levelscope/plugins/      게임 플러그인 (정본 한 벌. v1.3의 양쪽 복
 plugins/                 프로젝트 전용 확장 자리 (비어 있어도 됨)
 configs/                 게임 YAML + icons/<게임>/ 뱃지 아이콘
 tests/                   합성 데이터 회귀 테스트 (표준 unittest, 무설치)
-tools/analyze.py       원 클릭 진입점 (분석하기.bat 이 부른다) — 게임 인식·설정 선택·survey·확인
-tools/watchdog.py      메모리 상한을 걸고 실행 (넘으면 프로세스만 죽는다). --tree 로 자식 합산
+tools/analyze.py       원 클릭 진입점 (분석하기.bat 이 부른다) — 게임 인식·설정 선택·survey·
+                       확인 후 `run --only` 로 단계를 나눠 돌리고 각 단계에 상한을 건다
+tools/watchdog.py      메모리 상한을 걸고 실행 (넘으면 프로세스만 죽는다).
+                       프로세스 트리 합산이 기본 — venv 스텁 때문에 필수다(--no-tree 는 진단용)
 tools/verify_baseline.py 실제 APK 기준치 대조
 ```
 
@@ -233,6 +235,21 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   `--split`(한 소스가 88%를 차지하면 4.26→4.52GB), 씬 스트리밍(3.19→3.16GB).
   **효과가 있던 것은 단계 사이 `gc.collect()` 하나다**(5.50→4.51GB). 새 최적화를
   제안하기 전에 어디가 몇 GB인지 먼저 재라.
+- **`watchdog` 의 트리 합산 기본값을 끄지 말 것.** 가상환경의 `.venv\Scripts\python.exe`
+  는 리다이렉터 스텁이라 실제 작업은 **손자 프로세스**가 한다. 대상 하나만 보면 스텁의
+  1MB 만 재고 상한이 영원히 발동하지 않는다 — 실측 스텁 0.001GB / 손자 1.125GB, 보고값
+  `최고 커밋 0.00GB`. v1.27.0 의 기본값이 그랬고, 그래서 감시가 있는데도 PixelFlow 계층
+  단계가 커밋 100GB 를 넘겨 PC 가 응답을 멈췄다. `tests/test_watchdog.py` 가 이걸 지킨다.
+- **무거운 추출을 한 프로세스에 몰지 말 것.** `run --only <산출물>` 로 나눠 부른다
+  (`tools/analyze.py` 가 4단계로 그렇게 한다). 앞 단계 잔여와 다음 단계 할당이 겹쳐
+  피크가 합쳐지고, 한 단계가 폭주하면 그 런의 산출물이 전부 날아간다. **독립 명령
+  (`sprites`/`assets`/`hierarchy`)으로 나누지 말 것** — 그것들은 `--config` 를 안 받아서
+  `max_count`·`categorize`·`max_nodes` 가 기본값(`--max 1000`)으로 떨어져 조용히 잘린다.
+- **PixelFlow 계층은 `typetree` 경로에서 누수가 있다.** 노드 13,684개인데 커밋이
+  평탄해지지 않고 6GB 를 넘긴다(같은 코드가 CookieRun 노드 112,901개를 4.3GB 로 한다).
+  `--no-typetree` 면 0.97GB · 9초에 끝난다 — 필드는 비지만 트리는 온전하다. 원인은
+  .NET 백엔드가 제네릭(`SerializableInterface<T>`·`PlainVar<T>`) 해석에 실패하며 쌓이는
+  것으로 **추정**, 아직 확정 아님. 우리 `hierarchy.py` 쪽은 무죄로 확인됐다.
 - **이름이 대소문자만 다른 스프라이트가 실제로 있다.** 원본이 표기를 혼용한다
   (`IconSnsFacebook`/`IconSnsFaceBook`, `shadow`/`Shadow`). zip 안에서는 다른 파일이지만
   Windows·macOS 는 대소문자를 구분하지 않아 **풀면 나중 것이 앞 것을 덮어써 조용히

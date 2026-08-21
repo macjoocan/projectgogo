@@ -313,12 +313,48 @@ def _write_error_report(out_dir, game, errors, warnings, log):
 
 # ─────────────────────────── run ───────────────────────────
 
-def run(args):
-    cfg = _load_config(args.config)
-    game = cfg.get("game", "levels")
-    log = print
-    log(f"[run] game={game} input={args.input}")
+#: `run` 이 만들 수 있는 산출물 전체 — `--only` 오타를 잡는 데 쓴다.
+_ALL_OUTPUTS = ("xlsx", "html", "zip", "sprites", "assets", "hierarchy")
+#: 레벨 수집·디코딩이 있어야 나오는 산출물. 이게 하나도 없으면 레벨 단계를 건너뛴다.
+_LEVEL_OUTPUTS = ("xlsx", "html", "zip")
 
+
+def _resolve_outputs(cfg, only, log):
+    """설정의 `outputs` 를 `--only` 로 좁힌다.
+
+    **단계를 나눠 돌리기 위한 것이다.** 한 프로세스가 sprites·assets·hierarchy 를
+    연달아 하면 앞 단계의 잔여와 다음 단계의 할당이 겹쳐 커밋 피크가 올라간다
+    (CookieRun 실측 5.50GB). 나눠 부르면 각 프로세스가 자기 단계 피크만 쓴다.
+
+    `--only` 는 **설정 안에서 고르는** 것이다. 설정에 없는 산출물을 켜지는 않는다 —
+    설정에서 일부러 뺀 것이 CLI 인자 하나로 되살아나면 그게 더 놀랍다. 고르다 빠진
+    것은 조용히 넘기지 않고 로그에 남긴다.
+    """
+    outputs = list(cfg.get("outputs") or ["xlsx", "html"])
+    if not only:
+        return outputs
+    want = [o.strip() for o in only.split(",") if o.strip()]
+    unknown = [o for o in want if o not in _ALL_OUTPUTS]
+    if unknown:
+        sys.exit(f"--only 에 모르는 산출물: {', '.join(unknown)}"
+                 f" (가능: {', '.join(_ALL_OUTPUTS)})")
+    picked = [o for o in outputs if o in want]
+    skipped = [o for o in want if o not in outputs]
+    log(f"[run] --only → 이번에 만들 것: {', '.join(picked) or '(없음)'}")
+    if skipped:
+        log(f"[run]   설정의 outputs 에 없어 건너뜀: {', '.join(skipped)}")
+    if not picked:
+        sys.exit("--only 로 고른 산출물이 설정의 outputs 에 하나도 없습니다 "
+                 f"(설정: {', '.join(outputs)})")
+    return picked
+
+
+def _emit_level_outputs(args, cfg, game, outputs, emit, failed, log):
+    """레벨을 수집·디코딩해 xlsx/html/zip 을 만든다. `(errors, warnings)` 를 돌려준다.
+
+    끝에서 레벨 데이터를 놓고 gc 를 돌린다 — 뒤따르는 sprites/assets/hierarchy 는
+    이걸 쓰지 않는데 붙잡고 있으면 Unity 번들 로딩과 겹쳐 커밋이 두 배로 뛴다.
+    """
     result = extract.collect_levels(args.input, cfg["input"])
     records = result.records
     log(f"[input] 레벨 파일 {len(records)}개 발견 ({result.source})")
@@ -334,33 +370,6 @@ def run(args):
     if schema.is_auto(cfg.get("fields")):
         # 장르마다 필드 이름이 다르다 — 손으로 적는 대신 표본에서 뽑는다
         cfg["fields"] = _resolve_auto_fields(records, cfg, log)
-    outputs = cfg.get("outputs") or ["xlsx", "html"]
-    os.makedirs(args.out, exist_ok=True)
-    failed = []
-
-    def emit(label, fn):
-        """산출물 하나를 만든다. 실패해도 나머지는 계속 만든다.
-
-        xlsx를 Excel로 열어둔 채 재실행하는 일이 흔한데, 예전에는 그 PermissionError가
-        런 전체를 중단시켜 뷰어·zip까지 못 나왔다.
-
-        **끝나면 반드시 gc 를 돌린다.** 단계가 끝나도 참조가 끊긴 Unity env 가 곧바로
-        회수되지 않아, 다음 단계의 할당과 겹친다. CookieRun: Crumble 실측으로
-        스프라이트(10,443장) 직후 3.63GB 가 남아 있었고, 이어서 에셋을 돌리면
-        최고 커밋이 **5.50GB** 였다. 사이에 gc 를 넣으면 잔여가 0.74GB 로 떨어져
-        **4.51GB** 로 끝난다 — 1.0GB(18%) 차이다.
-        """
-        try:
-            fn()
-            return True
-        except Exception as e:  # noqa: BLE001
-            hint = (" — 다른 프로그램(Excel 등)에서 열려 있는지 확인하세요"
-                    if isinstance(e, PermissionError) else "")
-            log(f"[{label}] 실패: {e}{hint}")
-            failed.append(label)
-            return False
-        finally:
-            gc.collect()
 
     zpath = os.path.join(args.out, f"{game}_levels_decoded.zip")
     zf = None
@@ -419,12 +428,57 @@ def run(args):
     if zf is not None:
         log(f"[zip] 저장: {zpath} ({os.path.getsize(zpath) / 1e6:.1f}MB)")
 
-    # 여기부터(sprites/assets/hierarchy)는 레벨 데이터를 쓰지 않는다. 그런데도 붙잡고
-    # 있으면 Unity 번들 로딩과 겹쳐 커밋이 두 배로 뛴다 — 레벨 4,500개짜리 게임에서는
-    # 이것만으로 수 GB 다. 뒤에 필요한 건 실패/경고 목록뿐이므로 그것만 남기고 놓는다.
+    # 레벨 데이터를 여기서 놓는다. 뒤따르는 sprites/assets/hierarchy 는 이걸 쓰지
+    # 않는데 붙잡고 있으면 Unity 번들 로딩과 겹쳐 커밋이 두 배로 뛴다 — 레벨
+    # 4,500개짜리 게임에서는 이것만으로 수 GB 다. 필요한 건 실패/경고 목록뿐이다.
     errors, warnings = got.errors, result.warnings
     del got, records, result, plugin, colors, names
     gc.collect()
+    return errors, warnings
+
+
+def run(args):
+    cfg = _load_config(args.config)
+    game = cfg.get("game", "levels")
+    log = print
+    log(f"[run] game={game} input={args.input}")
+
+    outputs = _resolve_outputs(cfg, getattr(args, "only", None), log)
+    os.makedirs(args.out, exist_ok=True)
+    failed = []
+
+    def emit(label, fn):
+        """산출물 하나를 만든다. 실패해도 나머지는 계속 만든다.
+
+        xlsx를 Excel로 열어둔 채 재실행하는 일이 흔한데, 예전에는 그 PermissionError가
+        런 전체를 중단시켜 뷰어·zip까지 못 나왔다.
+
+        **끝나면 반드시 gc 를 돌린다.** 단계가 끝나도 참조가 끊긴 Unity env 가 곧바로
+        회수되지 않아, 다음 단계의 할당과 겹친다. CookieRun: Crumble 실측으로
+        스프라이트(10,443장) 직후 3.63GB 가 남아 있었고, 이어서 에셋을 돌리면
+        최고 커밋이 **5.50GB** 였다. 사이에 gc 를 넣으면 잔여가 0.74GB 로 떨어져
+        **4.51GB** 로 끝난다 — 1.0GB(18%) 차이다.
+        """
+        try:
+            fn()
+            return True
+        except Exception as e:  # noqa: BLE001
+            hint = (" — 다른 프로그램(Excel 등)에서 열려 있는지 확인하세요"
+                    if isinstance(e, PermissionError) else "")
+            log(f"[{label}] 실패: {e}{hint}")
+            failed.append(label)
+            return False
+        finally:
+            gc.collect()
+
+    if any(o in outputs for o in _LEVEL_OUTPUTS):
+        errors, warnings = _emit_level_outputs(
+            args, cfg, game, outputs, emit, failed, log)
+    else:
+        # `--only sprites` 처럼 레벨을 쓰지 않는 산출물만 고른 경우다. 수집·디코딩을
+        # 아예 건너뛴다 — 단계를 나눠 돌릴 때 레벨을 단계마다 다시 풀지 않게 한다.
+        log("[run] 레벨 단계 생략 — 고른 산출물이 레벨 데이터를 쓰지 않습니다")
+        errors, warnings = [], []
 
     if "sprites" in outputs and cfg.get("sprites"):
         from . import sprites as sprites_mod
@@ -709,6 +763,10 @@ def build_parser():
     p.add_argument("--input", required=True, help="apk/xapk/obb/zip 파일 또는 폴더")
     p.add_argument("--out", default="out")
     p.add_argument("--limit", type=int, default=0, help="앞 N개만 처리 (빠른 확인용)")
+    p.add_argument("--only", default=None,
+                   help=f"이 산출물만 만든다 (쉼표 구분: {','.join(_ALL_OUTPUTS)}). "
+                        "설정의 outputs 안에서 고른다. 단계를 나눠 돌려 커밋 피크를 "
+                        "단계별로 낮출 때 쓴다 — tools/analyze.py 가 이걸 쓴다")
     p.set_defaults(func=run)
 
     p = sub.add_parser("inspect", help="샘플 레벨 디코딩 결과 확인")

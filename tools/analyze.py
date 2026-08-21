@@ -7,14 +7,20 @@
   2. `configs/` 에 그 게임 설정이 이미 있으면 그걸 쓴다. 없으면 `fields: auto` 로
      임시 설정을 만들어 쓴다 — 장르를 몰라도 표가 나온다
   3. `survey` 로 규모를 먼저 보고(20초 남짓), **무거운 추출 전에 한 번 물어본다**
-  4. 확인하면 전체 추출 → `out_<게임>\\`
+  4. 확인하면 **단계를 나눠** 추출 → `out_<게임>\\`
 
-**왜 중간에 물어보나:** 전체 추출은 메모리를 4~5GB 쓰고 큰 게임은 30분 넘게 돈다.
-이 PC 에서 과거에 메모리 폭주로 작업이 멈춘 이력이 있어서, 여유를 확인하고 사람이
-한 번 승인하게 둔다. 여유가 모자라면 무엇을 닫아야 하는지 알려준다.
+**왜 중간에 물어보나:** 큰 게임은 30분 넘게 돈다. 여유를 확인하고 사람이 한 번
+승인하게 둔다. 여유가 모자라면 무엇을 닫아야 하는지 알려준다.
+
+**왜 나눠 돌리나:** 레벨·스프라이트·에셋·계층을 한 프로세스에서 연달아 하면 앞
+단계의 잔여와 다음 단계의 할당이 겹쳐 커밋 피크가 합쳐진다. 2026-08-22 에
+PixelFlow 계층 단계에서 커밋이 100GB 를 넘겨 PC 가 응답을 멈춘 일이 있었다.
+이제 단계마다 프로세스를 끊고 `tools/watchdog.py` 로 상한을 걸어, 넘으면 PC 가
+아니라 그 단계만 죽는다. 앞 단계 산출물은 이미 디스크에 남아 있다.
 
 직접 쓰려면:
     python tools/analyze.py <apk|xapk|폴더> [--out <폴더>] [--yes] [--dry-run]
+                            [--cap <GB>] [--no-cap]
 """
 import argparse
 import io
@@ -29,6 +35,88 @@ sys.path.insert(0, ROOT)
 
 #: 전체 추출에 필요한 커밋 여유(GB). 실측 피크가 4.3~4.5GB 라 안전분을 더한 값.
 NEED_FREE_GB = 7.0
+
+#: 단계별 커밋 상한(GB) 기본값. 넘으면 PC 가 아니라 그 단계 프로세스만 죽는다.
+DEFAULT_CAP_GB = 6.0
+
+#: 나눠 돌리는 단계 — (표시 이름, `run --only` 값).
+#:
+#: **한 프로세스에 몰지 않는 이유.** 앞 단계의 잔여 메모리와 다음 단계의 할당이 겹쳐
+#: 커밋 피크가 합쳐진다(CookieRun 실측: 스프라이트 직후 3.63GB 가 남은 채 에셋을
+#: 시작해 5.50GB). 단계마다 프로세스를 끊으면 피크가 '가장 무거운 단계 하나' 로
+#: 내려가고, 한 단계가 폭주해도 나머지 산출물은 이미 디스크에 있다.
+STAGES = (
+    ("레벨 표·뷰어·JSON", "xlsx,html,zip"),
+    ("스프라이트", "sprites"),
+    ("사운드·머티리얼·폰트·Spine", "assets"),
+    ("씬·프리팹 계층", "hierarchy"),
+)
+
+
+def force_utf8_output():
+    """한국어 Windows 콘솔(cp949)에서 '—' 같은 문자로 죽는 것을 막는다.
+
+    `levelscope.cli` 에 같은 함수가 있지만 여기서 다시 쓴다 — 이 스크립트는 진입점이라
+    levelscope 임포트가 깨진 상황에서도 안내 문구를 찍어야 한다. 자식 프로세스는
+    `run_cli` 가 `PYTHONIOENCODING` 으로 따로 처리한다.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, OSError, ValueError):
+            pass
+
+
+def load_watchdog():
+    """`tools/watchdog.py` 모듈. 쓸 수 없으면 None.
+
+    **경로로 직접 읽는다.** `import watchdog` 은 PyPI 의 동명 패키지(파일시스템 감시)를
+    잡을 수 있는데, 그쪽에는 `run(cap, argv)` 가 없어 조용히 엉뚱하게 동작한다.
+    커밋 측정에 psapi/toolhelp 를 쓰므로 Windows 전용이다 — 아니면 상한 없이 돈다.
+    """
+    if os.name != "nt":
+        return None
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "watchdog.py")
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("_levelscope_watchdog", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod if hasattr(mod, "run") else None
+    except Exception:  # noqa: BLE001 - 감시는 선택 사항이다. 없으면 그냥 돈다
+        return None
+
+
+def config_outputs(cfg_path):
+    """설정의 `outputs` 목록. 못 읽으면 None.
+
+    설정에 없는 단계를 헛돌리지 않기 위해 미리 본다 — `run --only hierarchy` 는
+    설정에 hierarchy 가 없으면 오류로 끝나는데, 그건 실패가 아니라 '할 일이 없음' 이다.
+    """
+    try:
+        from levelscope import cli      # ROOT 는 모듈 최상단에서 sys.path 에 넣었다
+        return list(cli._load_config(cfg_path).get("outputs") or ["xlsx", "html"])
+    except SystemExit:                     # 설정 형식 오류는 run 이 다시 보고한다
+        raise
+    except Exception:  # noqa: BLE001 - PyYAML 이 없거나 읽기 실패. 전 단계를 시도한다
+        return None
+
+
+def plan_stages(cfg_path, log=print):
+    """이 설정으로 실제 만들 수 있는 단계만 골라 돌려준다."""
+    outputs = config_outputs(cfg_path)
+    if outputs is None:
+        log("[i] 설정의 outputs 를 미리 읽지 못해 모든 단계를 시도합니다.")
+        return list(STAGES)
+    stages, skipped = [], []
+    for label, only in STAGES:
+        if any(o in outputs for o in only.split(",")):
+            stages.append((label, only))
+        else:
+            skipped.append(label)
+    if skipped:
+        log(f"단계     : {len(stages)}개 실행 · 설정에 없어 제외 — {', '.join(skipped)}")
+    return stages
 
 
 def app_info(path):
@@ -181,11 +269,17 @@ def run_cli(args, log=print):
 
 
 def main():
+    force_utf8_output()
     ap = argparse.ArgumentParser(description="APK 하나로 끝까지 뽑는다")
     ap.add_argument("input", help="apk / xapk / obb / 압축 푼 폴더")
     ap.add_argument("--out", default=None, help="기본: <입력 폴더>\\out_<게임>")
     ap.add_argument("--yes", action="store_true", help="확인 없이 전체 추출까지 진행")
     ap.add_argument("--dry-run", action="store_true", help="무엇을 할지만 보여주고 끝낸다")
+    ap.add_argument("--cap", type=float, default=DEFAULT_CAP_GB,
+                    help=f"단계별 커밋 상한(GB, 기본 {DEFAULT_CAP_GB:g}). 넘으면 PC 가 "
+                         "멈추는 대신 그 단계만 중단된다")
+    ap.add_argument("--no-cap", action="store_true",
+                    help="상한 없이 돌린다 (권장하지 않음 — 과거에 PC 가 멈춘 이력이 있다)")
     a = ap.parse_args()
 
     src = os.path.abspath(a.input)
@@ -225,7 +319,22 @@ def main():
                 print(f"     {n}  {gb}GB")
             print("   (Unity 에디터·ComfyUI·WSL 이 흔한 원인입니다. WSL 은 `wsl --shutdown`)")
 
+    cap = None if a.no_cap else a.cap
+    wd = load_watchdog() if cap else None
+    if cap and wd is None:
+        print("[i] 메모리 상한을 걸 수 없습니다(watchdog 사용 불가) — 상한 없이 돕니다.")
+        cap = None
+    print("상한   : " + (f"단계별 {cap:.1f}GB — 넘으면 PC 가 아니라 그 단계만 중단"
+                         if cap else "없음 (--no-cap)"))
+
     if a.dry_run:
+        # 무엇을 할지 보여주는 게 목적이니 단계 계획까지 보여준다. 설정이 없는
+        # 게임은 임시 설정을 만들어야 알 수 있으므로 기본 단계 목록을 보여준다.
+        stages = plan_stages(cfg) if cfg else list(STAGES)
+        print(f"\n단계   : {len(stages)}개로 나눠 돕니다"
+              + ("" if cfg else " (임시 설정 기준 예상)"))
+        for i, (label, only) in enumerate(stages, 1):
+            print(f"   [{i}/{len(stages)}] {label}   → run --only {only}")
         print("\n--dry-run 이라 여기서 끝냅니다.")
         return
 
@@ -234,14 +343,17 @@ def main():
         cfg = temp_config(out, game)
         print(f"임시 설정 생성: {cfg}")
 
-    print("\n[1/2] survey — 규모·구조 먼저 봅니다 (20초 남짓, 메모리 1GB 안팎)")
+    stages = plan_stages(cfg)
+
+    print("\n[survey] 규모·구조 먼저 봅니다 (20초 남짓, 메모리 1GB 안팎)")
     if run_cli(["survey", "--input", src, "--configs", os.path.join(ROOT, "configs")]) != 0:
         print("\n!! survey 가 실패했습니다. 위 로그를 확인하세요.")
         sys.exit(1)
 
     if not a.yes:
         print("\n" + "-" * 66)
-        print("[2/2] 전체 추출은 게임 크기에 따라 몇 분~30분, 메모리 4~5GB 를 씁니다.")
+        print(f"추출은 {len(stages)}단계로 나눠 돕니다. 게임 크기에 따라 몇 분~30분.")
+        print("단계마다 프로세스를 끊으므로 한 단계가 실패해도 앞 산출물은 남습니다.")
         try:
             if input("계속할까요? (y/N) ").strip().lower() not in ("y", "yes"):
                 print("여기서 멈췄습니다. survey 결과만 보셔도 규모는 파악됩니다.")
@@ -250,15 +362,35 @@ def main():
             print("입력을 받을 수 없어 멈췄습니다. 전체 추출은 --yes 로 실행하세요.")
             return
 
-    rc = run_cli(["run", "--config", cfg, "--input", src, "--out", out])
+    # 단계를 하나씩. 실패해도 다음 단계는 계속한다 — 단계끼리 서로 쓰지 않는다.
+    results = []
+    for i, (label, only) in enumerate(stages, 1):
+        print("\n" + "-" * 66)
+        print(f"[{i}/{len(stages)}] {label}")
+        argv = ["run", "--config", cfg, "--input", src, "--out", out, "--only", only]
+        if cap and wd:
+            rc, peak = wd.run(cap, argv)
+            print(f"[{label}] 최고 커밋 {peak:.2f}GB")
+        else:
+            rc = run_cli(argv)
+        results.append((label, rc))
+        if rc == 9:
+            print(f"\n!! '{label}' 이 상한 {cap:.1f}GB 를 넘어 중단됐습니다. PC 는 안전합니다.")
+            print("   --cap 을 올리거나, 이 단계를 `--source`/`--split` 으로 쪼개세요.")
+
     print("\n" + "=" * 66)
-    if rc == 0:
+    bad = [(label, rc) for label, rc in results if rc != 0]
+    if not bad:
         print(f"완료: {out}")
     else:
-        print(f"일부 산출물이 실패했습니다(종료코드 {rc}). 위 로그와 "
-              f"{os.path.join(out, '*_errors.txt')} 를 보세요.")
+        print(f"단계 {len(results)}개 중 {len(bad)}개 실패:")
+        for label, rc in bad:
+            why = f"상한 초과로 중단(종료코드 {rc})" if rc == 9 else f"종료코드 {rc}"
+            print(f"   - {label}: {why}")
+        print(f"   나머지 산출물은 {out} 에 있습니다. "
+              f"자세한 사유는 {os.path.join(out, '*_errors.txt')}.")
     print("=" * 66)
-    sys.exit(rc)
+    sys.exit(1 if bad else 0)
 
 
 if __name__ == "__main__":
