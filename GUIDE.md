@@ -130,6 +130,16 @@ python -m levelscope hierarchy --input <입력> --out out --game <게임> --max-
 
 - 피크는 **가장 큰 번들 하나를 여는 값**으로 정해진다. `UnityPy.load()` 가 오브젝트
   58만 개를 파싱하는 데 1.83GB 든다. 우리 코드가 얹는 건 0.02GB 뿐이다.
+- **`hierarchy` 는 예외다 — 피크의 대부분이 `typetree` 백엔드 초기화다.** `load_il2cpp`
+  가 백엔드마다 IL2CPP 를 통째로 파싱한다. PixelFlow(libil2cpp 193MB · Unity 6000) 실측
+  AssetRipper 2.86 / AssetStudio 1.38 / AssetsTools 0.70GB. 첫 백엔드만 미리 올리므로
+  (v1.29.0) 폴백이 필요 없는 게임은 2GB 를 아예 내지 않는다. 남은 몫은 **가장 큰 루트
+  하나의 문서**다(PixelFlow 루트 `AB` +2.11GB, 쓰고 나면 회수).
+  **계층의 컴포넌트 필드 값이 필요 없으면 `--no-typetree` 가 정답이다** — PixelFlow 가
+  6GB↑ → **0.97GB · 9초**로 끝난다(트리·이름·타입은 그대로, 필드만 빈다).
+- **`Resource-Exhaustion-Detector`(이벤트 2004)의 "consumed N bytes" 를 커밋으로 읽지
+  말 것.** 그건 **예약 주소 공간**이다 — .NET 백엔드 하나가 커밋 3.16GB 에 예약 259GB 다.
+  이걸 커밋으로 오해해 "100GB 폭주"로 진단한 적이 있다(실제 피크는 6~7GB).
 - **돌리기 전에 여유를 본다.** 커밋 여유가 8GB 미만이면 안 쓰는 Unity 에디터를 닫거나
   `wsl --shutdown` 으로 회수하고 시작한다.
 - 한 번에 **하나만** 돌린다. 여러 단계를 동시에 띄우지 않는다.

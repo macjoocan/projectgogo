@@ -172,10 +172,12 @@ def find_materials(input_path, cfg=None):
 class MonoReader:
     """MonoBehaviour를 typetree로 읽어주는 객체. 실패해도 예외를 밖으로 안 낸다."""
 
-    def __init__(self, generators, log=print, registry=None):
+    def __init__(self, generators, log=print, registry=None, factory=None, backends=None):
         self.registry = registry             # 번들 경계를 넘는 MonoScript 조회용
-        self._gens = generators              # {backend: TypeTreeGenerator}
-        self._order = list(generators)
+        self._gens = dict(generators)        # 이미 올라온 {backend: TypeTreeGenerator}
+        self._factory = factory              # 이름 -> 생성자. None 이면 지연 로드 없음
+        self._order = list(backends or generators)
+        self._dead = set()                   # 만들다 실패한 백엔드 (다시 시도하지 않는다)
         self._nodes = {}                     # (backend, asm, full) -> nodes | None
         self._winner = {}                    # (asm, full) -> backend (성공한 백엔드 기억)
         self.log = log
@@ -206,19 +208,64 @@ class MonoReader:
             f" metadata={_short(labels[1])} ({len(md) / 1e6:.1f}MB) unity={version}")
 
         backends = as_list(cfg.get("backends")) or list(DEFAULT_BACKENDS)
-        gens, errs = {}, []
-        for b in backends:
-            try:
-                g = TypeTreeGenerator(version, b)
-                g.load_il2cpp(so, md)
-                gens[b] = g
-            except Exception as e:  # noqa: BLE001 - 백엔드별로 지원 범위가 다르다
-                errs.append(f"{b}: {e}")
-        if not gens:
+
+        def factory(name):
+            """백엔드 하나를 만든다. **부르는 시점에** IL2CPP 를 파싱한다.
+
+            여기가 비싼 곳이다 — PixelFlow(libil2cpp 193MB · metadata 42MB) 실측으로
+            AssetRipper 2.86GB · AssetStudio 1.38GB · AssetsTools 0.70GB 다.
+            `so`·`md` 는 나중 백엔드를 위해 클로저가 붙잡는다(235MB) — 쓰지도 않을
+            백엔드 하나를 미리 파싱하는 값(GB)보다 훨씬 싸다.
+            """
+            g = TypeTreeGenerator(version, name)
+            g.load_il2cpp(so, md)
+            return g
+
+        reader = cls({}, log=log, registry=registry, factory=factory, backends=backends)
+        errs = reader._warm_first()
+        if not reader._gens:
             raise TypeTreeUnavailable("모든 백엔드 초기화 실패 — " + " / ".join(errs))
-        log(f"[typetree] 백엔드 {list(gens)} 준비"
+        rest = [b for b in backends if b not in reader._gens and b not in reader._dead]
+        log(f"[typetree] 백엔드 {list(reader._gens)} 준비"
+            + (f" · 나머지 {rest} 는 폴백이 필요해지면 로드" if rest else "")
             + (f" (실패: {', '.join(errs)})" if errs else ""))
-        return cls(gens, log=log, registry=registry)
+        return reader
+
+    # ── 백엔드 확보 (지연) ──────────────────────────────────────────
+
+    def _warm_first(self):
+        """첫 백엔드 **하나만** 미리 올린다. 실패 사유 목록을 돌려준다.
+
+        재료(libil2cpp/metadata)가 아예 못 쓰는 것이면 지금 알아야 하므로 하나는
+        올려 본다. 나머지는 `_generator` 가 필요해질 때 올린다 — 백엔드마다 IL2CPP
+        파싱에 GB 단위가 들고, 대부분의 클래스는 첫 백엔드로 읽힌다.
+        """
+        errs = []
+        for name in self._order:
+            if self._generator(name, errs=errs) is not None:
+                break
+        return errs
+
+    def _generator(self, name, errs=None):
+        """백엔드를 돌려준다. 아직 없으면 **지금 만든다.** 못 만들면 None."""
+        if name in self._gens:
+            return self._gens[name]
+        if name in self._dead or self._factory is None:
+            return None
+        try:
+            g = self._factory(name)
+        except Exception as e:  # noqa: BLE001 - 백엔드별로 지원 범위가 다르다
+            self._dead.add(name)
+            if errs is None:
+                self.log(f"[typetree] 백엔드 {name} 초기화 실패 — 건너뜁니다: {e}")
+            else:
+                errs.append(f"{name}: {e}")
+            return None
+        self._gens[name] = g
+        if errs is None:                 # 지연 로드된 것만 알린다 (첫 로드는 open 이 찍는다)
+            self.log(f"[typetree] 백엔드 {name} 추가 로드 —"
+                     " 앞 백엔드가 못 읽는 클래스가 나왔습니다")
+        return g
 
     # ── 노드 확보 ───────────────────────────────────────────────────
 
@@ -226,9 +273,12 @@ class MonoReader:
         key = (backend, ref.assembly, ref.fullname)
         if key in self._nodes:
             return self._nodes[key]
+        gen = self._generator(backend)
+        if gen is None:
+            return None       # 캐시하지 않는다 — 백엔드가 없는 것은 _dead 가 기억한다
         try:
             from UnityPy.helpers.TypeTreeNode import TypeTreeNode
-            raw = self._gens[backend].get_nodes(ref.assembly, ref.fullname)
+            raw = gen.get_nodes(ref.assembly, ref.fullname)
             nodes = TypeTreeNode.from_list(
                 [{"m_Type": n.m_Type, "m_Name": n.m_Name,
                   "m_Level": n.m_Level, "m_MetaFlag": n.m_MetaFlag} for n in raw])

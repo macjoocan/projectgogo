@@ -241,3 +241,126 @@ class OpenReaderDegrades(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class _RecordingAPI:
+    """TypeTreeGeneratorAPI 대역 — 어느 백엔드가 **언제** 만들어졌는지 기록한다."""
+
+    def __init__(self, readable, fail_ctor=()):
+        self.readable = readable          # 클래스 → 노드를 줄 수 있는 백엔드 집합
+        self.fail_ctor = set(fail_ctor)
+        self.built = []                   # 생성자 호출 순서
+        self.loaded = []                  # load_il2cpp 호출 순서 (실제 비용이 드는 곳)
+
+    def TypeTreeGenerator(self, _version, backend):
+        if backend in self.fail_ctor:
+            raise RuntimeError(f"{backend} 초기화 실패")
+        self.built.append(backend)
+        missing = [c for c, bs in self.readable.items() if backend not in bs]
+        gen = _StubGen(backend, missing=missing)
+        gen.load_il2cpp = lambda _so, _md, _b=backend: self.loaded.append(_b)
+        return gen
+
+
+def _mono_obj(cls):
+    """MonoBehaviour 대역 — 노드를 받기만 하면 읽어낸다.
+
+    백엔드 선택이 오직 '노드를 줄 수 있는가'로만 결정되게 해서, 지연 로드가
+    필요한 시점을 정확히 짚는다.
+    """
+    script = types.SimpleNamespace(m_ClassName=cls, m_Namespace="", m_AssemblyName="x.dll")
+    o = FakeObj("MonoBehaviour", 1, FakeFile("f"))
+
+    def _read_typetree(nodes=None):
+        if nodes is None:
+            raise ValueError("typetree 없음")
+        return {"ok": cls, "via": str(nodes.m_Name).split(":")[-1]}
+
+    o.read_typetree = _read_typetree
+    o.read = lambda check_read=True: types.SimpleNamespace(
+        m_Script=types.SimpleNamespace(deref=lambda: types.SimpleNamespace(
+            read=lambda: script)))
+    return o
+
+
+class LazyBackendLoad(unittest.TestCase):
+    """백엔드는 **필요할 때** 하나씩 올린다.
+
+    셋을 미리 다 올리면 IL2CPP 를 세 번 파싱한다. PixelFlow(libil2cpp 193MB ·
+    metadata 42MB · Unity 6000) 실측으로 AssetRipper 2.86GB + AssetStudio 1.38GB +
+    AssetsTools 0.70GB = **4.94GB 가 아무것도 읽기 전에** 든다 — 계층 순회 자체는
+    0.97GB 다. 그래서 첫 백엔드만 올리고 나머지는 폴백이 필요해질 때 올린다.
+    """
+
+    BACKENDS = ["A", "B", "C"]
+
+    def _open(self, api, backends=None):
+        import sys as _sys
+        had = "TypeTreeGeneratorAPI" in _sys.modules
+        old_mod = _sys.modules.get("TypeTreeGeneratorAPI")
+        old_fm = typetree.find_materials
+        _sys.modules["TypeTreeGeneratorAPI"] = api
+        typetree.find_materials = lambda *_a, **_k: (b"so", b"md", ("so", "md"))
+        try:
+            return typetree.MonoReader.open(
+                "in.apk", {"backends": backends or self.BACKENDS}, "2022.3.1f1",
+                log=lambda *_: None)
+        finally:
+            typetree.find_materials = old_fm
+            if had:
+                _sys.modules["TypeTreeGeneratorAPI"] = old_mod
+            else:
+                del _sys.modules["TypeTreeGeneratorAPI"]
+
+    def test_open_loads_only_the_first_backend(self):
+        api = _RecordingAPI({"Image": {"A", "B", "C"}})
+        self._open(api)
+        self.assertEqual(api.built, ["A"])
+        self.assertEqual(api.loaded, ["A"], "IL2CPP 를 한 번만 파싱해야 한다")
+
+    def test_second_backend_loads_only_when_the_first_cannot_read(self):
+        api = _RecordingAPI({"Image": {"A"}, "I2.Loc.Localize": {"B"}})
+        reader = self._open(api)
+
+        reader.read(_mono_obj("Image"))                  # A 로 해결 → 추가 로드 없음
+        self.assertEqual(api.loaded, ["A"])
+
+        cls, tree = reader.read(_mono_obj("I2.Loc.Localize"))
+        self.assertEqual(tree["via"], "B")
+        self.assertEqual(api.loaded, ["A", "B"])
+        self.assertNotIn("C", api.loaded, "B 로 해결됐으면 C 는 올리지 않는다")
+
+    def test_all_backends_load_when_nothing_can_read(self):
+        api = _RecordingAPI({"Mystery": set()})
+        reader = self._open(api)
+        cls, tree = reader.read(_mono_obj("Mystery"))
+        self.assertIsNone(tree)
+        self.assertEqual(api.loaded, ["A", "B", "C"])    # 다 시도해야 실패라고 말할 수 있다
+
+    def test_lazy_backend_that_fails_to_build_is_skipped_and_not_retried(self):
+        api = _RecordingAPI({"Only C": {"C"}}, fail_ctor=["B"])
+        reader = self._open(api)
+        for _ in range(3):
+            cls, tree = reader.read(_mono_obj("Only C"))
+            self.assertEqual(tree["via"], "C")
+        self.assertEqual(api.built, ["A", "C"])          # B 는 한 번만 시도하고 포기
+
+    def test_open_raises_when_no_backend_can_be_built(self):
+        api = _RecordingAPI({}, fail_ctor=["A", "B", "C"])
+        with self.assertRaises(typetree.TypeTreeUnavailable) as e:
+            self._open(api)
+        self.assertIn("초기화 실패", str(e.exception))
+
+    def test_open_skips_a_broken_first_backend(self):
+        api = _RecordingAPI({"Image": {"B"}}, fail_ctor=["A"])
+        reader = self._open(api)
+        self.assertEqual(api.loaded, ["B"])
+        self.assertEqual(reader.read(_mono_obj("Image"))[1]["via"], "B")
+
+    def test_winner_is_remembered_so_the_first_backend_is_not_retried(self):
+        api = _RecordingAPI({"I2.Loc.Localize": {"B"}})
+        reader = self._open(api)
+        reader.read(_mono_obj("I2.Loc.Localize"))
+        before = dict(reader._nodes)
+        reader.read(_mono_obj("I2.Loc.Localize"))
+        self.assertEqual(reader._nodes, before, "캐시가 있으면 get_nodes 를 다시 부르지 않는다")

@@ -238,18 +238,28 @@ tools/verify_baseline.py 실제 APK 기준치 대조
 - **`watchdog` 의 트리 합산 기본값을 끄지 말 것.** 가상환경의 `.venv\Scripts\python.exe`
   는 리다이렉터 스텁이라 실제 작업은 **손자 프로세스**가 한다. 대상 하나만 보면 스텁의
   1MB 만 재고 상한이 영원히 발동하지 않는다 — 실측 스텁 0.001GB / 손자 1.125GB, 보고값
-  `최고 커밋 0.00GB`. v1.27.0 의 기본값이 그랬고, 그래서 감시가 있는데도 PixelFlow 계층
-  단계가 커밋 100GB 를 넘겨 PC 가 응답을 멈췄다. `tests/test_watchdog.py` 가 이걸 지킨다.
+  `최고 커밋 0.00GB`. v1.27.0 의 기본값이 그랬고, 그래서 감시가 있는데도 2026-08-22 에
+  PC 가 응답을 멈췄다. `tests/test_watchdog.py` 가 이걸 지킨다.
 - **무거운 추출을 한 프로세스에 몰지 말 것.** `run --only <산출물>` 로 나눠 부른다
   (`tools/analyze.py` 가 4단계로 그렇게 한다). 앞 단계 잔여와 다음 단계 할당이 겹쳐
   피크가 합쳐지고, 한 단계가 폭주하면 그 런의 산출물이 전부 날아간다. **독립 명령
   (`sprites`/`assets`/`hierarchy`)으로 나누지 말 것** — 그것들은 `--config` 를 안 받아서
   `max_count`·`categorize`·`max_nodes` 가 기본값(`--max 1000`)으로 떨어져 조용히 잘린다.
-- **PixelFlow 계층은 `typetree` 경로에서 누수가 있다.** 노드 13,684개인데 커밋이
-  평탄해지지 않고 6GB 를 넘긴다(같은 코드가 CookieRun 노드 112,901개를 4.3GB 로 한다).
-  `--no-typetree` 면 0.97GB · 9초에 끝난다 — 필드는 비지만 트리는 온전하다. 원인은
-  .NET 백엔드가 제네릭(`SerializableInterface<T>`·`PlainVar<T>`) 해석에 실패하며 쌓이는
-  것으로 **추정**, 아직 확정 아님. 우리 `hierarchy.py` 쪽은 무죄로 확인됐다.
+- **`typetree` 비용은 누수가 아니라 백엔드 초기화 고정비다.** `load_il2cpp` 는 백엔드마다
+  IL2CPP 를 통째로 파싱한다 — PixelFlow(libil2cpp 193MB · metadata 42MB · Unity 6000)
+  실측 **AssetRipper 2.86 / AssetStudio 1.38 / AssetsTools 0.70GB = 4.94GB** 가
+  *아무것도 읽기 전에* 든다. 그래서 `MonoReader` 는 **첫 백엔드만 올리고 나머지는 폴백이
+  필요해질 때** 올린다(`_warm_first` / `_generator`). 이 지연 로드를 되돌리지 말 것.
+  읽기 루프는 평탄하다(실측 read 500→2500 구간 5.81→5.84GB, 노드 캐시 196개) — 캐시가
+  `(백엔드, 클래스)` 단위라 `get_nodes` 는 클래스마다 한 번뿐이다.
+  나머지 피크는 **가장 큰 루트 하나의 문서**다(PixelFlow 루트 `AB` 가 +2.11GB, 쓰고 나면
+  회수). typetree 를 켜면 컴포넌트마다 필드 값이 실려서 `--no-typetree`(0.97GB · 9초)와
+  크게 갈린다. 계층 필드가 필요 없으면 `--no-typetree` 가 정답이다.
+- **.NET 백엔드는 주소 공간을 크게 예약한다 — 이걸 커밋으로 읽지 말 것.** 실측: 백엔드
+  하나를 올리면 커밋 3.16GB인데 **예약은 259GB** 다(.NET GC 리전). Windows
+  `Resource-Exhaustion-Detector` ID 2004 가 찍는 "consumed N bytes"는 이 **예약**이라
+  109GB 같은 숫자가 나온다. 커밋 한도가 38GB인 PC에서 109GB 커밋은 애초에 불가능하다 —
+  실제 피크는 6~7GB 였다. 사고의 원인은 이 숫자가 아니라 **한 프로세스에 다 몰아넣은 것**.
 - **이름이 대소문자만 다른 스프라이트가 실제로 있다.** 원본이 표기를 혼용한다
   (`IconSnsFacebook`/`IconSnsFaceBook`, `shadow`/`Shadow`). zip 안에서는 다른 파일이지만
   Windows·macOS 는 대소문자를 구분하지 않아 **풀면 나중 것이 앞 것을 덮어써 조용히
