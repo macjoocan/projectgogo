@@ -34,3 +34,6 @@ configs/icons/**/*.webp
 configs/_suggested_*.yaml
 # tools/fbnames_from_dump.py 가 생성하는 이름 지도 중간물 — 확정본은 게임 yaml 안에 인라인한다
 configs/_names_*.yaml
+
+# 설치.bat 이 만드는 가상환경
+.venv/
