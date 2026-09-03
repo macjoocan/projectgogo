@@ -184,11 +184,60 @@ print(struct.unpack_from('<II', d)[1])"
 다만 번들이 타입트리를 자체적으로 품고 있으면 IL2CPP 없이도 98% 넘게 읽힌다 — 먼저
 `기본 읽기로 x/y` 줄을 확인한다.
 
+**소스가 몇 개 안 잡히는데 파일은 크다**
+
+번들이 **한 파일에 여러 개 이어붙어** 있는 배포다. `survey` 가 이렇게 말해 준다:
+
+```
+[concat] assets/aa/Android/inpackage_aa_1.lpak — 번들 1,369개가 이어붙어 있습니다
+         (113,816,320B, 그냥 열면 첫 번들만 읽힙니다)
+```
+
+이 줄이 **없는데** 큰 파일이 `오브젝트 16` 처럼 터무니없이 적게 잡히면 손으로 본다 —
+앞 8바이트가 `UnityFS\0` 이고 헤더의 크기 필드(앞 64바이트 안)가 파일 크기보다 훨씬
+작으면 이어붙인 것이다. `concat.segments()` 로 확인한다. 세그먼트 합계가 파일 크기와
+정확히 같아야 하고, 안 맞으면 펼치지 않는다.
+
+**엔진 버전이 `0.0.0` 으로 나온다**
+
+번들 헤더의 버전이 지워진 것이다(Unity 는 빈 문자열이 아니라 `0.0.0` 을 넣는다).
+같은 빌드의 다른 소스가 진짜 버전을 들고 있으니 `discover` 가 폴백으로 심는다.
+**소스를 하나만 주는 경우(`--split`, `--source`)는 배울 데가 없다** — `--unity-version`
+으로 직접 넘긴다. 안 넘기면 `No valid Unity version found` 로 그 소스가 통째로 빠진다.
+
 **번들 해시 이름이 뭔지 모르겠다**
 
-Addressables 카탈로그를 해독하면 원본 프로젝트 경로가 나온다. `catalog.json`(구형)과
-`catalog.bin`(Addressables 1.21+ / Unity 2023+) 둘 다 읽는다. 바이너리 쪽은
-`pip install addressablestools` 가 있어야 매핑까지 풀린다(없으면 문자열 목록만).
+Addressables 카탈로그를 해독하면 원본 프로젝트 경로가 나온다. 위치가 세 갈래다 —
+`catalog.json`(구형) · `catalog.bin`(Addressables 1.21+ / Unity 2023+) ·
+**`catalog.bundle`**(카탈로그를 Unity 번들 안 TextAsset 으로 한 번 더 싼 것).
+`catalog.bin` 은 `pip install addressablestools` 가 있어야 매핑까지 풀린다.
+
+`addressablestools` 가 `UnsupportedCatalogVersionError` 를 내면 **스튜디오 자체
+포맷**이다. 그래도 포기하지 않는다 — `flatbuf`(스키마 없는 FlatBuffers 해독기)로
+문자열 벡터에서 경로를 건진다(Clash of Critters: 루트 테이블
+`AddressablesMainContentCatalog`, 경로 12,945개). 슬롯 이름은 모르므로 **주소↔번들
+매핑은 만들지 않고** 경로 목록만 쓴다.
+
+**스프라이트 이름이 죄다 알아볼 수 없다 (`기타` 가 절반 넘는다)**
+
+기본 분류 규칙은 CookieRun 이름에서 뽑은 것이라 다른 게임의 약어를 모른다. 게임이
+체계적으로 이름을 붙였는지 먼저 본다 — 접두어와 **두 번째 토큰**의 분포를 세면
+바로 보인다.
+
+Clash of Critters 는 `<tx|sp|pb|tl><ui|sc|vx|fx|ch>_<도메인>_<이름>` 이었고, 사람이
+찾는 축은 시각 종류가 아니라 **도메인**(playerhead 906 · pet 788 · homestead 605 …)
+이었다. 도메인 규칙을 `sprites.categories` 에 넣으니 `기타` 가 4,692 → 129장
+(65% → 1.8%)이 됐다.
+
+규칙을 시험할 때는 **`recategorize` 를 쓴다** — zip 안 이름만 바꾸므로 APK 를 다시
+읽지 않고 몇 초면 끝난다. 개수 분포가 바로 나오니 규칙을 여기서 다듬는다.
+
+```bash
+python -m levelscope recategorize --zip out/<게임>_sprites.zip --config configs/<게임>.yaml
+```
+
+**큰 버킷은 표본을 눈으로 확인한다.** 이름만 보고 라벨을 붙였다가 아이콘을 엉뚱하게
+매칭한 사고가 있었다. 라벨의 근거(무엇을 보고 그렇게 판단했는지)를 설정에 적어 둔다.
 
 **콘텐츠가 APK 에 없다**
 

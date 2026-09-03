@@ -10,12 +10,14 @@ import json
 import os
 import sys
 import tempfile
+import types
 import unittest
 import zipfile
 
 from levelscope import cli
 
 from .helpers import jbytes, level, make_zip_bytes, write_zip
+from unittest import mock
 
 PLUGIN_SRC = '''
 ENTITY_SHEET = {"name": "Things", "headers": ["set", "level", "kind"]}
@@ -444,10 +446,6 @@ class Parser(unittest.TestCase):
         self.assertEqual(args.limit, 0)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class ResolveOutputs(unittest.TestCase):
     """`--only` — 설정의 outputs 를 좁힌다. 넓히지는 않는다."""
 
@@ -541,3 +539,56 @@ class RunOnly(RunEndToEnd):
              zipfile.ZipFile(os.path.join(split, "TestGame_levels_decoded.zip")) as b:
             self.assertEqual(sorted(a.namelist()), sorted(b.namelist()))
             self.assertEqual(a.read("levels/set1/2.json"), b.read("levels/set1/2.json"))
+
+
+class EmitResourcesWithoutLevels(unittest.TestCase):
+    """레벨이 APK 에 없어도 리소스 단계는 돌아야 한다.
+
+    콘텐츠를 서버에서 받는 런처 빌드가 실제로 있다(CookieRun: Crumble, ninja.sky.fight).
+    예전에는 레벨 수집이 FileNotFoundError 를 내면 런 전체가 죽어 스프라이트·에셋·계층을
+    하나도 못 얻었다.
+    """
+
+    def _args(self, out="out"):
+        return types.SimpleNamespace(input="game.apk", out=out, config="c.yaml", limit=None)
+
+    def test_runs_only_requested_stages(self):
+        called = []
+        cfg = {"sprites": {"sources": "auto"}, "hierarchy": {"sources": "auto"},
+               "outputs": ["sprites", "hierarchy"]}
+        with mock.patch.object(cli, "_emit_resources", wraps=cli._emit_resources),              mock.patch("levelscope.sprites.extract_sprites",
+                        side_effect=lambda *a, **k: called.append("sprites")),              mock.patch("levelscope.hierarchy.extract_hierarchy",
+                        side_effect=lambda *a, **k: called.append("hierarchy")),              mock.patch("levelscope.assets.extract_assets",
+                        side_effect=lambda *a, **k: called.append("assets")):
+            failed = cli._emit_resources(self._args(), cfg, "G",
+                                         outputs=["sprites", "hierarchy"],
+                                         log=lambda *_: None)
+        self.assertEqual(called, ["sprites", "hierarchy"])
+        self.assertEqual(failed, [])
+
+    def test_one_stage_failing_does_not_stop_the_rest(self):
+        called = []
+        # 빈 dict 은 "설정 없음"으로 건너뛴다(기존 동작) — 내용을 넣어야 실행된다
+        cfg = {"sprites": {"sources": "auto"}, "assets": {"sources": "auto"},
+               "outputs": ["sprites", "assets"]}
+        with mock.patch("levelscope.sprites.extract_sprites",
+                        side_effect=RuntimeError("boom")),              mock.patch("levelscope.assets.extract_assets",
+                        side_effect=lambda *a, **k: called.append("assets")):
+            failed = cli._emit_resources(self._args(), cfg, "G",
+                                         outputs=["sprites", "assets"],
+                                         log=lambda *_: None)
+        self.assertEqual(called, ["assets"])
+        self.assertEqual(failed, ["sprites"])
+
+    def test_stage_without_config_section_is_skipped(self):
+        called = []
+        with mock.patch("levelscope.sprites.extract_sprites",
+                        side_effect=lambda *a, **k: called.append("sprites")):
+            failed = cli._emit_resources(self._args(), {"outputs": ["sprites"]}, "G",
+                                         outputs=["sprites"], log=lambda *_: None)
+        self.assertEqual(called, [])
+        self.assertEqual(failed, [])
+
+
+if __name__ == "__main__":
+    unittest.main()

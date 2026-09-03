@@ -139,16 +139,11 @@ def script_ref(obj, registry=None):
 
 
 def detect_unity_version(env):
-    """번들 안 SerializedFile에서 Unity 버전 문자열 (예: '2021.3.42f1')."""
-    for f in getattr(env, "files", {}).values():
-        v = getattr(f, "unity_version", None)
-        if v:
-            return v
-        for sf in getattr(f, "files", {}).values():
-            v = getattr(sf, "unity_version", None)
-            if v:
-                return v
-    return None
+    """번들 안 SerializedFile에서 Unity 버전 문자열 (예: '2021.3.42f1').
+
+    자리표시자(`0.0.0`)는 버전이 없는 것으로 본다 — `unity.is_real_version` 참고.
+    """
+    return unity.detect_version(env)
 
 
 def find_materials(input_path, cfg=None):
@@ -194,6 +189,26 @@ class MonoReader:
         cfg = cfg or {}
         if cfg.get("enabled") is False:
             raise TypeTreeUnavailable("typetree.enabled=false")
+        # TypeTreeGeneratorAPI(.NET)는 capstone.dll 을 DllImport 로 부르는데, Python
+        # 3.8+ 는 PATH 를 DLL 검색에서 무시하므로 패키지 폴더를 명시적으로 등록해야
+        # 한다. 안 하면 "Unable to load DLL 'capstone'" 으로 백엔드가 통째로 죽고,
+        # 그게 metadata 암호화로 오진되기 쉽다(실제로 20 Minutes Till Dawn 에서 이
+        # 때문에 정상 metadata 인데도 타입트리 복원이 2.8% 로 떨어졌다).
+        # os.add_dll_directory 는 Win32 LoadLibrary 용이라 .NET Core 의 native DLL
+        # 검색(어셈블리 폴더/AppContext base)에는 안 먹혔다. 확실한 방법은 capstone.dll
+        # 을 파이썬 실행 파일 폴더에 복사하는 것 — .NET 이 그 base directory 를 본다.
+        try:
+            import importlib.util
+            import shutil
+            spec = importlib.util.find_spec("TypeTreeGeneratorAPI")
+            if spec and spec.submodule_search_locations:
+                pkg = spec.submodule_search_locations[0]
+                cap = os.path.join(pkg, "capstone.dll")
+                dst = os.path.join(os.path.dirname(sys.executable), "capstone.dll")
+                if os.path.exists(cap) and not os.path.exists(dst):
+                    shutil.copy2(cap, dst)
+        except Exception:  # noqa: BLE001 - 복사 실패해도 아래 import 를 그대로 시도한다
+            pass
         try:
             from TypeTreeGeneratorAPI import TypeTreeGenerator
         except ImportError as e:

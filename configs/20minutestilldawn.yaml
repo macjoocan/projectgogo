@@ -1,0 +1,22 @@
+# 20 Minutes Till Dawn (com.Flanne.MinutesTillDawn...) v8.3 — flanne · 로그라이크 슈터
+# Unity 2022.3.56f1 · IL2CPP · Addressables(개별 serialized 에셋 다수)
+# 암호화 없음. localization 은 평문 CSV. 밸런스는 MonoBehaviour 컴포넌트 + assets/*.json.
+game: 20MinutesTillDawn
+package: com.Flanne.MinutesTillDawn.roguelike.shooting.fr.gp
+input: {}
+codec: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 20000
+  categorize: true
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 20000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+outputs: [sprites, assets, hierarchy]

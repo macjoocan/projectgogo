@@ -1,0 +1,57 @@
+# Cat Gunner (com.Chodun.CatGunner) v1.1.59 — Chodun · 방치형 슈터 RPG
+# Unity 6000.0.61f1 · IL2CPP · 단일 번들 data.unity3d
+#
+# 암호화·이어붙이기 없음. data.unity3d 하나에 오브젝트 150,873개.
+#
+# **밸런스 데이터가 별도 파일이 아니라 MonoBehaviour 컴포넌트에 박혀 있다.**
+# TextAsset 33개는 Spine 애니메이션(.atlas/skeleton)·IAP 카탈로그·Unity 내장뿐.
+# 스탯은 컴포넌트 필드에 있다 — Enemy×1933 · Gun×345 · Monster×240 · Ore×1000 ·
+# Tree×501 · Bullet_Mesh×1215 등. 그래서 이 게임의 핵심 산출물은 **계층(hierarchy)**
+# 이고, 컴포넌트 필드 복원(fields: full)이 관건이다.
+#
+# 계층이 무겁다 — 15만 오브젝트 단일 번들이라 트리 구축에 8GB 안팎. 워치독 --cap 12
+# 로 돌린다(실측 피크는 아래 기준치 참고).
+
+game: CatGunner
+package: com.Chodun.CatGunner
+
+# 레벨 파일이 없다(밸런스는 컴포넌트에). run 은 리소스 단계만 돌린다.
+input: {}
+
+codec: auto
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 20000
+  categorize: true
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 20000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+
+# 3D/2D 슈터라 보드형 그리드 뷰어(html)는 뺀다.
+outputs: [sprites, assets, hierarchy]
+
+# ── 밸런스: 암호화된 metadata 뒤에 있다 (2026-09-03 확인) ────────────────
+# 계층 추출 시 컴포넌트 필드 복원이 6.3%뿐이다. global-metadata.dat 가 암호화돼
+# (magic e0dff16c, 정상 AF1BB1FA) IL2CPP 백엔드가 다 실패한다. 다만 Clash of
+# Critters 와 달리 **libil2cpp.so 는 평문**(패킹 안 됨)이고, metadata 도 **앞 3.3MB
+# (0x329140)만 암호화** — 헤더 + 문자열 리터럴. 나머지 14.6MB(typeDefinitions·
+# 필드/타입 이름)는 평문이다. 암호는 스트림/블록(ECB 아님)이라 known-plaintext 불가.
+# 헤더 없이 직접 파싱은 비표준 구조 탓에 정확도 34% 한계로 실패.
+# 재개 경로: Qiling(arm64)으로 il2cpp_init(@VA 0x290e700) 에뮬레이션 → 복호화된
+# metadata 덤프 → Il2CppDumper. 상세는 메모리 catgunner-encrypted-metadata /
+# il2cpp-emulation-toolkit. (주말 시도 예정)
+
+notes:
+  - "밸런스는 MonoBehaviour 컴포넌트에 박혀 있다 — 계층이 핵심 산출물"
+  - "data.unity3d 헤더 버전은 6000.0.51f1, 실제 감지 6000.0.61f1 (미세 불일치)"
+  - "밸런스 필드는 암호화된 global-metadata.dat 뒤 — 에뮬레이션 필요(위 주석 참고)"

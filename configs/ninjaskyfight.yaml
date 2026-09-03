@@ -1,0 +1,39 @@
+# ninja.sky.fight — Unity 2019.4.8f1 · IL2CPP · 3D 절단/파괴 물리 게임
+#
+# **레벨 데이터가 APK 에 없다.** 27MB 런처 빌드로 씬 1개·Sprite 13장뿐이고 콘텐츠는
+# 실행 시 서버에서 받는다. 그래서 levels_glob 이 아무것도 못 잡고, run 은 리소스
+# 단계(sprites/assets/hierarchy)만 돌린다 — 정상이다.
+#
+# APK 는 360 Jiagu 로 보호돼 있지만(`assets/libjiagu_a64.so`) dex 계층만이고
+# Unity 에셋은 멀쩡하다 — global-metadata 매직·버전(24) 정상 확인.
+#
+# 계층 컴포넌트 필드 복원은 11.8%(67/567)다. 패커 탓이 아니라 백엔드가 못 읽는
+# 클래스군 때문이다 — ProBuilderMesh 228 · HoldingObject 46 · Trigger 38 ·
+# SlicedObject 27 · ShatterTool 27 이 실패 500건의 대부분이다.
+game: NinjaSkyFight
+package: ninja.sky.fight
+
+input:
+  levels_glob: "assets/**/*.json"
+  set_from: parent_dir
+  level_id_from: stem
+
+codec: auto
+fields: auto
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 40000
+  categorize: true
+
+assets:
+  sources: auto
+  max_count: 40000
+
+hierarchy:
+  sources: auto
+  fields: full
+  max_nodes: 300000
+
+outputs: [xlsx, zip, sprites, assets, hierarchy]

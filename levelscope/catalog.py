@@ -19,9 +19,16 @@ Addressables를 쓰는 게임의 번들 이름은 `room10__a259fe9091a05b92773fd
 포기하고 `m_InternalIds` 목록만 쓴다 (그것만으로도 번들·에셋 경로는 읽을 수 있다).
 잘못 푼 매핑으로 이름을 붙이는 건 이름을 안 붙이는 것보다 나쁘다.
 
-`catalog.json`(구형)과 `catalog.bin`(Addressables 1.21+/Unity 2023+)을 모두 읽는다.
-바이너리 쪽은 선택 의존성 `addressablestools` 가 있을 때만 매핑까지 풀고, 없으면
-문자열 목록만 낸다.
+포맷이 세 갈래다.
+
+1. `catalog.json` — 구형. 위에 적은 방식으로 직접 푼다.
+2. `catalog.bin` — Addressables 1.21+ / Unity 2023+. 선택 의존성
+   `addressablestools` 가 있을 때만 매핑까지 풀고, 없으면 문자열 목록만 낸다.
+3. **`catalog.bundle` 안 TextAsset** — 카탈로그를 Unity 번들로 한 번 더 싼 것.
+   내용이 Unity 표준 바이너리가 아니라 **게임 고유 FlatBuffers** 인 경우가 있다
+   (Clash of Critters: 루트 테이블 `AddressablesMainContentCatalog`). 이때는
+   `flatbuf` 로 풀어 문자열 벡터에서 경로를 건진다 — 실측 13,001개
+   (`Assets/Res/Audio/...`, `Assets/Res/UI/...`).
 
     cat = load_catalog(apk)
     cat.addresses_for("room10__a259fe9091a05b92773fd5c141a7db0a.bundle")
@@ -35,9 +42,15 @@ import struct
 
 from . import container
 
-#: 카탈로그 위치 후보
+#: 카탈로그 위치 후보.
+#:
+#: `catalog.bundle` 은 **카탈로그를 Unity 번들 안 TextAsset 으로 싸서** 넣은 것이다
+#: (Clash of Critters: `assets/aa/catalog.bundle` 안 `catalog` TextAsset 5.7MB).
+#: 이 경로를 안 보면 카탈로그가 있는데도 "카탈로그 없음"이 되고, 추출한 아트에
+#: 원본 프로젝트 경로를 붙일 수 없다.
 CATALOG_GLOB = ["assets/aa/*/catalog.json", "*/catalog.json", "catalog.json",
-                "assets/aa/*/catalog.bin", "*/catalog.bin"]
+                "assets/aa/*/catalog.bin", "*/catalog.bin",
+                "assets/aa/catalog.bundle", "*/catalog.bundle"]
 
 #: ContentCatalogData 의 엔트리 하나는 int32 7개다
 _ENTRY_SIZE = 28
@@ -181,8 +194,17 @@ def load_catalog(input_path, globs=None, log=print):
     if data is None:
         raise CatalogUnavailable(f"카탈로그 없음 (탐색: {pats})")
 
-    if label.lower().endswith(".bin"):
+    if label.lower().endswith(".bundle"):
+        inner = _unwrap_bundle(data, label, log)
+        if inner is None:
+            raise CatalogUnavailable(
+                f"{label}: 번들 안에서 카탈로그 TextAsset 을 찾지 못했습니다")
+        data = inner
+
+    if label.lower().endswith((".bin", ".bundle")):
         cat = _binary_catalog(data, label, log)
+        if cat is None:
+            cat = _flatbuffers_catalog(data, label, log)
         if cat is not None:
             return cat
         # 폴백: 읽을 수 있는 문자열만 건져 목록으로 낸다 — 매핑은 못 하지만
@@ -233,6 +255,113 @@ def _plain_id(s):
         if end != -1:
             s = s[end + 1:].lstrip("/\\")
     return s
+
+def _unwrap_bundle(data, label, log):
+    """`catalog.bundle` → 안에 든 카탈로그 TextAsset bytes. 못 찾으면 None.
+
+    이름이 `catalog` 인 TextAsset 을 먼저 찾고, 없으면 **가장 큰** TextAsset 을
+    쓴다. 번들 안에 폰트 아틀라스 같은 다른 TextAsset 이 섞여 있을 수 있어서
+    이름을 우선한다.
+    """
+    from . import unity
+    best = None
+    try:
+        with unity.load_bytes(data, suffix=".bundle") as env:
+            for o in unity.iter_objects(env, ["TextAsset"]):
+                try:
+                    d = unity.read_obj(o)
+                except Exception:  # noqa: BLE001 - 못 읽는 엔트리는 넘긴다
+                    continue
+                raw = getattr(d, "m_Script", None)
+                if raw is None:
+                    continue
+                blob = (raw.encode("utf-8", "surrogateescape")
+                        if isinstance(raw, str) else bytes(raw))
+                name = str(getattr(d, "m_Name", "") or "")
+                if name.lower() == "catalog":
+                    log(f"[catalog] {label}: 번들 안 TextAsset 'catalog' "
+                        f"{len(blob):,}B 를 씁니다")
+                    return blob
+                if best is None or len(blob) > len(best[1]):
+                    best = (name, blob)
+    except unity.UnityUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 - 번들이 안 열리면 카탈로그가 아닌 것으로 본다
+        log(f"[catalog] {label}: 번들을 열지 못했습니다 ({e!r})")
+        return None
+    if best:
+        log(f"[catalog] {label}: 'catalog' 이름이 없어 가장 큰 TextAsset "
+            f"'{best[0]}' {len(best[1]):,}B 를 씁니다")
+        return best[1]
+    return None
+
+
+#: FlatBuffers 카탈로그에서 경로로 인정할 최소 개수.
+#: 이보다 적으면 엉뚱한 문자열을 경로로 착각한 것으로 보고 포기한다.
+_FB_MIN_PATHS = 20
+
+
+def _flatbuffers_catalog(data, label, log):
+    """게임 고유 FlatBuffers 카탈로그 → Catalog. 아니거나 못 풀면 None.
+
+    Unity 표준이 아니라 스튜디오가 직접 만든 카탈로그다(Clash of Critters:
+    루트 테이블 이름이 `AddressablesMainContentCatalog`). 스키마가 없으니
+    필드 이름은 못 얻고, **문자열 벡터에서 경로를 건지는 것까지** 한다.
+
+    주소 ↔ 번들 매핑은 하지 않는다 — 슬롯 의미를 모르는 상태에서 매핑을 지어내면
+    잘못 푼 이름을 붙이게 되고, 그건 이름을 안 붙이는 것보다 나쁘다(모듈 독스트링).
+    경로 목록만으로도 추출물에 원본 폴더를 붙일 수 있다.
+    """
+    try:
+        from . import flatbuf
+    except Exception:  # noqa: BLE001
+        return None
+    if not flatbuf.looks_like(data):
+        return None
+    try:
+        doc = flatbuf.decode(data)
+    except Exception as e:  # noqa: BLE001 - FlatBuffers 가 아니었던 것으로 본다
+        log(f"[catalog] {label}: FlatBuffers 해독 실패 ({e!r})")
+        return None
+
+    ids, root = [], None
+    def walk(v, depth=0):
+        if depth > 6:
+            return
+        if isinstance(v, str):
+            ids.append(v)
+        elif isinstance(v, dict):
+            for k, x in v.items():
+                if k in ("of", "n"):
+                    continue
+                walk(x, depth + 1)
+        elif isinstance(v, (list, tuple)):
+            for x in v:
+                walk(x, depth + 1)
+
+    if isinstance(doc, dict):
+        root = doc.get("f0") if isinstance(doc.get("f0"), str) else None
+    walk(doc)
+
+    seen, uniq = set(), []
+    for x in ids:
+        p = _plain_id(x)
+        if p and p not in seen:
+            seen.add(p)
+            uniq.append(p)
+    n_paths = len(_assets(uniq)) + len(_bundles(uniq))
+    if n_paths < _FB_MIN_PATHS:
+        log(f"[catalog] {label}: FlatBuffers 로 풀렸지만 경로처럼 보이는 문자열이 "
+            f"{n_paths}개뿐입니다 — 카탈로그가 아닌 것으로 봅니다")
+        return None
+
+    note = ("게임 고유 FlatBuffers 카탈로그"
+            + (f" (루트 {root})" if root else "")
+            + " — 경로 목록만, 주소↔번들 매핑 없음")
+    log(f"[catalog] {label}: 번들 {len(_bundles(uniq)):,}개 · "
+        f"에셋경로 {len(_assets(uniq)):,}개 · {note}")
+    return Catalog(label, uniq, [], {}, False, note)
+
 
 def _binary_catalog(data, label, log):
     """catalog.bin (Addressables 바이너리 카탈로그) → Catalog. 못 하면 None.

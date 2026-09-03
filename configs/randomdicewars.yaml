@@ -1,0 +1,22 @@
+# Random Dice Wars (2.12.11) — 111%(111 Percent) · 랜덤 다이스 협동 디펜스
+# Unity 2020.3.38f1 · IL2CPP · Addressables(카탈로그 해독됨, 번들 이름 의미 있음)
+# metadata 정상(magic fab11baf v27) — capstone.dll 수정으로 타입트리 복원됨.
+# 밸런스는 MonoBehaviour ScriptableObject(shopitems/event 등 번들)에.
+game: RandomDiceWars
+input: {}
+codec: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 30000
+  categorize: true
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 30000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+outputs: [sprites, assets, hierarchy]

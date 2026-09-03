@@ -82,6 +82,8 @@ python tools/verify_baseline.py --zenmatch <xapk> --pixelflow <xapk|폴더>
 ```
 levelscope/container.py  입력 추상화 — 폴더/zip/apk/xapk/obb/중첩 apk를 한 인터페이스로.
                          컨테이너를 다루는 코드는 전부 여기를 거친다
+levelscope/concat.py     한 파일에 번들이 여러 개 이어붙은 배포를 세그먼트로 가른다
+                         (`container.ConcatView` 가 이걸 가상 엔트리로 보여준다)
 levelscope/discover.py   Unity 소스 자동 발견 (`sources: auto`) — Addressables 번들 포함
 levelscope/survey.py     APK 프로파일 + 설정 초안 (새 게임 온보딩의 0단계)
 levelscope/catalog.py    Addressables 카탈로그 해독 — 번들 해시 → 원본 프로젝트 경로
@@ -135,8 +137,16 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   N>0이면 `assets_file.externals[N-1]` 이다. path_id는 파일마다 1부터 다시 시작하므로
   번들 전체에서 path_id만 찾으면 엉뚱한 에셋이 잡힌다 (실제로 `level0` 과
   `resources.assets` 에 같은 path_id가 있다).
+- **`typetree` 백엔드가 `Unable to load DLL 'capstone'` 로 다 죽으면 metadata 암호화로
+  오진하지 말 것.** capstone.dll 은 x64 정상이어도 .NET Core 가 어셈블리 폴더의 native
+  DLL 을 못 찾는다(.NET native 검색은 `os.add_dll_directory` 를 안 따름). 해결은
+  **capstone.dll 을 파이썬 실행 파일 폴더로 복사** — `typetree.MonoReader.open` 이
+  백엔드 import 전에 자동으로 한다(v1.29.0). 이 버그로 20 Minutes Till Dawn 은 정상
+  metadata 인데도 필드 복원이 2.8% 였다. metadata 암호화는 magic(`fab11baf` 정상)으로
+  판별한다 — 백엔드 실패만으로 암호화라 단정하지 말 것.
 - **`typetree` 백엔드 순서를 한 개로 줄이지 말 것.** AssetRipper 단독은 82%에서 멈춘다.
-  못 읽는 클래스군(`I2.Loc.Localize`·UI LayoutGroup·Spine)이 갈라져 있어 AssetStudio
+  못 읽는 클래스군(`I2.Loc.Localize`·UI LayoutGroup·Spine·`UnityEngine.ProBuilder`)이
+  갈라져 있어 AssetStudio
   폴백이 나머지를 메운다. 순서를 바꾸면 `MonoReader` 의 "클래스별 성공 백엔드 기억"이
   다시 학습하므로 정확도는 유지되지만 초기 시도 비용이 늘어난다.
 - **못 읽은 것을 조용히 빼지 말 것.** 계층의 컴포넌트는 `"fields": null` 로 남기고,
@@ -166,6 +176,26 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   번들에 있는 게임이 있다(Royal Kingdom: 정의 `data.unity3d` / 사용 `datapack.unity3d`).
   `typetree.ScriptRegistry` 가 이걸 푼다 — 없으면 복원률이 14%까지 떨어진다.
   단, 스크립트 전용 번들만 미리 열 것(조건 없이 열면 90MB 번들을 두 번 읽는다).
+- **한 파일에 번들이 여러 개 이어붙어 있을 수 있다.** Clash of Critters 의
+  `inpackage_aa_1.lpak`(108MB)은 커스텀 포맷이 아니라 `UnityFS` 번들 **1,369개를
+  그냥 연달아 붙인 것**이다(세그먼트 합계 = 파일 크기의 100.0000%, 꼬리 0바이트).
+  그냥 열면 **UnityPy 가 첫 번들만 읽고 멈춰서** 오브젝트 16개만 잡히고 108MB 가
+  조용히 사라진다 — 펼치면 229,785개다. `container.ConcatView` 가 앞 64바이트의
+  크기 필드를 보고 자동으로 판정·분할한다(`concat` 모듈).
+  **펼치기를 소비자 쪽으로 옮기지 말 것** — 컨테이너 층이라서 discover·sprites·
+  assets·hierarchy·extract·`--split` 이 전부 그대로 동작한다. 여섯 군데에 흩어
+  놓으면 한 곳을 빠뜨렸을 때 그 단계만 조용히 3%를 뽑는다.
+  **`ConcatView.glob` 의 두 갈래를 하나로 줄이지 말 것** — 세그먼트 이름 직접 조회
+  (`find_first` 가 discover 가 찾은 소스 이름을 다시 찾는다)와 부모 경로 패턴
+  (`sources: [.../*.lpak]`)이 둘 다 온다. 앞쪽을 빼먹었더니 survey 의 Sprite 집계가
+  13 → 6 으로 **펼치기 전보다 나빠졌다.**
+  **전부 맞아떨어질 때만 펼칠 것.** 중간에 어긋나면 원본을 그대로 쓴다 — 절반만
+  인정하면 "일부만 뽑힌 것"이 정상처럼 보인다.
+- **`0.0.0` 을 Unity 버전으로 받지 말 것.** Unity 는 번들 헤더의 버전을 지울 때 빈
+  문자열이 아니라 `0.0.0` 을 넣는다(lpak 세그먼트 1,369개가 전부 `5.x.x`/`0.0.0`).
+  값이 있으니 `if v:` 로는 안 걸러진다. `unity.is_real_version` 을 쓸 것 — 안 쓰면
+  survey 가 "Unity 0.0.0" 이라 보고하고(실제 2022.3.62f3), 폴백으로 심으면 버전 없는
+  형제 번들이 `0.0.0` 으로 열려 타입트리가 어긋난다.
 - **헤더에 Unity 버전이 없는 번들을 "Unity 파일 아님"으로 버리지 말 것.** UnityPy 는
   버전을 못 읽으면 `No valid Unity version found` 로 **파싱 자체를 포기**하고, 그러면
   `discover.probe` 가 후보 탈락으로 처리한다. CookieRun: Crumble(Unity 6000.3)에서
@@ -225,6 +255,18 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   오프셋 기반 객체 그래프라 직접 파서를 쓰면 조용히 어긋나므로 검증된 선택 의존성
   `addressablestools`(MIT, 무의존)로 읽는다. 없거나 파싱이 실패하면 문자열 목록만 내는
   폴백으로 내려간다 — **폴백을 지우지 말 것.**
+- **카탈로그가 번들 안에 들어 있을 수 있다.** `assets/aa/catalog.bundle` 안
+  TextAsset `catalog` 가 그것이다(Clash of Critters, 5.7MB). `catalog.json`/
+  `catalog.bin` 만 찾으면 **카탈로그가 있는데도 "카탈로그 없음"** 이 되고, 추출한
+  아트에 원본 프로젝트 경로를 못 붙인다. `CATALOG_GLOB` 에 들어 있다.
+- **카탈로그가 게임 고유 FlatBuffers 일 수 있다.** `addressablestools` 가
+  `UnsupportedCatalogVersionError` 를 내면 포기하지 말고 `flatbuf` 로 본다 — 루트
+  테이블 이름이 `AddressablesMainContentCatalog` 인 스튜디오 자체 포맷이었고,
+  스키마 없이도 경로 12,945개가 나왔다. 단 **주소↔번들 매핑은 만들지 않는다**
+  (슬롯 의미를 모른다). `decoded=False` 로 두고 경로 목록만 쓴다.
+- **카탈로그의 번들 수와 APK 의 번들 수를 대조할 것.** Clash of Critters 는 카탈로그에
+  10,810개인데 APK 에는 1,369개(12.7%)뿐이다 — 파일 이름 `inpackage` 그대로 나머지
+  87%는 실행 시 받는다. 이걸 안 보면 "리소스 다 뽑았다"고 잘못 적는다.
 - 카탈로그 해독은 **검증 후에만** 신뢰한다 (`catalog._parse_buckets`/`_parse_entries` 가
   블롭 크기·인덱스 범위를 확인). 검증 실패 시 매핑 없이 목록만 쓴다 — 잘못 푼 매핑으로
   이름을 붙이는 건 이름을 안 붙이는 것보다 나쁘다.
@@ -282,6 +324,14 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   타일 합 11,817, 디코딩 실패 0, 스프라이트 37개. `blockTypeData` 합×3 = 랜덤 타일 수가
   blockTypeData를 가진 73개 스테이지 전부에서 성립(`pool_ok` 컬럼). `defaultMapData` 14개는
   구형 스키마라 blockTypeData가 없어 `pool_ok='-'`. **일일 맵은 서버 배포라 APK에 없다.**
+- Clash of Critters 기준치(com.farlightgames.pgame.gp v0.46.1): Unity 소스 1,495
+  (lpak 세그먼트 1,369 + serialized 126) · 오브젝트 229,785 · 스프라이트 4,117
+  (실패 4,854 — 전부 `m_PathID == 0`, 그중 95개는 픽셀이 APK 에 없는 CDN 배급분
+  자리표시자) · 에셋 1,561 · 계층 씬 3 / 프리팹 985 / 노드 53,875 / 필드 복원 99.7%.
+  **레벨·밸런스는 APK 에서 안 나온다** — 암호화된 `pgame.pkg`(15MB)·`.jsone` 안이고
+  `ff ff ff ff`+평문길이+8바이트 패딩 형식의 **8바이트 블록 ECB**(반복키 XOR 은
+  `--xor-scan --max-keylen 64` 로 배제). 키는 `libil2cpp.so` 안. 별건이므로 손대기
+  전에 사용자에게 묻는다.
 - 뷰어 아이콘 매핑 중 `splitObjects→PigCell`, `pixelWoodBlocks→HardPixel`(PixelFlow)과
   블록타입 id ↔ `card*` 스프라이트(SheepNSheep)는 이름 기반 **추정** 매핑 — 정정되면
   해당 config만 고치면 된다.

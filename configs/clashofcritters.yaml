@@ -1,0 +1,205 @@
+# Clash of Critters (com.farlightgames.pgame.gp) v0.46.1 — Farlight Games
+# Unity 2022.3.62f3 · IL2CPP · Addressables
+#
+# ─────────────────────────────────────────────────────────────────────────
+# 이 게임에서 배운 것 두 가지 (다른 게임에도 온다)
+# ─────────────────────────────────────────────────────────────────────────
+#
+# ① **콘텐츠 전부가 한 파일에 이어붙어 있다.**
+#    `assets/aa/Android/inpackage_aa_1.lpak` (108MB) 는 커스텀 포맷이 아니라
+#    평범한 UnityFS 번들 **1,369개를 그냥 연달아 붙인 것**이다(세그먼트 합계가
+#    파일 크기의 100.0000%, 남는 꼬리 0바이트). 그냥 열면 UnityPy 가 첫 번들만
+#    읽고 멈춰서 오브젝트 16개만 잡힌다 — 펼치면 229,785개다(62배).
+#    `container.ConcatView` 가 자동으로 펼친다. `concat` 모듈 참고.
+#
+# ② **세그먼트 헤더의 Unity 버전이 `0.0.0` 이다.**
+#    자리표시자라 진짜 버전이 아니다(실제 2022.3.62f3, base apk 쪽에 있다).
+#    `unity.is_real_version` 이 거부하고, `discover` 가 형제 소스에서 배운
+#    버전을 폴백으로 심는다. **소스를 하나만 주는 경우(`--split`, `--source`)는
+#    배울 데가 없으니 `--unity-version 2022.3.62f3` 을 반드시 넘긴다.**
+#
+# ─────────────────────────────────────────────────────────────────────────
+# 레벨·밸런스 데이터는 APK 에서 못 뽑는다 (확인함)
+# ─────────────────────────────────────────────────────────────────────────
+#
+# Unity 에셋 쪽 TextAsset 은 22개뿐이고 전부 레벨이 아니다 — Addressables
+# 카탈로그, 타이 단어사전, Spine `.skel`/`.atlas`, 비트맵폰트 프레임 JSON,
+# 런타임 설정. MonoBehaviour 53,082개는 프리팹 컴포넌트다.
+#
+# 실제 설계 데이터는 **암호화된 파일 안**에 있다:
+#
+#     BinaryAssets.apk!assets/pgame.pkg              15.0MB
+#     BinaryAssets.apk!assets/Game.jsone              1.7KB
+#     BinaryAssets.apk!assets/Config.jsone            0.6KB
+#     BinaryAssets.apk!assets/Localization.jsone      0.7KB
+#     BinaryAssets.apk!assets/AppInfo.jsone           0.3KB
+#     BinaryAssets.apk!assets/Config/LanguageDbEN.luae  0.5MB
+#
+# 공통 형식: `ff ff ff ff` + 평문길이 uint32(LE) + 본문(8바이트 배수로 패딩).
+# 판정 근거 —
+#   · 평문길이가 본문을 8바이트 경계로 올린 값과 정확히 일치 → **8바이트 블록 암호**
+#     (324→328 · 607→608 · 1695→1696 · 518651→518656)
+#   · 서로 다른 네 파일의 **두 번째 블록(0x10~0x17)이 완전히 동일** → ECB 계열
+#     (CBC 라면 첫 블록이 다른 순간 이후가 전부 갈라진다)
+#   · `detect --xor-scan --max-keylen 64` 로 반복키 XOR 은 배제됨
+#   · pgame.pkg 는 5,327개 레코드로 파일을 100% 채운다(각 레코드도 같은
+#     ff ff ff ff+길이+패딩 형식). 레코드 블록1이 5,326개 동일 = 같은 평문.
+#     레코드 구조는 완전히 파악됐다 — 키만 있으면 즉시 전부 풀린다.
+#
+# **키는 정적으로 못 뽑는다 (2026-09-03 확인).** 복호화 루틴은 libil2cpp.so(58MB)·
+# libigame.so(11MB) 안에 있는데, 둘 다 **NetEase HTProtect** 상용 보호로 코드
+# 세그먼트가 암호화 패킹돼 있다(앞 8MB/4MB 엔트로피 8.000, ARM64 프롤로그 0%,
+# il2cpp export 전무, 섹션 이름 `.note.gnu.text` 등 위장). global-metadata.dat 도
+# 같은 `HTPX` 매직으로 암호화돼 있다. 알려진 암호 상수(AES sbox·TEA delta·
+# Blowfish P·DES 테이블)는 어디에도 없다 = 커스텀 8바이트 블록 암호.
+# 2026-09-03 정적 경로를 다 밟아 재확인했다 — 암호 상수(AES/TEA/DES/Blowfish)
+# 전무 · il2cpp export 전무 · libNetHTProtect 는 BoringSSL 링크 없고 디바이스
+# 지문 코드뿐 · `HTPX` 매직 처리 코드는 암호화 세그먼트 안 · **init_array 함수
+# 포인터 7개가 파일에는 전부 0**(런타임에 심는다 = HTProtect 런타임 언패커).
+# 키를 얻으려면 **실기기 동적 분석**(Frida 후킹·메모리 덤프)이 필요하고, 이는
+# 정적 분석 범위 밖이자 안티치트 우회라 별건이다. 사용자 지시 없이는 안 한다.
+#
+# ─────────────────────────────────────────────────────────────────────────
+# 기준치 (v0.46.1, 이 PC / UnityPy 1.25.3)
+# ─────────────────────────────────────────────────────────────────────────
+#   Unity 소스 1,495개 (lpak 세그먼트 1,369 + serialized 126) · 오브젝트 229,785
+#   스프라이트 4,117장 추출 / 실패 4,854
+#      → 실패는 전부 `m_PathID == 0` (텍스처 참조가 null). 그중 95개는
+#        `txui_*` 이고 픽셀이 APK 어디에도 없다 = CDN 배급분 자리표시자.
+#        나머지는 같은 이름이 다른 세그먼트에서 정상 추출된 중복 참조다.
+#   에셋 1,561개 (audio 254 · material 1,279 · font 6 · spine 6 · text 16)
+#      실패 1 — font/battle_popup_water 는 m_FontData 가 비어 있다(시스템 폰트)
+#   계층 씬 3 · 프리팹 985 · 노드 53,875 · 컴포넌트 필드 복원 52,169/52,350 (99.7%)
+#      번들에 타입트리가 들어 있어서 IL2CPP 백엔드가 없어도 이만큼 나온다
+#   카탈로그 번들 10,810개 · 에셋경로 12,945개
+#      → **APK 에는 1,369개(12.7%)만 있다.** 파일 이름 `inpackage` 그대로,
+#        나머지 87%는 실행 시 받는다. "이 게임 리소스 다 뽑았다"고 하면 안 된다.
+#   메모리 최고 커밋: survey 0.34GB · 스프라이트 1.21GB · 에셋 0.98GB · 계층 0.61GB
+#      run 전체 1.28GB (세그먼트가 작아서 낮다. 지금까지 본 게임 중 가장 가볍다)
+#
+#   `run` 전체(types 에 Texture2D 포함)는 스프라이트 7,243장이다. 분류 결과 —
+#      아바타 906 · 펫 819 · 기지 711 · 전투 605 · 공용 579 · 핀볼 467 · 아이템 459
+#      · 상점 389 · UI소재 344 · 길드전 315 · 경쟁 178 · 농장 157 · 럭키디펜스 156
+#      · 소셜 154 · 배경 137 · **기타 129** · 월드맵 111 · 스파인 108 · 카드 90
+#      · 이벤트 70 · 이펙트소재 70 · 이펙트 63 · 미니게임 62 · UI 54 · 아틀라스 42
+#      · 텍스처 37 · 아이콘 19 · 씬소재 10 · 프로필 2
+#   기본 규칙만 쓰면 기타가 4,692장(65%)이었다. 아래 도메인 규칙으로 **129장(1.8%)**.
+#   남은 129장은 Unity 에디터·디버그 UI다(Checkmark · ExpandArrow ·
+#   InspectReferenceArrow — RuntimeInspector / In-game Debug Console 애셋).
+#
+# 카탈로그는 `assets/aa/catalog.bundle` 안 TextAsset `catalog` 5.7MB 이고
+# Unity 표준이 아니라 **게임 고유 FlatBuffers**(루트 테이블
+# `AddressablesMainContentCatalog`)다. `catalog.py` 가 자동으로 처리한다.
+# 슬롯 이름은 모르므로 주소↔번들 매핑은 만들지 않고 경로 목록만 쓴다.
+
+game: ClashofCritters
+package: com.farlightgames.pgame.gp
+
+# 레벨 파일이 없다. 위에 적은 대로 설계 데이터는 암호화된 pgame.pkg 쪽이다.
+# `run` 은 이 절이 비어 있으면 리소스 단계만 돌리고 그 사실을 로그에 남긴다.
+input: {}
+
+codec: auto
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  # 스프라이트가 9천 장이라 기본 상한(1000)이면 잘린다.
+  max_count: 20000
+  categorize: true
+
+  # ── 분류 규칙 ─────────────────────────────────────────────────────────
+  #
+  # 이 게임은 이름이 **체계적**이다: `<tx|sp|pb|tl|fx><ui|sc|vx|fx|ch>_<도메인>_<이름>`.
+  # 7,243장 중 6,686장(92%)이 이 형태이고, 세 번째 토큰이 아니라 **두 번째 토큰
+  # (도메인)** 이 실제로 사람이 찾는 축이다("펫 이미지 다 보여줘").
+  #
+  # 그래서 기본 규칙(아이콘/배경/UI 같은 **시각 종류**)보다 도메인을 우선한다.
+  # 기본 규칙만으로는 65%(4,692장)가 `기타` 로 떨어져 쓸 수 없었다.
+  # 시각 종류는 파일 이름의 접두어(`txui`=UI · `txsc`=씬 · `txvx`/`txfx`=이펙트)에
+  # 그대로 남아 있으므로 정보가 사라지지 않는다.
+  #
+  # **근거**: 아래 개수는 v0.46.1 실측이다. 라벨은 도메인 토큰의 뜻을 그대로 옮긴
+  # 것이고, 큰 버킷 네 개는 표본을 **눈으로 확인**했다 —
+  #   playerhead → 동물 얼굴이 든 둥근 아바타 테두리 (아바타 ✔)
+  #   homestead  → `bgdecoration_stone_02` = 바위 소품 (기지 배경 소품 ✔)
+  #   gvgpro     → `report_page_performance` = 결과 화면 무대 패널 (길드전 ✔)
+  #   luckydefense → 노란 투사체/조준 아이콘 (모드 전용 ✔)
+  # 나머지는 **토큰 기반 추정**이다. 틀렸으면 이 절만 고치면 된다.
+  categories:
+    - name: 아바타          # playerhead 906
+      match: ["re:^[a-z]{4}_playerhead_"]
+    - name: 펫             # pet 788 · feed 19 · petcatch 12
+      match: ["re:^[a-z]{4}_pet_", "re:^[a-z]{4}_feed_", "re:^[a-z]{4}_petcatch_"]
+    - name: 공용            # common 567 · com 12
+      match: ["re:^[a-z]{4}_common_", "re:^[a-z]{4}_com_"]
+    - name: 전투            # battle 520 · boss 23 · trap 46 · character 16
+      match: ["re:^[a-z]{4}_battle_", "re:^[a-z]{4}_boss_", "re:^[a-z]{4}_trap_",
+              "re:^[a-z]{4}_character_"]
+    - name: 기지            # homestead 605 · build 45 · building 12 · city 12
+      #                     · develop 13 · upgrade 10 · canteen 14
+      match: ["re:^[a-z]{4}_homestead_", "re:^[a-z]{4}_build_",
+              "re:^[a-z]{4}_building_", "re:^[a-z]{4}_city_",
+              "re:^[a-z]{4}_develop_", "re:^[a-z]{4}_upgrade_",
+              "re:^[a-z]{4}_canteen_"]
+    - name: 아이템          # item 417 · gift 18 · giftbox 14 · rune 10
+      match: ["re:^[a-z]{4}_item_", "re:^[a-z]{4}_gift_",
+              "re:^[a-z]{4}_giftbox_", "re:^[a-z]{4}_rune_"]
+    - name: 상점            # shop 377 · subscribe 12
+      match: ["re:^[a-z]{4}_shop_", "re:^[a-z]{4}_subscribe_"]
+    - name: 핀볼            # pinball 369 · frenzyball 40 · demo 38 · pinballtable 12
+      match: ["re:^[a-z]{4}_pinball", "re:^[a-z]{4}_frenzyball_",
+              "re:^[a-z]{4}_demo_"]
+    - name: 길드전          # gvgpro 215 · gvg 100
+      match: ["re:^[a-z]{4}_gvg"]
+    - name: 럭키디펜스      # luckydefense 156
+      match: ["re:^[a-z]{4}_luckydefense_"]
+    - name: 경쟁            # trial 127 · gym 41 · teamup 10
+      match: ["re:^[a-z]{4}_trial_", "re:^[a-z]{4}_gym_", "re:^[a-z]{4}_teamup_"]
+    - name: 농장            # farm 124 · fish 33
+      match: ["re:^[a-z]{4}_farm_", "re:^[a-z]{4}_fish_"]
+    - name: 카드            # tradingcard 90
+      match: ["re:^[a-z]{4}_tradingcard_"]
+    - name: 미니게임        # treasurehunt 20 · hiddenegg 16 · blockblast 15 · seek 11
+      match: ["re:^[a-z]{4}_treasurehunt_", "re:^[a-z]{4}_hiddenegg_",
+              "re:^[a-z]{4}_blockblast_", "re:^[a-z]{4}_seek_"]
+    - name: 소셜            # chat 49 · friend 42 · report 25 · emoji 25 · share 13
+      match: ["re:^[a-z]{4}_chat_", "re:^[a-z]{4}_friend_", "re:^[a-z]{4}_report_",
+              "re:^[a-z]{4}_emoji_", "re:^[a-z]{4}_share_"]
+    - name: 이벤트          # activity 51 · mission 19
+      match: ["re:^[a-z]{4}_activity_", "re:^[a-z]{4}_mission_"]
+    - name: 월드맵          # worldmap 32 · loading 19 · rob 35 · destory/destroy 35
+      #                     (destory 는 원본의 오타다 — 그대로 맞춘다)
+      match: ["re:^[a-z]{4}_worldmap_", "re:^[a-z]{4}_loading_",
+              "re:^[a-z]{4}_rob_", "re:^[a-z]{4}_destor?y_"]
+    - name: 스파인          # pbch_gpu_spine_* 61 + Spine_* 47 — GPU 스키닝 캐릭터
+      match: ["re:^pbch_gpu_", "re:^spine_"]
+
+    # ↓ 도메인이 위 목록에 없을 때 쓰는 접두어 기반 시각 분류.
+    #   도메인 규칙이 먼저 걸리므로 여기까지 오는 건 자잘한 도메인(10장 미만 75종)이다.
+    - name: UI소재          # txui/spui/pbui/tlui — 버튼·메뉴·아이콘·폰트류
+      match: ["re:^(tx|sp|pb|tl)ui_"]
+    - name: 씬소재          # txsc — 배경·소품
+      match: ["re:^txsc_"]
+    - name: 이펙트소재      # txvx/txfx/spvx/fxtx/mtvx — 이펙트·파티클
+      match: ["re:^(tx|sp|fx|mt)(vx|fx|tx)_"]
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 20000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+
+# 보드형 퍼즐이 아니라 3D 배틀·미니게임 모음이므로 그리드 뷰어(html)는 뺀다.
+outputs: [sprites, assets, hierarchy]
+
+notes:
+  - "콘텐츠는 inpackage_aa_1.lpak 안에 UnityFS 번들 1,369개가 이어붙어 있다"
+  - "세그먼트 헤더 Unity 버전은 0.0.0(자리표시자) — 실제 2022.3.62f3"
+  - "레벨·밸런스는 암호화된 pgame.pkg/.jsone 안. 8바이트 블록 ECB, XOR 아님"
+  - "카탈로그 번들 10,810 중 APK 에 1,369(12.7%) — 나머지는 CDN 배급"

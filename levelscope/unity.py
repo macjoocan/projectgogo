@@ -141,7 +141,7 @@ def set_fallback_version(version):
     같은 빌드 안 다른 소스는 버전을 들고 있으므로(여기선 `data.unity3d` = 6000.3.15f1)
     그 값을 넣어 주면 열린다. 한 프로세스 전체에 걸리는 전역 설정이다.
     """
-    if not version:
+    if not is_real_version(version):
         return None
     UnityPy = _unitypy()
     UnityPy.config.FALLBACK_UNITY_VERSION = str(version)
@@ -156,16 +156,33 @@ def fallback_version():
         return None
 
 
+#: 버전 자리표시자 — 값이 있지만 **아무 의미가 없는** 문자열들.
+#:
+#: Unity 는 번들 헤더의 버전을 지울 때 빈 문자열이 아니라 `0.0.0` 을 넣는다.
+#: Clash of Critters 의 `inpackage_aa_1.lpak` 세그먼트 1,369개가 전부 그렇다
+#: (헤더에 `5.x.x` / `0.0.0`). 이걸 진짜 버전으로 받으면 두 가지가 망가진다 —
+#: survey 가 "엔진 Unity 0.0.0" 이라고 보고하고(실제는 2022.3.62f3), 폴백으로
+#: 심으면 버전 없는 형제 번들이 `0.0.0` 으로 열려 타입트리가 통째로 어긋난다.
+PLACEHOLDER_VERSIONS = ("0.0.0", "5.x.x", "0.0.0f0")
+
+
+def is_real_version(v):
+    """쓸 만한 Unity 버전 문자열인가. 자리표시자·빈 값은 아니다."""
+    s = str(v or "").strip()
+    return bool(s) and s not in PLACEHOLDER_VERSIONS
+
+
 def detect_version(env):
-    """번들 안 SerializedFile 에서 Unity 버전 문자열 (예: '6000.3.15f1')."""
+    """번들 안 SerializedFile 에서 Unity 버전 문자열 (예: '6000.3.15f1').
+
+    자리표시자(`0.0.0`)는 건너뛰고 **진짜 버전을 들고 있는** 파일을 찾는다.
+    """
     for f in getattr(env, "files", {}).values():
-        v = getattr(f, "unity_version", None)
-        if v:
-            return v
+        if is_real_version(getattr(f, "unity_version", None)):
+            return f.unity_version
         for sf in getattr(f, "files", {}).values():
-            v = getattr(sf, "unity_version", None)
-            if v:
-                return v
+            if is_real_version(getattr(sf, "unity_version", None)):
+                return sf.unity_version
     return None
 
 

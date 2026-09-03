@@ -143,7 +143,9 @@ class IterContainers(Tmp):
     def test_folder_root_yielded_first(self):
         write_tree(self.tmp, {"assets/Levels/s1/1.json": b"{}"})
         first = next(container.iter_containers(self.tmp))
-        self.assertIsInstance(first, container.DirContainer)
+        # 이어붙인 번들을 펼치는 ConcatView 로 감싸서 나온다 (`concat` 모듈 참고).
+        self.assertIsInstance(first, container.ConcatView)
+        self.assertIsInstance(first.inner, container.DirContainer)
 
 
 class FindFirst(Tmp):

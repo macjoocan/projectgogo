@@ -296,6 +296,42 @@ def _build_dataframe(rows):
     return df
 
 
+def _emit_resources(args, cfg, game, outputs, log=print):
+    """스프라이트·에셋·계층을 뽑는다. 실패한 산출물 이름 목록을 반환.
+
+    레벨 데이터를 쓰지 않는 단계라, 레벨 수집이 실패한 입력에서도 이것만 따로 돌린다.
+    단계마다 gc 를 돈다 — 끝나도 Unity env 가 곧바로 회수되지 않아 다음 단계 할당과
+    겹치면 피크가 1GB 가까이 뛴다(실측 5.50 → 4.51GB).
+    """
+    failed = []
+
+    def one(label, fn):
+        try:
+            fn()
+        except Exception as e:  # noqa: BLE001 - 하나가 실패해도 나머지는 만든다
+            hint = (" — 다른 프로그램에서 열려 있는지 확인하세요"
+                    if isinstance(e, PermissionError) else "")
+            log(f"[{label}] 실패: {e}{hint}")
+            failed.append(label)
+        finally:
+            gc.collect()
+
+    if "sprites" in outputs and cfg.get("sprites"):
+        from . import sprites as sprites_mod
+        one("sprites", lambda: sprites_mod.extract_sprites(
+            args.input, cfg["sprites"], args.out, game=game, log=log))
+    if "assets" in outputs and cfg.get("assets"):
+        from . import assets as assets_mod
+        one("assets", lambda: assets_mod.extract_assets(
+            args.input, cfg["assets"], args.out, game=game, log=log))
+    if "hierarchy" in outputs and cfg.get("hierarchy"):
+        from . import hierarchy as hier_mod
+        one("hierarchy", lambda: hier_mod.extract_hierarchy(
+            args.input, cfg["hierarchy"], args.out, game=game,
+            mono_cfg=cfg.get("typetree"), log=log))
+    return failed
+
+
 def _write_error_report(out_dir, game, errors, warnings, log):
     if not errors and not warnings:
         return None
@@ -355,13 +391,22 @@ def _emit_level_outputs(args, cfg, game, outputs, emit, failed, log):
     끝에서 레벨 데이터를 놓고 gc 를 돌린다 — 뒤따르는 sprites/assets/hierarchy 는
     이걸 쓰지 않는데 붙잡고 있으면 Unity 번들 로딩과 겹쳐 커밋이 두 배로 뛴다.
     """
-    result = extract.collect_levels(args.input, cfg["input"])
+    # 레벨 outputs(xlsx/html/zip)를 골랐는데 레벨 수집이 안 되는 게임이 있다 —
+    # 콘텐츠가 서버 배급이거나(CookieRun: Crumble · Clash of Critters) 레벨 설정을
+    # 아예 안 쓴 경우(`input: {}` → ConfigError)다. 그때는 리소스 단계로만 넘긴다
+    # (run 본체가 이어서 _emit_resources 를 부른다). 예전에는 여기서 런 전체가 죽었다.
+    try:
+        result = extract.collect_levels(args.input, cfg["input"])
+    except (FileNotFoundError, extract.ConfigError) as e:
+        log(f"[input] 레벨을 수집하지 못했습니다 — {e} (리소스 단계만 진행)")
+        return [], []
     records = result.records
     log(f"[input] 레벨 파일 {len(records)}개 발견 ({result.source})")
     for w in result.warnings[:5]:
         log(f"  ~ {w}")
     if not records:
-        sys.exit("레벨 파일이 없습니다. levels_glob / input.unity 확인 필요")
+        log("[input] 레벨이 비어 있습니다 — 리소스 단계만 진행")
+        return [], []
     if args.limit:
         records = records[: args.limit]
         log(f"[input] --limit {args.limit} 적용 — {len(records)}개만 처리")
@@ -480,19 +525,7 @@ def run(args):
         log("[run] 레벨 단계 생략 — 고른 산출물이 레벨 데이터를 쓰지 않습니다")
         errors, warnings = [], []
 
-    if "sprites" in outputs and cfg.get("sprites"):
-        from . import sprites as sprites_mod
-        emit("sprites", lambda: sprites_mod.extract_sprites(
-            args.input, cfg["sprites"], args.out, game=game, log=log))
-    if "assets" in outputs and cfg.get("assets"):
-        from . import assets as assets_mod
-        emit("assets", lambda: assets_mod.extract_assets(
-            args.input, cfg["assets"], args.out, game=game, log=log))
-    if "hierarchy" in outputs and cfg.get("hierarchy"):
-        from . import hierarchy as hier_mod
-        emit("hierarchy", lambda: hier_mod.extract_hierarchy(
-            args.input, cfg["hierarchy"], args.out, game=game,
-            mono_cfg=cfg.get("typetree"), log=log))
+    failed += _emit_resources(args, cfg, game, outputs=outputs, log=log)
 
     _write_error_report(args.out, game, errors, warnings, log)
     if failed:

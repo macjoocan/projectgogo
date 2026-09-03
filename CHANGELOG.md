@@ -5,6 +5,33 @@
 
 ---
 
+## 1.30.0
+
+**타입트리 백엔드가 죽어 있던 환경 버그 수정 — `capstone.dll` 로딩.** IL2CPP
+컴포넌트 필드 복원(TypeTreeGeneratorAPI)이 `Unable to load DLL 'capstone' or one of
+its dependencies` 로 **3종 백엔드가 다 초기화 실패**하고 있었다. capstone.dll 은
+x64 정상이고 `ctypes.CDLL` 직접 로드도 되는데, TypeTreeGeneratorAPI(.NET)가 자기
+어셈블리 폴더의 native DLL 을 못 찾는 게 원인이었다 — .NET Core 의 native 검색은
+`os.add_dll_directory`(Win32 LoadLibrary 용)를 안 따른다. **capstone.dll 을 파이썬
+실행 파일 폴더로 복사**하면(.NET 이 그 base directory 를 본다) 해결된다.
+`typetree.MonoReader.open` 이 백엔드 import 전에 자동으로 복사한다.
+
+이게 조용히 컸다 — 이 실패가 **metadata 암호화로 오진되기 쉽다.** 20 Minutes Till
+Dawn 은 metadata 가 정상(magic fab11baf)인데도 이 DLL 문제로 필드 복원이 2.8% 였다.
+번들에 타입트리가 든 게임(Clash of Critters·Random Dice Wars)은 백엔드 없이 기본
+읽기로 98%+ 나와서 안 드러났지만, 번들 타입트리가 없는 IL2CPP 게임은 이 버그로
+컴포넌트가 통째로 비어 나왔다.
+
+**신규 게임 설정 2개** — `configs/20minutestilldawn.yaml`(Unity 2022.3.56f1),
+`configs/randomdicewars.yaml`(Unity 2020.3.38f1). 둘 다 metadata 정상이라 밸런스가
+뚫린다(암호화된 Cat Gunner·Clash of Critters 와 대비). Random Dice Wars 는 계층
+필드 복원 98.5%(62,811/63,758) · 씬 17 · 프리팹 1,429 · 노드 101,025.
+
+(같은 v1.29.0 에서 concat·카탈로그 작업과 원격의 타입트리 지연 로드가 함께 올라와,
+이 capstone 수정은 v1.30.0 으로 분리했다.)
+
+---
+
 ## 1.29.0
 
 **`typetree` 백엔드를 지연 로드한다.** `MonoReader.open` 이 백엔드 셋을 미리 다 올리던
@@ -112,6 +139,121 @@ v1.21.0·v1.24.0 의 계층 검증 대상은 Royal Kingdom·CookieRun 이었고 
 **검증** — 테스트 408 → **441개** 통과(+33: `--only` 17 · analyze 12 · watchdog 4).
 실제 APK(PixelFlow 0.31.3)로 레벨 단계 2,384개 · 실패 0 · 팔레트 34색 · 슈터 160,313행 —
 기준치 일치.
+
+---
+
+## 1.28.0
+
+**한 파일에 번들이 여러 개 이어붙은 배포를 펼친다 (`levelscope/concat.py`).**
+Clash of Critters(`com.farlightgames.pgame.gp`)는 Addressables 콘텐츠 전부를
+`assets/aa/Android/inpackage_aa_1.lpak` 한 파일에 넣는다. 확장자가 낯설어 커스텀
+포맷처럼 보이지만 **암호화도 커스텀 헤더도 아니고 평범한 `UnityFS` 번들 1,369개를
+그냥 연달아 붙인 것**이다 — 세그먼트 합계가 113,816,320 바이트로 파일 크기의
+**100.0000%**, 남는 꼬리 0바이트.
+
+그냥 열면 **UnityPy 가 첫 번들만 읽고 멈춘다.** 오브젝트 16개짜리 첫 세그먼트만
+잡히고 나머지 108MB 가 조용히 사라졌다. "열렸으니 다 읽었다"로 오해하기 가장 쉬운
+형태다 — v1.24.0 의 Unity 버전 폴백 사고와 같은 종류다.
+
+실측 효과:
+
+| | 이전 | 이후 |
+|---|---|---|
+| Unity 소스 | 127 | 1,495 |
+| 오브젝트 합계 | 3,708 | **229,785** |
+| Sprite | 13 | 8,971 |
+| Texture2D | 102 | 3,178 |
+| AudioClip | 0 | 254 |
+| GameObject | 108 | 53,875 |
+| 씬 | 1 | 6 |
+
+- 펼치는 자리를 **컨테이너 층(`container.ConcatView`)** 으로 잡았다. `names()`/
+  `read()`/`glob()` 아래에서 세그먼트를 가상 엔트리(`<이름>#0000`)로 보여주면
+  discover·sprites·assets·hierarchy·extract·`--split` 이 **전부 고칠 것 없이**
+  동작한다. 소비자 쪽에 넣으면 여섯 군데를 똑같이 고쳐야 하고, 한 곳을 빠뜨리면
+  그 단계만 조용히 3%를 뽑는다.
+- **탐지는 공짜다.** UnityFS 헤더에 자기 번들의 전체 크기가 적혀 있으니 앞 64바이트만
+  읽어 "적힌 크기 < 파일 크기" 인지 본다. 그럴 때만 전체를 읽어 헤더를 따라 걸어간다.
+- **전부 맞아떨어질 때만 펼친다.** 도중에 매직이 안 맞거나 크기가 범위를 넘으면 빈
+  목록을 돌려주고 원본을 그대로 쓴다. 절반만 인정하면 "일부만 뽑힌 것"이 정상처럼
+  보인다.
+- 부모 bytes 는 **한 칸만** 캐시한다(소비자가 이름 순서대로 훑으므로 한 부모의
+  세그먼트가 연속으로 들어온다). 세그먼트 표(offset·길이)는 `(라벨, 엔트리, 크기,
+  앞 64바이트)` 로 프로세스 단위 캐시 — `container.find_first` 가 소스마다 컨테이너를
+  새로 열기 때문에, 캐시가 없으면 108MB 부모를 소스 1,369개마다 다시 읽는다.
+  캐시 키에 **앞부분 바이트까지** 넣는다: root ZipContainer 의 label 은 basename 이라
+  폴더가 다른 동명 파일이 같은 키를 갖는다.
+- `glob` 은 **양방향**으로 맞춘다. ① 세그먼트 이름을 그대로 준 경우(discover 가 찾아
+  둔 소스 이름을 `find_first` 가 다시 조회한다) ② 설정에 부모 경로를 적어 둔 경우
+  (`sources: [assets/aa/Android/*.lpak]` → 세그먼트 전부로 펼친다). ①을 빼먹었더니
+  survey 의 리소스 집계가 세그먼트 1,369개를 통째로 놓쳐 Sprite 가 13 → 6 으로
+  **줄었다**(펼치기 전보다 나빠졌다). 두 갈래가 다 필요하다.
+
+**`0.0.0` 을 진짜 Unity 버전으로 받지 않는다 (`unity.is_real_version`).**
+Unity 는 번들 헤더의 버전을 지울 때 빈 문자열이 아니라 `0.0.0` 을 넣는다. lpak
+세그먼트 1,369개가 전부 그렇다(헤더 `5.x.x` / `0.0.0`). 이걸 버전으로 받으면 두 가지가
+망가진다 — survey 가 "엔진 Unity 0.0.0" 이라고 보고하고(실제 2022.3.62f3), 폴백으로
+심으면 버전 없는 형제 번들이 `0.0.0` 으로 열려 타입트리가 어긋난다.
+`unity.detect_version` 은 자리표시자를 든 파일을 지나쳐 진짜 버전을 찾고,
+`unity.set_fallback_version` 은 자리표시자를 거부한다. `typetree.detect_unity_version`
+은 같은 판정을 쓰도록 `unity.detect_version` 에 위임했다(중복 구현 제거).
+
+**`catalog.bundle` — 번들에 싸인 카탈로그를 읽는다.** 카탈로그를 Unity 번들 안
+TextAsset 으로 한 번 더 싸서 넣는 배포가 있다(Clash of Critters:
+`assets/aa/catalog.bundle` 안 `catalog` 5.7MB). `CATALOG_GLOB` 이 `catalog.json`/
+`catalog.bin` 만 봤기 때문에 **카탈로그가 있는데도 "카탈로그 없음"** 이었고, 추출한
+아트에 원본 프로젝트 경로를 붙일 수 없었다.
+
+**게임 고유 FlatBuffers 카탈로그도 읽는다 (`catalog._flatbuffers_catalog`).**
+그 5.7MB 는 Unity 표준 바이너리가 아니다 — `addressablestools` 가
+`UnsupportedCatalogVersionError("Only versions 1-3 are supported")` 로 거부한다.
+실제로는 스튜디오가 직접 만든 FlatBuffers 이고 루트 테이블 이름이
+`AddressablesMainContentCatalog` 다. 이미 있는 `flatbuf`(스키마 없는 해독기)로 풀어
+문자열 벡터에서 경로를 건진다 — 실측 **번들 10,810개 · 에셋경로 12,945개**
+(`Assets/Res/Audio/Events/Music/Activity/Boss/...` 처럼 원본 폴더까지 나온다).
+
+- **주소↔번들 매핑은 만들지 않는다.** 슬롯 의미를 모르는 상태에서 매핑을 지어내면
+  잘못 푼 이름을 붙이게 되고, 그건 이름을 안 붙이는 것보다 나쁘다(모듈 독스트링의
+  원칙). `decoded=False` 로 남기고 경로 목록만 쓴다.
+- 경로처럼 보이는 문자열이 20개 미만이면 카탈로그가 아닌 것으로 보고 포기한다.
+- 이 카탈로그가 알려 준 것: **번들 10,810개 중 APK 에 1,369개(12.7%)만 있다.**
+  파일 이름 `inpackage` 그대로, 나머지 87%는 실행 시 받는다. 앞으로 이 게임을
+  "리소스 다 뽑았다"고 적으면 틀린다.
+
+**`run` 이 레벨 설정 없이도 리소스를 뽑는다.** v1.27.x 에서 `FileNotFoundError`
+(패턴은 썼는데 안 맞은 경우)는 넘겼지만, **레벨 설정을 아예 안 쓴 경우**(`input: {}`)는
+`extract.ConfigError` 로 여전히 트레이스백을 내며 죽었다. 설계 데이터가 암호화돼 있어
+레벨 절을 비워 두는 게 정답인 게임이 있으므로(아래 Clash of Critters) 그것도 정상
+경로로 받는다. 레벨도 리소스도 없으면 그건 진짜 설정 오류이므로 그대로 종료한다.
+
+**`configs/clashofcritters.yaml` 추가.** 기준치(v0.46.1, 이 PC / UnityPy 1.25.3):
+
+    Unity 소스 1,495 (lpak 세그먼트 1,369 + serialized 126) · 오브젝트 229,785
+    스프라이트 4,117장 / 실패 4,854 — 실패는 전부 m_PathID == 0 (텍스처 참조 null)
+       그중 95개(`txui_*`)는 픽셀이 APK 어디에도 없다 = CDN 배급분 자리표시자
+       나머지는 같은 이름이 다른 세그먼트에서 정상 추출된 중복 참조
+    에셋 1,561 (audio 254 · material 1,279 · font 6 · spine 6 · text 16) · 실패 1
+       font/battle_popup_water 는 m_FontData 가 비어 있다(시스템 폰트 참조)
+    계층 씬 3 · 프리팹 985 · 노드 53,875 · 컴포넌트 필드 복원 52,169/52,350 (99.7%)
+       번들에 타입트리가 들어 있어 IL2CPP 백엔드 초기화가 실패해도 이만큼 나온다
+    최고 커밋: survey 0.34GB · 스프라이트 1.21GB · 에셋 0.98GB · 계층 0.61GB
+
+**레벨·밸런스 데이터는 이 APK 에서 못 뽑는다 — 확인하고 근거를 남겼다.** Unity 쪽
+TextAsset 은 22개뿐이고 전부 레벨이 아니다(카탈로그, 타이 단어사전, Spine
+`.skel`/`.atlas`, 비트맵폰트 프레임 JSON, 런타임 설정). 실제 설계 데이터는 암호화된
+`BinaryAssets.apk!assets/pgame.pkg`(15MB)와 `.jsone`/`.luae` 안이다. 형식은
+`ff ff ff ff` + 평문길이 uint32(LE) + 8바이트 배수로 패딩한 본문이고, 판정 근거는
+세 가지다 — ① 평문길이가 본문을 8바이트 경계로 올린 값과 정확히 일치(324→328 ·
+607→608 · 1695→1696 · 518651→518656)해서 **8바이트 블록 암호** ② 서로 다른 네
+파일의 두 번째 블록(0x10~0x17)이 완전히 동일해서 **ECB 계열**(CBC 라면 첫 블록이
+갈라진 순간 이후가 전부 다르다) ③ `detect --xor-scan --max-keylen 64` 로 **반복키
+XOR 은 배제**. 키는 `libil2cpp.so`(58MB) 안에 있을 것이고, 네이티브 코드에서 키를
+찾는 별건이라 손대지 않았다.
+
+테스트 415 → **460개** (`tests/test_concat.py` 신규 29개 + 자리표시자 버전 5개 +
+카탈로그 12개 + `run` 의 ConfigError 경로 2개). 전부 합성 데이터로 돌아간다.
+
+---
 
 ## 1.27.0
 
