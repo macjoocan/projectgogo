@@ -1,0 +1,463 @@
+<title>Cat Gunner 경제 시뮬레이터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef0f4; --ink:#191c22; --muted:#5c6472;
+  --faint:#8a92a1; --line:#e1e4ea; --line-strong:#cdd2db;
+  --accent:#c25a17; --accent-soft:#f2e3d6; --accent-ink:#8a3d0c;
+  --power:#c25a17; --money:#b8842a; --rebirth:#2f7d8c; --grid:#e6e9ee;
+  --shadow:0 1px 2px rgba(20,24,32,.06),0 4px 16px rgba(20,24,32,.05);
+}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+  --bg:#0f1115; --surface:#171a20; --surface-2:#1f232b; --ink:#e7eaf0; --muted:#9aa3b2;
+  --faint:#6b7484; --line:#272c35; --line-strong:#39404b;
+  --accent:#e2933f; --accent-soft:#2e2318; --accent-ink:#f0ad63;
+  --power:#e2933f; --money:#e0b25a; --rebirth:#5bb6c6; --grid:#232830;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.28);
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --surface:#171a20; --surface-2:#1f232b; --ink:#e7eaf0; --muted:#9aa3b2;
+  --faint:#6b7484; --line:#272c35; --line-strong:#39404b;
+  --accent:#e2933f; --accent-soft:#2e2318; --accent-ink:#f0ad63;
+  --power:#e2933f; --money:#e0b25a; --rebirth:#5bb6c6; --grid:#232830;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;
+  font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+h1,h2,h3{font-family:"Archivo","IBM Plex Sans",sans-serif;margin:0;text-wrap:balance;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 72px;}
+header{padding:34px 0 20px;border-bottom:2px solid var(--ink);margin-bottom:24px;}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent-ink);font-weight:500;}
+h1{font-size:clamp(26px,4vw,40px);font-weight:700;letter-spacing:-.02em;margin:8px 0 4px;}
+.sub{color:var(--muted);font-size:15px;max-width:70ch;}
+
+.layout{display:grid;grid-template-columns:288px 1fr;gap:22px;align-items:start;}
+@media(max-width:880px){.layout{grid-template-columns:1fr;}}
+
+/* controls */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+  box-shadow:var(--shadow);position:sticky;top:14px;}
+.panel h2{font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.ctrl{margin-bottom:15px;}
+.ctrl .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.ctrl label{font-size:12.5px;color:var(--ink);}
+.ctrl .v{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--accent-ink);}
+.ctrl .d{font-size:10.5px;color:var(--faint);}
+input[type=range]{width:100%;accent-color:var(--accent);height:4px;margin:2px 0;}
+.grp-title{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);
+  margin:4px 0 10px;padding-top:12px;border-top:1px solid var(--line);}
+.grp-title:first-child{border-top:none;padding-top:0;}
+.btn{width:100%;padding:9px;border:1px solid var(--line-strong);background:var(--surface-2);
+  color:var(--ink);border-radius:7px;font-family:"IBM Plex Sans";font-size:13px;font-weight:500;cursor:pointer;}
+.btn:hover{border-color:var(--accent);color:var(--accent-ink);}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* main */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.tile{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);
+  border-radius:9px;padding:13px 15px;box-shadow:var(--shadow);}
+.tile .big{font-family:"IBM Plex Mono",monospace;font-size:23px;font-weight:600;letter-spacing:-.02em;line-height:1.05;}
+.tile .lab{font-size:11.5px;color:var(--muted);margin-top:6px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px 12px;
+  margin-bottom:20px;box-shadow:var(--shadow);}
+.card h3{font-size:14px;font-weight:600;margin-bottom:2px;}
+.card .cap{font-size:12px;color:var(--faint);margin-bottom:12px;}
+canvas{width:100%;display:block;}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sw{width:12px;height:3px;border-radius:2px;display:inline-block;}
+
+/* flow diagram */
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+  font-size:12.5px;padding:6px 0 2px;}
+.node{border:1px solid var(--line-strong);border-radius:8px;padding:8px 12px;background:var(--surface-2);
+  font-weight:500;text-align:center;}
+.node.p{border-color:var(--power);color:var(--power);}
+.node.m{border-color:var(--money);color:var(--money);}
+.node.r{border-color:var(--rebirth);color:var(--rebirth);}
+.arrow{color:var(--faint);font-size:16px;}
+.readout{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7;}
+.readout b{color:var(--ink);font-family:"IBM Plex Mono",monospace;}
+.foot{font-size:12px;color:var(--faint);margin-top:26px;border-top:1px solid var(--line);padding-top:16px;line-height:1.7;}
+/* system data section */
+.secdiv{display:flex;align-items:baseline;gap:12px;margin:34px 0 6px;border-bottom:1px solid var(--line-strong);padding-bottom:8px;}
+.secdiv h2{font-size:19px;font-weight:700;letter-spacing:-.01em;}
+.secdiv .tag{margin-left:auto;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.secnote{color:var(--muted);font-size:13px;margin:8px 0 16px;max-width:76ch;}
+.sysgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;align-items:start;}
+.dtable{background:var(--surface);border:1px solid var(--line);border-radius:9px;overflow:hidden;box-shadow:var(--shadow);}
+.dtable h4{font-size:12.5px;font-weight:600;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface-2);display:flex;align-items:center;gap:8px;margin:0;}
+.dtable h4 .dot{width:8px;height:8px;border-radius:2px;background:var(--k,var(--accent));}
+.dtable table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.dtable td{padding:6px 14px;border-bottom:1px solid var(--line);}
+.dtable tr:last-child td{border-bottom:none;}
+.dtable td.k{color:var(--muted);}
+.dtable td.v{font-family:"IBM Plex Mono",monospace;text-align:right;font-weight:500;white-space:nowrap;}
+.dtable tr:hover{background:var(--surface-2);}
+.chips2{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px;}
+.chip2{font-family:"IBM Plex Mono",monospace;font-size:11.5px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;background:var(--surface);}
+.tierline{display:flex;gap:8px;align-items:center;padding:5px 14px;}
+.tierline .tl{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);width:64px;flex:none;}
+.ins{padding:10px 14px;font-size:12px;color:var(--ink);background:var(--accent-soft);margin:0;border-top:1px solid var(--line);}
+.ins b{color:var(--accent-ink);}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">경쟁작 밸런스 · 경제 흐름 시뮬레이터</div>
+  <h1>Cat Gunner 경제 시뮬레이터</h1>
+  <p class="sub">추출한 실측 상수로 아이들 진행 루프를 재현한다. 좌측 값을 바꾸면 업그레이드 곡선·성장 시뮬레이션·환생 주기가 즉시 갱신된다. 초기값은 Cat Gunner 라이브 수치.</p>
+</header>
+
+<div class="layout">
+  <!-- CONTROLS -->
+  <aside class="panel">
+    <h2>파라미터</h2>
+    <div class="grp-title">업그레이드 경제</div>
+    <div class="ctrl"><div class="row"><label>가격 성장률</label><span class="v" id="v_pg">1.38</span></div><input type="range" id="pg" min="1.05" max="2.0" step="0.01" value="1.38"><div class="d">PriceGrowth /Lv</div></div>
+    <div class="ctrl"><div class="row"><label>공격력·골드 배수</label><span class="v" id="v_pm">1.08</span></div><input type="range" id="pm" min="1.02" max="1.30" step="0.01" value="1.08"><div class="d">PowerMult · MoneyMult /Lv</div></div>
+    <div class="ctrl"><div class="row"><label>기준 가격</label><span class="v" id="v_pb">50</span></div><input type="range" id="pb" min="5" max="200" step="5" value="50"><div class="d">PriceBase</div></div>
+    <div class="ctrl"><div class="row"><label>소프트캡 레벨</label><span class="v" id="v_sc">167</span></div><input type="range" id="sc" min="50" max="192" step="1" value="167"><div class="d">이후 가격 2.0×</div></div>
+
+    <div class="grp-title">환생 (프레스티지)</div>
+    <div class="ctrl"><div class="row"><label>환생당 영구 성장</label><span class="v" id="v_rb">1.05</span></div><input type="range" id="rb" min="1.00" max="1.30" step="0.01" value="1.05"><div class="d">Damage·Money /환생Lv</div></div>
+    <div class="ctrl"><div class="row"><label>환생 트리거 레벨</label><span class="v" id="v_rt">150</span></div><input type="range" id="rt" min="50" max="192" step="1" value="150"><div class="d">이 레벨 도달 시 환생</div></div>
+
+    <div class="grp-title">플레이 가정</div>
+    <div class="ctrl"><div class="row"><label>기준 골드 수입 계수</label><span class="v" id="v_ci">1.0</span></div><input type="range" id="ci" min="0.2" max="5" step="0.1" value="1.0"><div class="d">스테이지당 골드 스케일</div></div>
+    <div class="ctrl"><div class="row"><label>시뮬 기간</label><span class="v" id="v_days">14</span></div><input type="range" id="days" min="1" max="60" step="1" value="14"><div class="d">활성 플레이 일수</div></div>
+    <button class="btn" id="reset">Cat Gunner 실측값으로 리셋</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="tiles" id="tiles"></div>
+
+    <div class="card">
+      <h3>코어 데이터 흐름</h3>
+      <div class="cap">스테이지 클리어 속도(공격력)가 골드 수입을 키우고, 골드가 다시 업그레이드로 되먹임되는 복리 루프. 벽에 닿으면 환생이 곱셈 레이어를 얹는다.</div>
+      <div class="flow">
+        <div class="node">스테이지 진행</div><span class="arrow">→</span>
+        <div class="node m">골드 수입</div><span class="arrow">→</span>
+        <div class="node p">업그레이드 (공격·골드)</div><span class="arrow">↺</span>
+        <div class="node">공격력 ↑</div><span class="arrow">→</span>
+        <div class="node r">환생 ×배수</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>레벨별 가격 · 공격력 곡선</h3>
+      <div class="cap">단일 업그레이드 가격(로그)과 누적 공격력 배수. 가격 성장(1.38)이 공격력 성장(1.08)보다 가팔라 후반에 벽이 생긴다.</div>
+      <canvas id="c1" height="300"></canvas>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--power)"></i> 단일 가격 (로그)</span>
+        <span><i class="sw" style="background:var(--money)"></i> 누적 공격력 배수 (로그)</span>
+        <span><i class="sw" style="background:var(--rebirth)"></i> 소프트캡</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>성장 시뮬레이션 — 시간에 따른 공격력</h3>
+      <div class="cap">기준 수입에서 매 시점 효율 높은 업그레이드를 구매하는 그리디 진행. 환생 트리거마다 리셋 후 영구 배수가 누적된다.</div>
+      <canvas id="c2" height="320"></canvas>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--power)"></i> 총 공격력 (로그)</span>
+        <span><i class="sw" style="background:var(--rebirth);height:8px;width:3px"></i> 환생 시점</span>
+      </div>
+      <div class="readout" id="readout"></div>
+    </div>
+
+    <!-- ===== 전체 시스템 데이터 ===== -->
+    <div class="secdiv"><h2>전투 시스템</h2><span class="tag">Gun · Relic · Monster · Raid · Buff</span></div>
+    <p class="secnote">경제 루프 밖의 전투·성장 콘텐츠 상수. 개별 유닛 수치(총기별 데미지 등)는 별도 추출 대상이며, 아래는 시스템 글로벌 값.</p>
+    <div class="sysgrid">
+      <div class="dtable" style="--k:var(--power)">
+        <h4><span class="dot"></span>총기 (GunType · 7종)</h4>
+        <div class="chips2">
+          <span class="chip2">SINGLE</span><span class="chip2">LASER</span><span class="chip2">PIERCE</span>
+          <span class="chip2">SHOTGUN</span><span class="chip2">EXPLOSIVE</span><span class="chip2">MISSILE</span><span class="chip2">BLAST_SNIPER</span>
+        </div>
+        <table><tbody>
+          <tr><td class="k">광고총 이벤트 총 수</td><td class="v">28</td></tr>
+          <tr><td class="k">광고총 이벤트 쿨타임</td><td class="v">1800 s</td></tr>
+          <tr><td class="k">자동합성 제외 등급</td><td class="v">14</td></tr>
+        </tbody></table>
+      </div>
+      <div class="dtable" style="--k:var(--rebirth)">
+        <h4><span class="dot"></span>유물 (Relic · 13종)</h4>
+        <div class="tierline"><span class="tl">피해</span><span class="chip2">Dmg 0</span><span class="chip2">Dmg 1</span><span class="chip2">Dmg 2</span></div>
+        <div class="tierline"><span class="tl">골드</span><span class="chip2">Money 0</span><span class="chip2">Money 1</span><span class="chip2">Money 2</span></div>
+        <div class="tierline"><span class="tl">치명</span><span class="chip2">CriDmg 0</span><span class="chip2">CriDmg 1</span><span class="chip2">CriDmg 2</span></div>
+        <div class="tierline"><span class="tl">유틸</span><span class="chip2">MoveSpeed</span><span class="chip2">Offline</span><span class="chip2">Rebirth</span><span class="chip2">Skip</span></div>
+        <p class="ins">3티어×3속성 성장 + 유틸 4종. <b>Offline·Skip·Rebirth</b> 유물이 방치 리텐션 핵심.</p>
+      </div>
+      <div class="dtable" style="--k:var(--combat,#b23b3b)">
+        <h4><span class="dot" style="background:#b23b3b"></span>몬스터 · 소탕</h4>
+        <table><tbody>
+          <tr><td class="k">캐치업 스폰 간격</td><td class="v">0.04 s</td></tr>
+          <tr><td class="k">캐치업 임계</td><td class="v">6</td></tr>
+          <tr><td class="k">소탕 안전 비율</td><td class="v">129 %</td></tr>
+          <tr><td class="k">소탕 최대 레벨</td><td class="v">128</td></tr>
+        </tbody></table>
+      </div>
+      <div class="dtable" style="--k:#b23b3b">
+        <h4><span class="dot" style="background:#b23b3b"></span>레이드 · 버프</h4>
+        <table><tbody>
+          <tr><td class="k">보스 보상값</td><td class="v">20</td></tr>
+          <tr><td class="k">레이드 제한시간</td><td class="v">30 s</td></tr>
+          <tr><td class="k">보스 수</td><td class="v">10</td></tr>
+          <tr><td class="k">버프 지속</td><td class="v">300 s</td></tr>
+          <tr><td class="k">버프 최대</td><td class="v">900 s</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="secdiv"><h2>성장 · 메타 콘텐츠</h2><span class="tag">Adventure · Fish · SpeedRun</span></div>
+    <div class="sysgrid">
+      <div class="dtable" style="--k:var(--money)">
+        <h4><span class="dot"></span>모험 (방치 보상)</h4>
+        <table><tbody>
+          <tr><td class="k">최대 레벨</td><td class="v">30</td></tr>
+          <tr><td class="k">티켓 최대</td><td class="v">40</td></tr>
+          <tr><td class="k">코어 보상</td><td class="v">40 /h</td></tr>
+          <tr><td class="k">경험치 보상</td><td class="v">20 /h</td></tr>
+          <tr><td class="k">펫 등급당 코어</td><td class="v">0.1</td></tr>
+          <tr><td class="k">티켓 충전 간격</td><td class="v">8 h</td></tr>
+        </tbody></table>
+        <p class="ins">티켓 8시간 충전 → 하루 <b>3장</b> 자연 회복(최대 40 비축). 방치 코어 40/h가 코어 재화의 주 공급원.</p>
+      </div>
+      <div class="dtable" style="--k:var(--rebirth)">
+        <h4><span class="dot"></span>피시 가챠</h4>
+        <table><tbody>
+          <tr><td class="k">최대 물고기</td><td class="v">40</td></tr>
+          <tr><td class="k">최대 등급</td><td class="v">24</td></tr>
+          <tr><td class="k">무료 가챠 일일 최대</td><td class="v">10 /일</td></tr>
+          <tr><td class="k">무광고 무료 횟수</td><td class="v">6</td></tr>
+          <tr><td class="k">프리미엄 가챠 비용</td><td class="v">129</td></tr>
+        </tbody></table>
+        <p class="ins">일일 무료 10회 중 <b>4회는 광고 시청</b> 필요(10−6). 컬렉션 폭 40종×24등급 = 장기 성장 목표.</p>
+      </div>
+      <div class="dtable" style="--k:var(--money)">
+        <h4><span class="dot"></span>스피드런</h4>
+        <table><tbody>
+          <tr><td class="k">평균 등급 비율</td><td class="v">129 %</td></tr>
+          <tr><td class="k">유효 시간</td><td class="v">48 s</td></tr>
+          <tr><td class="k">코어 지역</td><td class="v">Forest·Desert·Tundra</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="secdiv"><h2>수익화 · 운영</h2><span class="tag">InApp · Gamemanager · Rank</span></div>
+    <div class="sysgrid">
+      <div class="dtable" style="--k:var(--money)">
+        <h4><span class="dot"></span>코어 상품 (InApp_Core_Type)</h4>
+        <div class="chips2">
+          <span class="chip2">Core 100</span><span class="chip2">Core 500</span><span class="chip2">Core 1050</span><span class="chip2">Core 3300</span>
+        </div>
+        <div class="chips2" style="padding-top:0">
+          <span class="chip2" style="border-color:var(--money)">Daily 750</span>
+          <span class="chip2" style="border-color:var(--money)">Weekly 1750</span>
+          <span class="chip2" style="border-color:var(--money)">Weekly 6000</span>
+        </div>
+        <p class="ins">단발 4단(100→3,300) + 정기(일일·주간). 정기 상품 코어 단가가 유리 → 구독형 유도. 보상: RemoveRewardAd·Gun, 미션: Dia·Gun·Core.</p>
+      </div>
+      <div class="dtable">
+        <h4><span class="dot" style="background:var(--muted)"></span>안티치트 · 세이브</h4>
+        <table><tbody>
+          <tr><td class="k">자동 저장 간격</td><td class="v">10 s</td></tr>
+          <tr><td class="k">시간 검증 간격</td><td class="v">30 min</td></tr>
+          <tr><td class="k">시간 오차 임계</td><td class="v">20 min</td></tr>
+          <tr><td class="k">실제 치트 임계</td><td class="v">120 min</td></tr>
+          <tr><td class="k">플래그 스트라이크</td><td class="v">4</td></tr>
+          <tr><td class="k">스트라이크 감쇠</td><td class="v">120 일</td></tr>
+          <tr><td class="k">골드 캐시 최대</td><td class="v">100</td></tr>
+        </tbody></table>
+      </div>
+      <div class="dtable">
+        <h4><span class="dot" style="background:var(--muted)"></span>랭킹</h4>
+        <table><tbody>
+          <tr><td class="k">제출 간격</td><td class="v">300 s</td></tr>
+          <tr><td class="k">리더보드</td><td class="v">Stage·Boss·Monster</td></tr>
+        </tbody></table>
+        <p class="ins">30분 주기 시간 검증 + 스트라이크(4회→플래그, 120일 감쇠)로 방치형 오프라인 보상 어뷰징 방어.</p>
+      </div>
+    </div>
+
+    <div class="foot" id="foot"></div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var ids=['pg','pm','pb','sc','rb','rt','ci','days'];
+  var defs={pg:1.38,pm:1.08,pb:50,sc:167,rb:1.05,rt:150,ci:1.0,days:14};
+  var el={}; ids.forEach(function(k){el[k]=document.getElementById(k);});
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function fmtBig(x){
+    if(x<1000) return x.toFixed(x<10?2:0);
+    var u=['','K','M','B','T','aa','ab','ac','ad','ae','af','ag'];var i=0;
+    while(x>=1000&&i<u.length-1){x/=1000;i++;}
+    return x.toFixed(2)+u[i];
+  }
+  function fmtTime(sec){
+    if(sec<60)return sec.toFixed(0)+'초';
+    if(sec<3600)return (sec/60).toFixed(1)+'분';
+    if(sec<86400)return (sec/3600).toFixed(1)+'시간';
+    return (sec/86400).toFixed(1)+'일';
+  }
+  function cost(lv,pb,pg,sc){ return lv<=sc ? pb*Math.pow(pg,lv) : pb*Math.pow(pg,sc)*Math.pow(2.0,lv-sc); }
+
+  function readParams(){
+    var p={}; ids.forEach(function(k){p[k]=parseFloat(el[k].value);});
+    return p;
+  }
+
+  // ---- simulation (purchase-by-purchase discrete event) ----
+  function simulate(p){
+    var maxLv=192, powMult=p.pm, moneyMult=p.pm, dmgRe=p.rb, moneyRe=p.rb, rebirthMult=6;
+    var pLv=0,mLv=0, gold=0, t=0, rbLv=0, rebirthed=0;
+    var Tmax=p.days*24*3600;      // active seconds
+    var C=p.ci*0.02;              // base income coefficient (gold/sec scale)
+    var series=[], rbMarks=[];
+    var oneTime=1;                // ×6 applied on first upgrade after rebirth (kept simple: fold into base)
+    function power(){ return Math.pow(powMult,pLv)*Math.pow(dmgRe,rbLv)*(rbLv>0?Math.pow(rebirthMult,Math.min(rbLv,0)):1); }
+    // rebirthMult applied as permanent one-time step each rebirth:
+    var rebirthBoost=1;
+    function pwr(){ return Math.pow(powMult,pLv)*Math.pow(dmgRe,rbLv)*rebirthBoost; }
+    function income(){ return C*pwr()*Math.pow(moneyMult,mLv)*Math.pow(moneyRe,rbLv); }
+    var guard=0, firstWallT=null, prevRate=null;
+    series.push([0,pwr()]);
+    while(t<Tmax && guard<200000){
+      guard++;
+      // efficiency of each track (marginal income gain per gold)
+      var inc=income();
+      var effP = pLv<maxLv ? inc*(powMult-1)/cost(pLv,p.pb,p.pg,p.sc) : -1;
+      var effM = mLv<maxLv ? inc*(moneyMult-1)/cost(mLv,p.pb,p.pg,p.sc) : -1;
+      if(effP<0&&effM<0) break;
+      var buyP = effP>=effM;
+      var cst = buyP?cost(pLv,p.pb,p.pg,p.sc):cost(mLv,p.pb,p.pg,p.sc);
+      var wait = gold>=cst?0:(cst-gold)/inc;
+      // detect wall: when wait to next purchase first exceeds ~1 hour
+      if(firstWallT===null && wait>3600) firstWallT=t;
+      t+=wait; if(t>Tmax){break;}
+      gold=0; if(buyP)pLv++; else mLv++;
+      series.push([t,pwr()]);
+      // rebirth trigger: when either track hits trigger level
+      if(pLv>=p.rt){
+        rbLv++; rebirthBoost*=rebirthMult; pLv=0; mLv=0; gold=0;
+        rbMarks.push(t); series.push([t,pwr()]);
+      }
+    }
+    return {series:series,rbMarks:rbMarks,rbLv:rbLv,firstWallT:firstWallT,finalPower:pwr(),Tmax:Tmax,pLvEnd:pLv};
+  }
+
+  // ---- chart helpers ----
+  function setupCanvas(cv,h){
+    var dpr=window.devicePixelRatio||1; var w=cv.clientWidth||600;
+    cv.width=w*dpr; cv.height=h*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    return {ctx:ctx,w:w,h:h};
+  }
+  function drawCurve(){
+    var p=readParams();
+    var cv=document.getElementById('c1'); var s=setupCanvas(cv,300); var ctx=s.ctx,W=s.w,H=s.h;
+    var ml=52,mr=48,mt=14,mb=28, iw=W-ml-mr, ih=H-mt-mb;
+    ctx.clearRect(0,0,W,H);
+    var maxLv=192;
+    var costs=[],powers=[];
+    for(var lv=1;lv<=maxLv;lv++){costs.push(Math.log10(cost(lv,p.pb,p.pg,p.sc)));powers.push(Math.log10(Math.pow(p.pm,lv)));}
+    var cmax=Math.ceil(costs[costs.length-1]), pmax=Math.ceil(powers[powers.length-1]);
+    var grid=css('--grid'),faint=css('--faint'),power=css('--power'),money=css('--money'),reb=css('--rebirth');
+    function X(lv){return ml+(lv/maxLv)*iw;}
+    function Yc(v){return mt+(1-v/cmax)*ih;}
+    function Yp(v){return mt+(1-v/pmax)*ih;}
+    // grid
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.font='10px "IBM Plex Mono",monospace';
+    for(var g=0;g<=cmax;g+=Math.max(1,Math.round(cmax/6))){var y=Yc(g);ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();ctx.fillStyle=faint;ctx.textAlign='right';ctx.fillText('10^'+g,ml-6,y+3);}
+    [1,50,100,p.sc,192].forEach(function(lv){var x=X(lv);ctx.fillStyle=faint;ctx.textAlign='center';ctx.fillText(lv,x,H-10);});
+    // softcap
+    var sx=X(p.sc);ctx.strokeStyle=reb;ctx.setLineDash([4,4]);ctx.globalAlpha=.6;ctx.beginPath();ctx.moveTo(sx,mt);ctx.lineTo(sx,H-mb);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    // cost line
+    ctx.strokeStyle=power;ctx.lineWidth=2;ctx.beginPath();
+    costs.forEach(function(v,i){var x=X(i+1),y=Yc(v);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+    // power line
+    ctx.strokeStyle=money;ctx.lineWidth=2;ctx.beginPath();
+    powers.forEach(function(v,i){var x=X(i+1),y=Yp(v);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+    // right axis label
+    ctx.fillStyle=faint;ctx.textAlign='left';ctx.fillText('공격력',W-mr+4,mt+8);
+  }
+
+  function drawSim(){
+    var p=readParams(); var R=simulate(p);
+    var cv=document.getElementById('c2'); var s=setupCanvas(cv,320); var ctx=s.ctx,W=s.w,H=s.h;
+    var ml=58,mr=16,mt=14,mb=30, iw=W-ml-mr, ih=H-mt-mb;
+    ctx.clearRect(0,0,W,H);
+    var xs=R.series.map(function(a){return a[0];}), ys=R.series.map(function(a){return Math.log10(Math.max(1,a[1]));});
+    var xmax=R.Tmax, ymax=Math.max(1,Math.ceil(Math.max.apply(null,ys)));
+    var grid=css('--grid'),faint=css('--faint'),power=css('--power'),reb=css('--rebirth');
+    function X(t){return ml+(t/xmax)*iw;}
+    function Y(v){return mt+(1-v/ymax)*ih;}
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.font='10px "IBM Plex Mono",monospace';
+    for(var g=0;g<=ymax;g+=Math.max(1,Math.round(ymax/6))){var y=Y(g);ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();ctx.fillStyle=faint;ctx.textAlign='right';ctx.fillText('×10^'+g,ml-6,y+3);}
+    var dayS=24*3600, ndays=Math.round(xmax/dayS);
+    var step=Math.max(1,Math.round(ndays/7));
+    for(var d=0;d<=ndays;d+=step){var x=X(d*dayS);ctx.fillStyle=faint;ctx.textAlign='center';ctx.fillText(d+'일',x,H-10);}
+    // rebirth marks
+    R.rbMarks.forEach(function(t){var x=X(t);ctx.strokeStyle=reb;ctx.globalAlpha=.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x,mt);ctx.lineTo(x,H-mb);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;});
+    // fill + line
+    ctx.beginPath();xs.forEach(function(t,i){var x=X(t),y=Y(ys[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.lineTo(X(xs[xs.length-1]),Y(0));ctx.lineTo(X(0),Y(0));ctx.closePath();
+    ctx.fillStyle=power;ctx.globalAlpha=.10;ctx.fill();ctx.globalAlpha=1;
+    ctx.strokeStyle=power;ctx.lineWidth=2;ctx.beginPath();
+    xs.forEach(function(t,i){var x=X(t),y=Y(ys[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+    // readout
+    document.getElementById('readout').innerHTML=
+      '기간 내 환생 <b>'+R.rbLv+'</b>회 · 최종 공격력 <b>×'+fmtBig(R.finalPower)+'</b>'+
+      (R.firstWallT!==null?' · 첫 벽(구매 대기 1시간 초과) <b>'+fmtTime(R.firstWallT)+'</b> 지점':' · 기간 내 뚜렷한 벽 없음');
+    return R;
+  }
+
+  function tiles(R,p){
+    var maxLv=192, cum=0; for(var lv=1;lv<=maxLv;lv++)cum+=cost(lv,p.pb,p.pg,p.sc);
+    var powMax=Math.pow(p.pm,maxLv);
+    var t=[
+      ['가격 성장', p.pg.toFixed(2)+'×', 'PriceGrowth /Lv'],
+      ['공격력/Lv', '×'+p.pm.toFixed(2), 'Max ×'+fmtBig(powMax)],
+      ['풀업 누적비용', fmtBig(cum), '골드 (1트랙)'],
+      ['환생', R.rbLv+'회', p.days+'일 시뮬'],
+      ['최종 공격력', '×'+fmtBig(R.finalPower), '환생 배수 반영']
+    ];
+    document.getElementById('tiles').innerHTML=t.map(function(x){
+      return '<div class="tile"><div class="big">'+x[1]+'</div><div class="lab">'+x[0]+'</div></div>';
+    }).join('');
+  }
+
+  function render(){
+    var p=readParams();
+    document.getElementById('v_pg').textContent=p.pg.toFixed(2);
+    document.getElementById('v_pm').textContent=p.pm.toFixed(2);
+    document.getElementById('v_pb').textContent=p.pb;
+    document.getElementById('v_sc').textContent=p.sc;
+    document.getElementById('v_rb').textContent=p.rb.toFixed(2);
+    document.getElementById('v_rt').textContent=p.rt;
+    document.getElementById('v_ci').textContent=p.ci.toFixed(1);
+    document.getElementById('v_days').textContent=p.days;
+    drawCurve();
+    var R=drawSim();
+    tiles(R,p);
+  }
+  ids.forEach(function(k){el[k].addEventListener('input',render);});
+  document.getElementById('reset').addEventListener('click',function(){
+    ids.forEach(function(k){el[k].value=defs[k];}); render();
+  });
+  document.getElementById('foot').innerHTML=
+    '<b>모델.</b> 매 시점 한계효율(수입 증가/가격)이 높은 트랙(공격/골드)을 구매하는 그리디 진행. 골드 수입 = 계수 × 공격력 × 골드배수^Lv × 환생보너스 (스테이지 클리어 속도가 수입을 키우는 되먹임을 추상화). 환생은 트리거 레벨 도달 시 업그레이드를 리셋하고 영구 ×6 및 ×1.05/환생Lv를 누적. '+
+    '<b>주의:</b> 몬스터 HP 스케일 등 미확보 상수는 계수(기준 골드 수입)로 흡수했으므로 절대 시간값보다 <b>상수 변화에 따른 곡선·환생 주기의 상대 비교</b>에 쓸 것. 상수는 오프라인 정적 추출 실측값이며 필드 기본값 기준.';
+  window.addEventListener('resize',render);
+  render();
+})();
+</script>
