@@ -1,0 +1,27 @@
+# Slayer Legend (com.gear2.growslayer) v700.0.2 — GEAR2 · 방치형 RPG
+# IL2CPP · Addressables(PAD 팩: hero/monster/map/skin/popup/emoticon/sound/contents apk)
+# **metadata 암호화 — Cat Gunner 계열.** global-metadata.dat magic=454b494c("LIKE"),
+# 정상 fab11baf 아님. libil2cpp.so(170MB) 평문(엔트로피 6.0, RET 57636). 코드 온전,
+# metadata 앞부분만 암호화 = 주말 에뮬레이션(Qiling) 복호화 대상. 밸런스는 그 뒤.
+game: SlayerLegend
+package: com.gear2.growslayer
+input: {}
+codec: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 30000
+  categorize: true
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 30000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+outputs: [sprites, assets, hierarchy]
+notes:
+  - "metadata 암호화(LIKE) — 밸런스는 주말 에뮬레이션 대상. libil2cpp 평문(Cat Gunner형)"
+  - "콘텐츠가 PAD 팩(hero/monster/map/skin/popup 등 apk)에 분산"

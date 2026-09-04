@@ -1,0 +1,29 @@
+# Idle MoonRabbit: AFK RPG (com.AbleGames.DalToKi) v1.150.2 — AbleGames · 방치형 RPG
+# Unity 2022.3.62f2 · IL2CPP · Addressables(개별 serialized 에셋 3,841개)
+#
+# **metadata 암호화 — Cat Gunner 계열.** global-metadata.dat magic=24494541("AEI$"),
+# 정상 fab11baf 아님. libil2cpp.so(79MB)는 평문(패킹 안 됨, 엔트로피 4.0). 즉 코드는
+# 온전하고 metadata 앞부분만 암호화 = 주말 에뮬레이션(Qiling)으로 복호화 대상.
+# 밸런스는 MonoBehaviour 169,215개(ScriptableObject)에 있는데 metadata 벽 뒤다.
+# TextAsset JSON(Localization·GameOptionTable·LanguageTable)은 평문 — assets 로 나옴.
+game: IdleMoonRabbit
+package: com.AbleGames.DalToKi
+input: {}
+codec: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 30000
+  categorize: true
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 30000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+outputs: [sprites, assets, hierarchy]
+notes:
+  - "metadata 암호화(AEI$) — 밸런스는 주말 에뮬레이션 대상. libil2cpp 평문(Cat Gunner형)"
