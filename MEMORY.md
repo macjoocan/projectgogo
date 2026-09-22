@@ -1,8 +1,60 @@
 # 공유 프로젝트 메모리 — Claude Code / Codex
 
-갱신: 2026-09-17. 이 파일은 두 도구가 읽는 공유 프로젝트 메모리다.
+갱신: 2026-09-22. 이 파일은 두 도구가 읽는 공유 프로젝트 메모리다.
 별도 서비스의 내장 메모리를 동기화하거나 이미 실행 중인 Claude에 메시지를 보낸 것은 아니다.
 최근 작업의 빠른 요약은 이 파일, 상세 이력은 `HANDOFF.md`, 게시 증거는 아래 PUBLICATION 문서를 읽는다.
+
+## 문서 게시 작업 — 2026-09-22
+
+- 사용자가 기존 GitHub `macjoocan/projectgogo`에 기법·히스토리·메모리 게시를 요청했다. 이번 범위는 `ANALYSIS_KNOWHOW.md`, `EXTRACTION_HISTORY.md`, `MEMORY.md`, `HANDOFF.md` 네 문서다. 사용자의 추가 요청에 따라 Royal Smash 계층·설정값 추출 이력을 함께 정리했다.
+- Sandtrix 후속 이력과 저장값/소비/도달성/실측 구분, 배열 축, UI·파티클 검증 기법을 정리했다. 원본 패키지·이미지·오디오·추출 데이터·덤프·키·인증정보는 추가하지 않는다. 기존 코드·설정·다른 문서의 미커밋 작업은 보존한다.
+- 이 기록은 게시 범위와 준비 이력이다. 푸시 성공은 원격 main 해시로 별도 확인한다. 아래의 커밋/푸시 미요청·미실행은 각 과거 분석 시점의 기록이다.
+
+## 새 세션 시작점 — 2026-09-22
+
+- 사용자가 긴 대화의 스크롤 문제로 세션 초기화 전 메모리 정리를 요청했다. 현재 분석 작업은 마무리했으며 자동 재추출·재전송하지 않는다. 다음 요청부터 이어간다.
+- 현재 대상: Sandtrix 1.8.4. 분석 저장소 `D:\99.기타\levelscope`, 산출물 `out/sandtrix/`, 개발 프로젝트 `C:\00.SVN\MiniApp`. 원본/프로토 수정 없이 로컬 정적 분석만 수행했다.
+- 최신 답신: `out/sandtrix/AXIS_PARTICLE_FAKE_REPLY.md`. 축은 `flipV(transpose(raw))` 유지(소비 코드 근거), 65/65 show/color 점유 일치. J/L 이름을 표준 손대칭의 정답으로 쓰지 않는다. Q2는 1모래셀 정수 위치 보존, 변환 시 11배수 스냅 없음.
+- 파티클: hierarchy ZIP의 ParticleSystem InitialModule에 값 존재. sparks TwoConstants 수명 endpoints 0.5/0.2, 속도50/800, 크기1/5; flash Constant 수명0.15, 속도0, 크기700. SizeOverLifetime 곡선·원본 단위 보존, CSS 픽셀 직접 대입 금지. Fake8은 Bomb.DrawBomb에서 확인; 일반 blink는 기존 CellState 유지(Fixed도 Sand로 바꾸지 않음).
+- HUD 답신 `HUD_SHAPE_BRIDGE_REPLY.md`: CanvasScaler Expand, disabled layout/image 구분, 정확한 sprite PPtr 및 9-slice border 사용. 이전 7건을 Claude가 반영했다고 보고했지만 실제 프로토 코드는 검토하지 않았다.
+- 브리지 대상 Claude `27d8b6d7-5a5f-4d6e-867b-c7c47e02c8ee`. 이전 HUD 답신은 사용자 수신/작업착수 확인. 최신 bmuba92b7-1 답신은 1회 전송했고 반환 queued, 15초 내 도착 미확인. 두 메시지의 상태를 혼동하거나 중복 발신하지 않는다. 아래 이전 queued 기록은 당시 이력이다.
+- 검증: 최근 native 정적 검사18/18, ASM 바이트 해시675건. 원작 실행 검증이나 프로토 R6 정합성 검증이 아니다. 남은 후보: 전체 회전/셀 단위 parity, 실제 제거 타이밍 소비·오버라이드, UIParticle 화면 배율. 24개 맵은 현행 활성 스테이지로 확정하지 않는다.
+- 재개 시 AGENTS/CLAUDE → 이 절 → 최신 답신 문서 순으로 읽고 필요한 근거만 추가 조회. 원본 게임/CDN/에뮬레이터 실행·보호 우회 없음. 미커밋 사용자 변경 보존; 커밋/푸시 요청 없음. 무거운 재독은 단계 분리·프로세스 트리 커밋 상한 사용.
+
+## 최신 작업 — Sandtrix 1.8.4 로컬 추출 (2026-09-21)
+
+- bmuba92b7-1 후속 정적 답신 `out/sandtrix/AXIS_PARTICLE_FAKE_REPLY.md`: J/L584/588 raw 배열로 flipV(transpose) 실루엣 재현, show/color 점유65/65일치. ShapeTexture는 생성경로 확인; 표준이름 대신 소비변환 유지. 파티클 InitialModule 값 기존 ZIP에 존재(sparks lifetime endpoints.5/.2,speed50/800,size1/5;flash .15/0/700), 원본입자단위와 CSS픽셀 구분. Fake8은 Bomb.DrawBomb 경로 확인; Heap/Cell Blink는 state불변, Sand뿐 아니라 Fixed도 기존상태유지. 사용자가 이전 bridge수신/작업착수 확인; 최신프로토7건 반영 자체는 미검증.
+
+- 전송상태 후속: 사용자 승인 후 HUD/Shape 답신을 Claude `27d8b6d7-5a5f-4d6e-867b-c7c47e02c8ee`에 cc-bridge로1회 발신. 반환 `queued`,30초 내 도착미확인. 아래 추출시점의 미전송 기록을 대체하며 수신/구현완료는 아님.
+
+- HUD/Shape bridge 질문 bmub94rzq-3 후속: `out/sandtrix/HUD_SHAPE_BRIDGE_REPLY.md`, `hud_bridge_evidence.json`. Score 컨테이너 Layout/Fitter/Image는 원본 enabled0; Resource 부모만 Layout enabled1. HUD CanvasScaler3개는 ScreenMatchMode1=Expand, match1 높이기준 해석 취소. ui_popup_back341 border107x4; PowerUp Field416 border45/52/46/48(동명335는border0). Shape SplitParticles는 현재 integer X/Y 셀을 그대로 Sand로 변경(변환시11스냅없음); authored[a,b] -> texture[11a+u,11b+v] -> board[startX+x,H-1-y]. Rainbow direct caller ColoredBlockPowerUp.Init0x15e5c54 확인. Color/CellColor 별도이동 확인.18기존검증통과/ASM673해시, 원본HUD 재독피크1.021GiB. 원작실행/프로토수정/자동bridge전송/커밋푸시 없음; 회전전체·런타임HUD parity는 미확정.
+
+- 맵 사용 경로 후속: `out/sandtrix/MAP_REACHABILITY.md`. 메뉴 delegate 메타데이터까지 대조: TaskGameButton2027→TryStartLevel→ExpertMode6, Endless2598→Endless4. Grid.Setup 직접6곳 모두task=null(시작3+종료3). TaskController2032 소유GO는비활성 저장. TaskState 객체/전이는남아있으므로완전삭제/전역미사용단정금지. StartScreen의 puzzle wrapper2248은같은Task버튼2027, 해금은저장10레벨이아니라Played_Once키존재. 맵24는조건부복원/실험자산, 현행활성24스테이지아님. 추가15정적검사 및원본UI5개재판독,게임실행없음. 기존미니26과분리. 공유문서갱신이며Claude수신확인/프로토수정/푸시없음.
+- 추가 심층 요청 완료: `out/sandtrix/DROP_SHUFFLE_RULES.md`, `DEEP_DEVELOPMENT_FINDINGS.md`. 원본 APK2개/1,342항목 재점검 및 lib/metadata 해시 재일치. 범위제한 ASM545개+별도셔플, 핵심18/드롭13/추가11=42정적·해석 검사 통과. 추가게임컴포넌트75/엔진3개 판독·참조 검증 통과(피크1.39GiB). 아래380은 초기 핵심 배치 개수다.
+- 드롭: 드래그50셀 기준/화면폭으로 pixelSize, 스와이프 .25초·15셀 조건→75+1500*t(텔레포트 아님), 좌우차단/회전별도. 착지 .15초 모래화. 설정1칸11×11/65모양 각484셀. 맵은4색 대응 Fisher–Yates/byte rejection/RNGCrypto, 항등순열 가능; 실제 재시작·맵 활성화는 미확정.
+- 추가함정: Time Freeze는10초 정지가 아니라 DecreaseGameSpeed(3)로 Balance 인덱스3단계 되돌림/linesCutter 보정. BombRain7/반경22/약.2초 간격/Sand|Fixed 원형 직접Reset; TripleRocket는3개Sand시드의4방향 같은색 덩어리(일반제거8방향과 구분), 약1.2초. Continue의ClearGrid는Fixed제외, Task경로+10moves 함수 존재하나 실제 노출/감소 호출 미확정. 모래루프 clip274/volume.4/looptrue, 단발273과 구분. 저장카메라 직교5.25. 소비자·도달성·실측 구분 유지, 추가도 로컬/우회없음/프로토·커밋·푸시 없음.
+- 후속 네이티브 분석 완료: `out/sandtrix/NATIVE_RULES.md`가 아래 1차 소비규칙 미검증 상태를 갱신한다. metadata31/ARM64 선언과380개 범위제한 디스어셈블리·해시,18개 정적/해석모델 검사 통과. 원본 실행 검증은 아님.
+- 핵심: 모래 Y+하강/아래→왼쪽→오른쪽/옆칸도 비어야 대각선 이동;8방향 연결/Sand|Fixed 판정;제거 셀 수 점수. 속도는 Sand 수와 전체격자×0.8 기준 비율을 쓴 곱셈식. 두색 확률은 정수1..99. 입력 Activate/Deactivate는 둘 다 touch배율1이므로 해제=정지로 추정 금지.
+- 24개 맵의 조건부 symbolic grid 복원 및33텍스처 wrapV=Clamp 확인. 그러나 Task/Endless/Expert 진입 경로는 task=null을 전달; TaskController.Setup 및 hardcodedSpeed 오버로드의 직접 B/BL 호출0개. 맵24/속도필드를 실제 사용 중이라고 확정하지 말 것. 간접호출/인라인 전체 배제는 아님. 자홍→Yellow enum; PNG샘플행 max(0,y-1); 무작위색은 토큰으로 유지.
+- task-observer 지침에 따라 저장값/소비 함수/도달성/실측을 분리해 기록했다. 이 후속도 게임/CDN/에뮬레이터/보호우회/프로토수정/커밋푸시 없음. 미관측 랜덤시드·시청각·모든 회전/아이템 경로 및 MMF_Player1개 한계는 남는다.
+- 현재 대상은 사용자 다운로드 폴더의 `Sandtrix_+ASMR+Blocks_1.8.4_APKPure.xapk`. 패키지 com.EveryDayGames.Sandtrix / code25, Unity2022.3.49f1 IL2CPP. 게임 실행·CDN 요청·보호 우회 없이 로컬 정적 추출했다. 9/17의 메모리만 저장 지시는 당시 Clash 작업의 이력이다.
+- Unity 종료 후 가용 commit 약10.47GiB로 회복되어 작업 재개. 기존 `.venv` 실행기는 제거된Python3.12를 가리켜 Blender5.2 Python3.13 + 기존 `../out_royalsmash/cdn_extraction_deps` 및 `.venv/Lib/site-packages`를 사용했다. 설치/전역 설정 변경 없음. 추출 cap4GiB/5GiB, hierarchy 피크약2.09GiB.
+- 결과: `out/sandtrix/README.md`. PNG490, WAV8, 머티리얼27, 폰트4, TextAsset5, 씬1/프리팹35/노드993. MonoBehaviour1251/1252 성공; MMF_Player SerializeReference1개 실패. 런타임0×0폰트텍스처5개 제외. ZIP CRC/PNG/WAV 프레임 검증 통과.
+- 추가 설정135개와 nonnull PPtr 참조 검증. 생성 typetree의 m_Script135개 불일치는 독립 기본 리더와 대조해 추가 JSON에서 교정하고 원시헤더/이전값을 보존했다. 공통 코어와 hierarchy ZIP은 고치지 않았다. `gameplay_settings.json`을 참조 근거로 사용한다.
+- ShapeConfig65개와 GameBalanceConfig2개의 Odin 바이너리67개를 전체 소비/노드/배열/다차원 크기 검증해 복구. `shapes_readable.json`, `balance_readable.json` 제공. BaseSpeed20, Endless5행/Expert6행. 키/확률 단위/최종속도 소비 규칙은 미검증.
+- 목표50개를 연속50스테이지로 합치지 말 것: GameData 미니목표26(시작18+일반8, `Level_01`~26, 맵null)와 TaskController 맵목표24(시작14+일반10, `Level 01`~24)는 다른 자산이다. `tasks_readable.json`, `task_collections.json` 및 맵별 sourceID/PNG 해시를 가진 `map_texture_index.json` 참조. 배열 좌표/맵색 변환과 실행시 선택은 미확정.
+- 새 게임설정 `configs/sandtrix.yaml`, 후속 스크립트와 산출물은 `out/sandtrix/`. 원본/산출물 Git게시·커밋·푸시 없음, 기존 코어 변경 보존. RoyalSmash 물리 재검토는 사용자 대상 전환으로 미완료 상태이며 답신 완료로 취급하지 않는다. 이 공유 파일 저장은 Claude의 수신/내장 메모리 동기화가 아니다.
+
+## 이전 작업 — Clash of Critters LDPlayer / 메모리만 저장 (2026-09-17)
+
+- 사용자 최신 지시: **일단 메모리 기록만**. 추가 분석·추출·설정 변경·커밋·푸시는 진행하지 않는다. 아래 이전 Git 요청을 현재 작업 권한으로 해석하지 않는다.
+- 사용자가 LDPlayer에서 게임과 CDN을 다운로드했다고 알렸고 USB 디버깅을 활성화했다. 이후 `emulator-5554 device` 연결과 `uid=2000(shell)`을 확인했다. 설치 위치 `C:\LDPlayer\LDPlayer14`, 인스턴스 0, CLI 14.0.25.2. 루트는 활성화하지 않았다.
+- 패키지 `com.farlightgames.pgame.gp` 설치 버전은 **0.47.1 / 4242**. 기존 로컬 분석은 **0.46.1 / 4097**, Config 2,670개 청크 복구 이력이 있으므로 기존 분석 전체를 실패로 취급하지 않는다.
+- 외부 저장소 `/sdcard/Android/data/com.farlightgames.pgame.gp`는 10,708 KiB, 대부분 `files/il2cpp`(10,392 KiB). `global-metadata.dat` 9,967,284 bytes 및 DLL 리소스 등이 보였다. OBB 디렉터리는 비어 있다. 작은 SDK/계정 관련 캐시·로그의 내용은 읽거나 복사하지 않았다.
+- 내부 `files`·`cache`(`/data/user/0/com.farlightgames.pgame.gp/…`)는 **Permission denied**. **CDN 캐시 위치·내용·완전성은 미확인**이며, 접근 거부를 다운로드 부재로 해석하지 않는다. 인증·보호 기능·파일 접근 권한 우회 없이 중단했다.
+- 설치된 base / BinaryAssets / UnityDataAssetPack / arm64 split APK 경로는 읽을 수 있었다. **아직 pull·추출·분석하지 않았으며 설치 APK가 CDN 확보 증거는 아니다.** 재개 시 0.47.1 설치 패키지의 오프라인 정적 비교가 후보일 뿐, 이번에는 착수하지 않는다.
+- 사용자는 ADB를 로컬 전용으로 설정했다고 알렸으나 관측된 리스너는 adb 서버 `127.0.0.1:5037`, LD VM `0.0.0.0:5555`, `0.0.0.0:2222`였다. wildcard 바인딩만으로 외부 접근 가능/불가능을 판정하지 않는다. 방화벽·외부 도달성은 미검증, 연결은 로컬로만 수행했고 설정은 바꾸지 않았다.
+- 게임은 이미 실행 중이었고 직접 실행하거나 CDN 요청을 보내지 않았다. 기존 에뮬레이터/게임 통신을 차단하거나 전체 통신 안전성을 검증한 것은 아니다. 상세 근거: `../out_clashofcritters/LDPLAYER_CHECK_2026-09-17.md`. 공유 파일 저장은 Claude 내장 메모리 동기화나 읽음 확인을 뜻하지 않는다.
 
 ## 작업 재개 요약 — 2026-09-17 정리
 
@@ -12,7 +64,7 @@
 - 원작 런타임 Config 선택값, 감속/retention 소비 규칙, 유효 공 생성점/발사 계산 및 해머 동시 궤적은 남은 확인 항목. 700레벨 튜닝은 검증 근거 정리 전 보류였으며 이번 문서 정리에서 재개하지 않았다.
 - 다음 검증에는 현재 함수와 해시를 다시 읽는다. `review_ball_revision_20260916.mjs`는 당시 알려진 실패도 assert하므로 수정된 코드에 그대로 돌려 나온 실패를 새 회귀로 오해하지 않는다.
 - **Git 범위:** 사용자 지정 저장소 `https://github.com/macjoocan/projectgogo`에 공유 문서/정리된 노하우만 반영한다. 기존 코어·테스트·설정 수정은 별도 로컬 작업으로 보존한다. `../out_*`, 원본 패키지, 분석용 의존성/덤프/이미지/전체 증거는 Git에 포함하지 않으므로 다른 PC에서 경로만으로 재현되지는 않는다.
-- 아래 기록은 각 날짜의 검사/전달 이력이다. `answered`·파일 게시가 상대의 읽음/구현/검증 완료를 뜻하지 않는다. 마지막 원작/프로토 감사는9/16이며9/17에는 문서 정리만 했다.
+- 아래 기록은 각 날짜의 검사/전달 이력이다. `answered`·파일 게시가 상대의 읽음/구현/검증 완료를 뜻하지 않는다. 9/17에는 문서 정리 이후 Royal Smash 층/파괴 정적 분석과 Clash of Critters LDPlayer 연결 점검도 수행했다. 최신 프로토 수정의 원작 런타임 동등성을 검증한 것은 아니다.
 
 ## 확인·전달 이력 — 날짜별 스냅샷
 
