@@ -26,8 +26,18 @@ def _unitypy():
 
 
 @contextlib.contextmanager
-def load_bytes(data, suffix=".unity3d", deps=()):
+def load_bytes(data, suffix=".unity3d", deps=(), path=None):
     """Unity 파일 bytes → env. bytes 직접 로드가 안 되면 임시파일로 폴백.
+
+    **`path` 를 주면 그 파일로 연다(bytes 대신).** UnityPy 는 `.resS`/`.resource`
+    스트리밍 파일을 **원본 파일 옆**에서 찾는다. bytes 로 올리면 그 형제를 못 만나
+    `FileNotFoundError: Resource file <이름>.resS not found` 로 텍스처가 통째로
+    빠진다 — SANABI(Steam) 실측으로 `resources.assets` 의 400장을 열어 보면
+    bytes 는 0/400, 경로는 400/400 이었다(그 `.resS` 는 디스크에 152MB 로 있었다).
+    deps 를 bytes 로 같이 올리는 것으로는 **안 된다** — raw bytes 에는 이름이 없어서
+    UnityPy 가 `.resS` 로 인식하지 못한다(같은 실측에서 0/400).
+    경로가 없는 입력(apk 안 엔트리, 이어붙인 번들의 세그먼트)은 None 을 주면 된다 —
+    `container.real_path` 가 그 판단을 해 준다.
 
     deps 에 다른 번들의 bytes 를 주면 **같은 환경에** 함께 올린다. 스프라이트의
     텍스처가 다른 번들의 SerializedFile 에 있는 경우가 있어서(Royal Kingdom의
@@ -41,7 +51,10 @@ def load_bytes(data, suffix=".unity3d", deps=()):
     """
     UnityPy = _unitypy()
     try:
-        env = UnityPy.load(data, *deps) if deps else UnityPy.load(data)
+        if path and os.path.isfile(path):
+            env = UnityPy.load(path, *deps) if deps else UnityPy.load(path)
+        else:
+            env = UnityPy.load(data, *deps) if deps else UnityPy.load(data)
     except UnityUnavailable:
         raise
     except Exception:  # noqa: BLE001 - 구버전/특이 번들은 파일 경로로만 열린다

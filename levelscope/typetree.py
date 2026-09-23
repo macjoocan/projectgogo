@@ -31,8 +31,15 @@ from .container import as_list
 DEFAULT_BACKENDS = ("AssetRipper", "AssetStudio", "AssetsTools")
 
 #: 재료 기본 위치 — 대부분의 Unity 안드로이드 빌드가 이 경로를 쓴다.
+#: IL2CPP 코드가 들어 있는 파일. **안드로이드를 먼저 본다** — 기존 게임의 동작이
+#: 바뀌면 안 되기 때문이다. 그 뒤가 PC(Steam) 빌드로, 코드가 `libil2cpp.so` 가
+#: 아니라 게임 루트의 `GameAssembly.dll` 에 있다. 이게 없으면 survey 가
+#: `IL2CPP(재료 일부 누락)` 이라 말하고 MonoBehaviour 필드가 전부 빈다 — SANABI 는
+#: TextAsset 이 2개뿐이고 데이터가 전부 ScriptableObject 라 그러면 아무것도 못 얻는다.
+#: 백엔드 3종은 PE 를 정상 로드한다(실측) — **PE 라서 안 되는 게 아니라 못 찾은 것**이다.
 DEFAULT_IL2CPP = ["lib/arm64-v8a/libil2cpp.so", "lib/armeabi-v7a/libil2cpp.so",
-                  "lib/*/libil2cpp.so"]
+                  "lib/*/libil2cpp.so",
+                  "GameAssembly.dll", "*/GameAssembly.dll"]
 DEFAULT_METADATA = ["assets/bin/Data/Managed/Metadata/global-metadata.dat",
                     "*/Metadata/global-metadata.dat"]
 
@@ -69,9 +76,15 @@ class ScriptRegistry:
     여기에 스크립트 보유 번들을 미리 등록해 두면 직접 찾아갈 수 있다.
     """
 
-    def __init__(self):
+    def __init__(self, lender=None):
         self._by_file = {}          # SerializedFile 이름 → {path_id: ScriptRef}
         self.sources = []
+        #: 색인에 없는 SerializedFile 이름 → env 를 내주는 콜백. None 이면 안 빌린다.
+        #: 미리 여는 "스크립트 전용 번들" 조건에 안 걸리고 런 중 누적도 **순서**에
+        #: 걸리기 때문에 필요하다 — SANABI 는 누적만으로 70.9 → 73.8% 였다.
+        self._lender = lender
+        self._borrowed = set()      # 이미 물어본 파일 (없다고 나와도 다시 안 연다)
+        self.borrowed_hits = 0
 
     def __bool__(self):
         return bool(self._by_file)
@@ -80,7 +93,7 @@ class ScriptRegistry:
     def count(self):
         return sum(len(v) for v in self._by_file.values())
 
-    def add_env(self, env, label=""):
+    def add_env(self, env, label="", alias=None):
         """이 번들의 MonoScript 를 **지금 읽어 값만** 색인에 남긴다.
 
         reader(`o`)를 그대로 담으면 그 안의 `assets_file`·`reader` 때문에 번들
@@ -98,7 +111,15 @@ class ScriptRegistry:
                 continue
             if ref is None:
                 continue
-            self._by_file.setdefault(unity.file_name(o), {})[o.path_id] = ref
+            fname = unity.file_name(o)
+            self._by_file.setdefault(fname, {})[o.path_id] = ref
+            if alias and alias != fname:
+                # **부르는 이름으로도 건다.** 같은 SerializedFile 이 여는 방식에 따라
+                # 다른 이름으로 불린다 — 소스로 열면 내부 이름
+                # (`8048103888263714719`), 다른 번들이 참조하면 externals 의
+                # `globalgamemanagers.assets`. 한쪽만 걸면 3,871개를 색인해 두고도
+                # 참조 2,033건을 못 푼다(SANABI 실측).
+                self._by_file.setdefault(alias, {})[o.path_id] = ref
             n += 1
         if n:
             self.sources.append((label, n))
@@ -120,7 +141,23 @@ class ScriptRegistry:
             fname = getattr(ext[fid - 1], "name", None) or "?"
         else:
             fname = unity.file_name(obj)
-        return self._by_file.get(fname, {}).get(pid)
+        hit = self._by_file.get(fname, {}).get(pid)
+        if hit is not None or self._lender is None or fname in self._borrowed:
+            return hit
+        # 색인에 없는 파일이다. 그 SerializedFile 을 품은 번들을 **그때 한 번** 열어
+        # 채운 뒤 다시 본다. 없다고 나와도 기억해 두 번 열지 않는다.
+        self._borrowed.add(fname)
+        try:
+            env = self._lender(fname)
+        except Exception:  # noqa: BLE001 - 못 빌려도 런은 계속된다
+            env = None
+        if env is None:
+            return None
+        n = self.add_env(env, f"(빌림) {fname}", alias=fname)
+        got = self._by_file.get(fname, {}).get(pid)
+        if got is not None:
+            self.borrowed_hits += 1
+        return got if n else None
 
 
 def script_ref(obj, registry=None):

@@ -1,6 +1,6 @@
 """Royal Match (com.dreamgames.royalmatch) 플러그인.
 
-레벨은 FlatBuffers 바이너리 14,300개(TextAsset 이름 `1`~`14300`)다. Royal Kingdom과
+레벨은 FlatBuffers 바이너리 14,500개(TextAsset 이름 `1`~`14500`)다. Royal Kingdom과
 같은 스튜디오(Dream Games)라 형식은 같지만 **열거형이 다르다** — Royal Kingdom의
 TiledId를 그대로 쓰면 6번이 Match1(RK)이 아니라 Orange(RM)라서 전부 어긋난다.
 
@@ -12,7 +12,7 @@ TiledId를 그대로 쓰면 6번이 Match1(RK)이 아니라 Orange(RM)라서 전
                               → tools/fbnames_from_dump.py 가 지도를 만든다
 
 그래서 이 게임은 슬롯 번호가 아니라 `Name`·`Move`·`Grid.Cells[].Honey` 처럼
-원래 이름으로 나온다. 14,300레벨 전부에서 셀 타입 100%가 이름이 붙었다(미상 0).
+원래 이름으로 나온다. 14,500레벨 전부에서 셀 타입 100%가 이름이 붙었다(미상 0).
 """
 
 #: 셀 타입 — 앱의 `Royal.Scenes.Game.Utils.LevelParser.TiledId` (429개)
@@ -107,6 +107,7 @@ TILED_ID = {
     "MetalPlateB", 386: "MetalPlateC", 387: "Turtle", 388: "ToyBoatTL", 389: "ToyBoatTR",
     391: "BoxingGloveDown", 392: "BoxingGloveRight", 393: "ColorMixerBL", 394:
     "PaintBucket", 395: "OtterOpen", 396: "OtterClosed", 398: "ToyBoatBL", 399: "ToyBoatBR",
+    401: "BathtubL", 402: "BathtubR",
     32734: "ColorMixerTL", 32735: "ColorMixerTR", 32736: "ColorMixerBR", 32737:
     "MagicLanternT", 32738: "PairTL", 32739: "PairML", 32740: "PairBL", 32741: "PairMM",
     32742: "PairBM", 32743: "PairBR", 32744: "Choco", 32745: "RoyalCapsuleHorizontalL",

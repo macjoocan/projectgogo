@@ -313,6 +313,69 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   스프라이트 1,229 → 10,443, 계층 노드 2,044 → 112,901 이 됐다. 기준치를 적을 때는
   **스킵 수와 사유까지** 함께 적는다(예: "10,443 추출 / 11건 스킵 — 0x0 런타임 생성
   텍스처"). 그 수가 나중에 늘면 그게 신호가 된다.
+- **Steam(PC) 빌드도 된다 — 입력에 설치 폴더를 그대로 준다.** 단 **윈도우 IL2CPP 는
+  코드가 `GameAssembly.dll`(루트)에 있고** 기본 탐색 패턴(`lib/*/libil2cpp.so`)은
+  안드로이드 전용이라 못 찾는다. 그러면 survey 가 `IL2CPP(재료 일부 누락)` 이라 말하고
+  MonoBehaviour 필드가 **전부 빈다.** `typetree.il2cpp: ["GameAssembly.dll"]` 한 줄로
+  해결된다(metadata 는 기본 `*/Metadata/global-metadata.dat` 에 걸린다). 실측으로
+  백엔드 3종이 PE 를 모두 정상 로드한다 — **PE 라서 안 되는 게 아니다.**
+- **번들 경계를 넘는 MonoScript 참조는 세 가지가 다 있어야 풀린다.** SANABI 실측으로
+  복원률이 **70.9% → 99.73%** (미해결 69,263 → 744) 가 된 과정이 그 근거다.
+  ① **미리 여는 "스크립트 전용 번들"만으로는 부족하다** — 조건(MonoScript 100개 이상
+  이고 MonoBehaviour 보다 많을 것)은 Royal Kingdom 처럼 정의를 한 곳에 몬 게임용이고,
+  스크립트가 콘텐츠 번들에 흩어진 게임에서는 소스 836개 중 1개만 걸렸다.
+  ② **런 중 누적**(여는 김에 `add_env`)은 공짜지만 **순서**에 걸린다 — 앞쪽 번들이
+  뒤쪽 스크립트를 참조하면 그 시점엔 색인에 없다(73.8% 에서 멈춘다).
+  ③ **온디맨드 대여가 결정적이다.** `discover.UnitySource.files` 가 번들 **내부**
+  SerializedFile 이름을 이미 알고, 참조가 가리키는 것도 그 이름(`CAB-…`)이다.
+  지도를 만들어 두면 필요한 번들만 한 번씩 열어 순서와 무관하게 푼다
+  (`hierarchy._script_lender` + `ScriptRegistry(lender=)`). 99.4%.
+  **지도에 소스 자신의 이름(basename)도 넣을 것** — 번들이 아닌 소스(kind=serialized)
+  는 `files` 가 비는데 다른 번들은 그걸 소스 이름 그대로 참조한다.
+  ④ **같은 파일이 여는 방식에 따라 다른 이름으로 불린다.** 소스로 열면 내부 이름
+  (`8048103888263714719`), 다른 번들이 참조하면 externals 의
+  `globalgamemanagers.assets`. 한쪽만 걸면 **스크립트 3,871개를 색인해 두고도**
+  참조 2,033건을 못 푼다. `add_env(alias=...)` 로 양쪽에 건다. 99.73%.
+  남은 744건은 **구조적으로 불가능**하다 — 743건이 `path_id == 0`(참조 자체가 빈
+  슬롯이라 "없다"가 정답), 1건이 오브젝트 파손이다. 더 고칠 것이 없다.
+- **측정 도구가 수정 경로를 타는지 먼저 확인할 것.** 위 ④ 를 고친 뒤 재측정했는데
+  숫자가 안 줄었다 — 진단 스크립트가 `_script_registry` 를 안 쓰고 `alias` 없이
+  `add_env` 를 부르고 있어서 **고친 경로를 아예 안 타고 있었다.** 그대로 믿었으면
+  "고쳤는데 효과 없음"으로 잘못 결론 낼 뻔했다.
+- **독립 ScriptableObject 는 어떤 산출물로도 안 나온다.** `hierarchy._classify` 는
+  Transform 이 있는 파일만 분류하므로 MonoBehaviour 만 든 데이터 번들을 통째로
+  건너뛰고, `assets` 의 종류에도 SO 가 없다. `input.unity` 의 `type: MonoBehaviour` 는
+  **JSON 문자열을 품은** SO 용이라(`payload_bytes` 가 가장 긴 문자열을 꺼낸다) 구조화된
+  필드에는 맞지 않는다. 데이터가 SO 에만 있는 게임은 `tools/dump_scriptableobjects.py`
+  를 쓴다 — `m_GameObject` 의 path_id 가 0 이면 독립 에셋, 아니면 컴포넌트다.
+- SANABI 기준치(Steam, WONDER POTION, Unity 2019.4.41f1 IL2CPP): Unity 소스 839 ·
+  Addressables 번들 832 · 에셋경로 1,210(catalog.json 구형). **씬 139 = survey 와 일치**
+  (prlg 14 · chap1~5 16/14/17/14/13 · chapending 3 · dlc 17 · 스피드런 srchap 19 + srdlc 6 ·
+  시스템 6) · 프리팹 2,540 · **노드 178,108 = GameObject 수와 정확히 일치** ·
+  MonoBehaviour 복원 **99.73%**(전체 273,980 중 273,236 — 고치기 전 70.9% 였다.
+  위 "번들 경계를 넘는 MonoScript 참조" 항목 참고). 에셋 18,658(audio 1,804 ·
+  material 16,797 · font 55 · text 2 — 넷 다 survey 와 일치, spine 0).
+  스프라이트 **121,220 추출 / 실패 0 = survey 의 Sprite 수와 일치**(고치기 전에는
+  118,982 / 스킵 2,238 이었다 — 전부 `FileNotFoundError('Resource file
+  resources.assets.resS not found')`. 그 파일은 디스크에 152MB 로 있었는데,
+  `sprites.py` 가 소스를 bytes 로 올리는 바람에 UnityPy 가 *파일 옆*에서 찾는
+  `.resS` 를 못 만났다. `unity.load_bytes(path=...)` 로 실제 경로를 주게 고쳤다).
+  Texture2D 223,869 장은 설정에서 일부러 뺐다
+  (둘 다면 345,089 장). 분류는 **기타가 112,982(95%)** 다 — 기본 규칙이 CookieRun
+  이름에서 나온 것이라 이 게임 약어를 모른다(`sprites.categories` 를 적어야 한다).
+  독립 SO **35,076개** · 컴포넌트 238,079 — 합계 + 미해결 744 + 실패 81 = 273,980 으로
+  survey 의 MonoBehaviour 수와 정확히 맞는다. 계층 쪽 복원은 **238,079/238,088(100.0%)**
+  이고 스크립트참조없음 0 이다(SO 덤프는 독립 에셋까지 보므로 744 가 남는다).
+  단계별 최고 커밋 계층 12.6 · 에셋 8.20 · 스프라이트 8.64GB.
+  `VfxInfoSo` 계열은 `[SerializeReference]` 라 백엔드 3종이 모두 못 읽는다.
+  **TextAsset 이 2개뿐이다** — 데이터 테이블이 없고 밸런스가 전부 SO 다:
+  `PlayerHpState`×4(Easy `damageRate 0.0` = 무적 / Normal 1.0 / Hard `hpRegenRate 0.5` /
+  **Very Hard `damageRate 999.0`** = 즉사) · `MainDifficultySo`×4 · `DLCDifficultySo`×4 ·
+  `EnemyRespawnerSO`×37 · `BattleGateSO`×8 · `SceneData`×100(`targetFolderPath` 에
+  원본 프로젝트 경로가 남아 있다) · `NewTilePalette`×12 · `RuleTileBrush`×22.
+  **계층 zip 의 씬 파일 이름이 CAB 해시라 그대로는 어느 챕터인지 모른다** — 추출 로그의
+  `[hierarchy] <번들>: <파일>(kind)` 줄로 매핑을 복원해 `sanabi_scene_index.json` 을 냈다.
+  Addressables 게임 공통 문제다(Capybara 도 `CAB-…` 였다).
 - 암살자 키우기 기준치(`highpixel.billion` v1.2.12, Unity 2022.3.62f3): TextAsset 93 →
   **데이터 테이블 86개 · 디코딩 실패 0**. 나머지 7은 의도적으로 제외 — `_words_filter`
   (욕설 필터) · `LineBreaking Leading/Following Characters`(Unity 줄바꿈 규칙) ·

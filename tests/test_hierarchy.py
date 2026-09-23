@@ -5,7 +5,7 @@ import math
 import unittest
 import zipfile
 
-from levelscope import hierarchy, typetree, unity
+from levelscope import discover, hierarchy, typetree, unity
 
 from .helpers import FakeEnv, FakeFile, FakeObj, go, pptr, rect
 
@@ -286,3 +286,108 @@ class SceneStreaming(unittest.TestCase):
         self.assertNotIn(b"NaN", new)
         self.assertEqual(new, self._old_way("level3", docs))
         json.loads(new)
+
+
+def _mono_script(fname, pid, cls, asm="Assembly-CSharp.dll", ns=""):
+    """MonoScript 대역 — add_env 가 보는 것만 채운다."""
+    return FakeObj("MonoScript", pid, FakeFile(fname),
+                   attrs={"m_ClassName": cls, "m_Namespace": ns, "m_AssemblyName": asm})
+
+
+class ScriptRegistryAccumulates(unittest.TestCase):
+    """스크립트 색인은 **런이 도는 동안 계속 쌓인다.**
+
+    **왜.** `_script_registry` 는 "스크립트 전용 번들"(MonoScript 가 100개 이상이고
+    MonoBehaviour 보다 많은 것)만 미리 연다. Royal Kingdom 처럼 정의를 한 번들에
+    몰아둔 게임은 그걸로 충분하지만, 스크립트가 콘텐츠 번들마다 흩어진 게임도 있다 —
+    SANABI(Steam) 실측으로 소스 836개 중 **602개**가 MonoScript 를 갖고 있는데
+    그 조건에는 **1개만** 걸려서, 참조가 `CAB-…` 다른 번들을 가리키는 MonoBehaviour
+    74,334건(27%)이 클래스를 못 찾았다. 어차피 런이 모든 번들을 한 번씩 열므로,
+    열린 김에 색인에 넣으면 공짜로 그만큼 풀린다.
+    """
+
+    def test_returns_empty_registry_when_no_bundle_qualifies(self):
+        """미리 열 번들이 없어도 None 이 아니라 **빈 색인**을 준다 (뒤에 쌓을 수 있게)."""
+        reg = hierarchy._script_registry("x", [], {}, lambda *_: None)
+        self.assertIsNotNone(reg, "빈 색인을 줘야 런 중에 누적할 수 있다")
+        self.assertEqual(reg.count, 0)
+        self.assertFalse(bool(reg))
+
+    def test_disabled_by_config_returns_none(self):
+        self.assertIsNone(
+            hierarchy._script_registry("x", [], {"script_registry": False},
+                                       lambda *_: None))
+
+    def test_add_env_grows_the_index(self):
+        reg = typetree.ScriptRegistry()
+        self.assertEqual(reg.count, 0)
+        env = FakeEnv([_mono_script("f1", 11, "Alpha"), _mono_script("f1", 12, "Beta")])
+        self.assertEqual(reg.add_env(env, "b1"), 2)
+        self.assertEqual(reg.count, 2)
+        env2 = FakeEnv([_mono_script("f2", 21, "Gamma")])
+        reg.add_env(env2, "b2")
+        self.assertEqual(reg.count, 3)
+        self.assertTrue(bool(reg))
+
+
+class IndexEntryCarriesSource(unittest.TestCase):
+    """index.json 항목은 **어느 번들에서 나왔는지**를 들고 있어야 한다.
+
+    zip 안 파일 이름은 번들 내부 SerializedFile 이름이라 Addressables 게임에서는
+    `CAB-2555028b…` 같은 해시다. 그것만으로는 어느 챕터인지 알 수 없어 산출물을
+    열어도 쓸 수가 없다 — SANABI 는 씬 139개가 전부 그랬다(`chap3_s13.unity.bundle`
+    이라는 걸 알아야 레벨 디자인을 볼 수 있다).
+    """
+
+    def test_scene_entry_has_readable_source(self):
+        e = hierarchy._entry("scenes/CAB-abc.json", "scene", "CAB-abc",
+                             "D:/game!SNB_Data/aa/chap3_s13.unity.bundle",
+                             roots=4, nodes=120)
+        self.assertEqual(e["source"], "chap3_s13.unity.bundle")
+        self.assertEqual(e["kind"], "scene")
+        self.assertEqual(e["roots"], 4)
+        self.assertEqual(e["nodes"], 120)
+
+    def test_prefab_entry_keeps_its_own_fields(self):
+        e = hierarchy._entry("prefabs/x.json", "prefab", "CAB-def",
+                             "app.xapk!base.apk!data.unity3d", name="Player")
+        self.assertEqual(e["source"], "data.unity3d")
+        self.assertEqual(e["name"], "Player")
+        self.assertNotIn("roots", e)
+
+
+class ScriptLenderMap(unittest.TestCase):
+    """대여 지도는 **번들 내부 이름과 소스 이름을 둘 다** 담아야 한다.
+
+    **실측.** 지도를 `UnitySource.files`(번들 내부 SerializedFile 이름)로만 만들면
+    `globalgamemanagers.assets` 처럼 **번들이 아닌 소스**(kind=serialized)가 빠진다.
+    다른 번들은 그걸 externals 에 **소스 이름 그대로** 적어 참조하므로, 지도에 없으면
+    대여를 요청해도 못 찾는다 — SANABI 에서 미해결 2,777건 중 **2,033건**이 전부
+    `globalgamemanagers.assets` 를 가리켰다(스크립트 3,871개가 거기 있는데도).
+    """
+
+    def _src(self, name, kind="bundle", files=()):
+        return discover.UnitySource(container_label="c", name=name, kind=kind,
+                                    size=1, n_objects=1, type_counts={},
+                                    files=list(files))
+
+    def _map(self, sources):
+        """lender 가 만든 지도를 되읽는다 — 클로저 대신 동작으로 확인한다."""
+        asked = []
+        lend = hierarchy._script_lender("in", sources, lambda *_: None)
+        if lend is None:
+            return None, asked
+        return lend, asked
+
+    def test_map_includes_internal_cab_names(self):
+        lend, _ = self._map([self._src("aa/chap2.bundle", files=["CAB-abc"])])
+        self.assertIsNotNone(lend)
+
+    def test_serialized_source_is_reachable_by_its_own_name(self):
+        """번들이 아닌 소스는 `files` 가 비어도 **자기 이름**으로 찾을 수 있어야 한다."""
+        srcs = [self._src("SNB_Data/globalgamemanagers.assets", kind="serialized")]
+        lend = hierarchy._script_lender("in", srcs, lambda *_: None)
+        self.assertIsNotNone(lend, "files 가 비어도 소스 이름으로 지도가 만들어져야 한다")
+
+    def test_no_sources_gives_no_lender(self):
+        self.assertIsNone(hierarchy._script_lender("in", [], lambda *_: None))

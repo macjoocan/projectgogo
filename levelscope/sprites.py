@@ -56,14 +56,19 @@ def _name_matches(name, pats):
 
 
 def iter_source_bytes(input_path, sources):
-    """(source_label, bytes) — 컨테이너(폴더·apk·xapk·obb·중첩 apk) 안의 unity 파일들."""
+    """(source_label, bytes, real_path) — 컨테이너 안의 unity 파일들.
+
+    `real_path` 는 **디스크에 실제로 있는 파일일 때만** 경로, 아니면 None.
+    UnityPy 가 `.resS` 스트리밍 파일을 원본 옆에서 찾기 때문에 필요하다
+    (`container.real_path` / `unity.load_bytes(path=...)` 독스트링 참고).
+    """
     patterns = as_list(sources)
     if not patterns:
         return
     for c in container.iter_containers(input_path):
         with c:
             for n in c.glob(patterns):
-                yield f"{c.label}!{n}", c.read(n)
+                yield f"{c.label}!{n}", c.read(n), container.real_path(c, n)
 
 
 #: UnityPy가 못 찾은 파일 이름을 실패 메시지에서 뽑는다
@@ -136,7 +141,7 @@ def _dep_file(input_path, name):
 
 def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budget,
                  deps=(), only_ids=None, budget_atlas=unity.ATLAS_CACHE_BUDGET,
-                 tally=None):
+                 tally=None, path=None):
     """소스 하나에서 스프라이트를 뽑는다.
 
     only_ids 를 주면 **그 오브젝트만** 처리한다 — 재시도에서 쓴다. 이름으로 거르면
@@ -148,7 +153,7 @@ def _extract_one(data, suffix, label, want_types, pats, zf, seen, failures, budg
     failed_ids = set()
     if budget <= 0:
         return {"count": 0, "truncated": True, "failed_ids": failed_ids}
-    with unity.load_bytes(data, suffix=suffix, deps=deps) as env:
+    with unity.load_bytes(data, suffix=suffix, deps=deps, path=path) as env:
         for o in unity.iter_objects(env, want_types):
             oid = (unity.file_name(o), o.path_id)
             if only_ids is not None and oid not in only_ids:
@@ -279,7 +284,7 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
     count, seen, failures, used_sources = 0, set(), [], []
     truncated = False
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as zf:
-        for label, data in iter_source_bytes(input_path, sources):
+        for label, data, src_path in iter_source_bytes(input_path, sources):
             used_sources.append(label)
             if count >= max_count:
                 truncated = True
@@ -288,7 +293,8 @@ def extract_sprites(input_path, sprites_cfg, out_dir, game="game", log=print):
             n_before = len(failures)
             missed = _extract_one(data, suffix, label, want_types, pats, zf, seen,
                                   failures, max_count - count,
-                                  budget_atlas=budget_atlas, tally=tally)
+                                  budget_atlas=budget_atlas, tally=tally,
+                                  path=src_path)
             count += missed["count"]
             truncated = truncated or missed["truncated"]
 

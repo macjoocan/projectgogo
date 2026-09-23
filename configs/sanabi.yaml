@@ -1,0 +1,67 @@
+# SANABI (WONDER POTION) — Steam 윈도우 빌드
+#
+# **모바일이 아니라 PC(Steam) 빌드다.** 입력은 APK 가 아니라 설치 폴더를 그대로 준다
+# (`container.DirContainer` 가 폴더를 받는다):
+#   D:\SteamLibrary\steamapps\common\SANABI
+#
+# **꼭 필요한 한 줄은 `typetree.il2cpp` 다.** 윈도우 IL2CPP 빌드는 코드가
+# `libil2cpp.so` 가 아니라 루트의 `GameAssembly.dll`(69.6MB)에 있는데, 기본 탐색
+# 패턴(`lib/*/libil2cpp.so`)이 안드로이드 전용이라 못 찾는다. 그래서 survey 가
+# "IL2CPP(재료 일부 누락)" 이라고 말한다. 이 줄이 없으면 MonoBehaviour 필드가
+# 전부 빈다 — 이 게임은 데이터가 전부 ScriptableObject 라 그러면 아무것도 못 얻는다.
+# metadata 는 기본 패턴 `*/Metadata/global-metadata.dat` 에 그대로 걸린다.
+# 실측: 백엔드 3종(AssetRipper/AssetStudio/AssetsTools)이 PE 를 모두 정상 로드한다.
+#
+# 조사(survey, 326초 · 피크 7.64GB):
+#   Unity 2019.4.41f1 · IL2CPP · Unity 소스 839개
+#   Addressables 번들 832 · 에셋경로 1,210 (catalog.json 구형 포맷, 주소매핑 해독됨)
+#   씬 139개 — chap<N>_s<NN> / srchap<N>_s<NN>(스피드런) 명명
+#   Sprite 121,220 · Texture2D 223,869 · AudioClip 1,804 · Material 16,797
+#   Mesh 15,967 · AnimationClip 7,738 · GameObject 178,108 · MonoBehaviour 273,980
+#   TextAsset 2  ← JSON/CSV 데이터 테이블이 **없다**
+#
+# **레벨 디자인 구조 = 씬 139개.** 챕터·스테이지가 번들 이름에 그대로 있다.
+# **밸런스 데이터 = ScriptableObject.** `dataso_assets_all.bundle`(7.2MB) 실측 —
+#   MainDifficultySo×4 · DLCDifficultySo×4 · PlayerHpState×4 · EnemyRespawnerSO×37 ·
+#   BattleGateSO×8 · NewTilePalette×12 · RuleTileBrush×22 · BranchSo×10 · SpeakerData×69.
+#   구조화된 필드(문자열 JSON 이 아니다)라 `input.unity` 로는 못 받는다 —
+#   그래서 이 설정에 `input` 절이 없다. 계층(hierarchy)이 컴포넌트 필드를 복원한다.
+game: sanabi
+
+typetree:
+  # 윈도우 IL2CPP — 이 줄이 이 설정의 핵심이다 (위 설명 참고)
+  il2cpp: ["GameAssembly.dll"]
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  # GameObject 178,108 — 기본값(200,000)에 근접한다. 여유를 둔다.
+  max_nodes: 500000
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  # AudioClip 1,804 + Material 16,797 = 18,601 이상. 기본값(4,000)이면 잘린다.
+  max_count: 40000
+
+sprites:
+  sources: auto
+  # **Texture2D 를 일부러 뺐다.** Sprite 121,220 + Texture2D 223,869 = 345,089 장이라
+  # 둘 다 뽑으면 수십 GB 가 된다. 픽셀아트 게임이라 Texture2D 상당수가 Sprite 의
+  # 아틀라스 원본이다. 필요해지면 types 에 Texture2D 를 넣고 디스크를 확보한 뒤 돌린다.
+  types: [Sprite]
+  max_count: 150000
+  categorize: true
+
+notes:
+  - "Steam PC 빌드 — 입력은 설치 폴더(D:\\SteamLibrary\\steamapps\\common\\SANABI)"
+  - "typetree.il2cpp: GameAssembly.dll 이 없으면 필드가 전부 빈다"
+  - "TextAsset 2개뿐 — 데이터는 전부 ScriptableObject"
+  - "레벨 디자인은 씬 139개(chap<N>_s<NN>), 밸런스는 dataso_assets_all.bundle"
+  - "sprites 는 Sprite 만 — Texture2D 까지면 345,089장"
+
+# 레벨 산출물(xlsx/zip/html) 없음 — JSON 데이터 테이블이 없는 게임이다.
+# (`run` 은 레벨 산출물을 고르지 않으면 수집·디코딩을 건너뛴다 — v1.29.0)
+outputs: [assets, hierarchy, sprites]

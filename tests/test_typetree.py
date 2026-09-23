@@ -364,3 +364,160 @@ class LazyBackendLoad(unittest.TestCase):
         before = dict(reader._nodes)
         reader.read(_mono_obj("I2.Loc.Localize"))
         self.assertEqual(reader._nodes, before, "캐시가 있으면 get_nodes 를 다시 부르지 않는다")
+
+
+class WindowsIl2cppDefaults(unittest.TestCase):
+    """윈도우(Steam) IL2CPP 빌드도 기본 탐색으로 잡혀야 한다.
+
+    **왜.** PC 빌드는 코드가 `libil2cpp.so` 가 아니라 게임 루트의
+    `GameAssembly.dll` 에 있다. 기본 패턴이 안드로이드 전용이면 survey 가
+    `IL2CPP(재료 일부 누락)` 이라 말하고 MonoBehaviour 필드가 **전부 빈다** —
+    SANABI 는 TextAsset 이 2개뿐이고 데이터가 전부 ScriptableObject 라 그러면
+    아무것도 못 얻는다. 실측으로 백엔드 3종이 PE 를 정상 로드하므로,
+    **PE 라서 안 되는 게 아니라 찾지를 못한 것**이었다.
+    metadata 는 `*/Metadata/global-metadata.dat` 가 이미 PC 경로
+    (`<게임>_Data/il2cpp_data/Metadata/...`)에 걸린다.
+    """
+
+    def setUp(self):
+        self._td = tempfile.TemporaryDirectory()
+        self.tmp = self._td.name
+
+    def tearDown(self):
+        self._td.cleanup()
+
+    def _write(self, rel, data=b"x"):
+        p = os.path.join(self.tmp, rel.replace("/", os.sep))
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "wb") as f:
+            f.write(data)
+
+    def test_default_patterns_include_gameassembly(self):
+        self.assertTrue(
+            any("GameAssembly.dll" in p for p in typetree.DEFAULT_IL2CPP),
+            f"윈도우 IL2CPP 를 못 찾는다: {typetree.DEFAULT_IL2CPP}")
+
+    def test_finds_steam_layout_without_config(self):
+        """설정 없이 Steam 설치 폴더 모양 그대로 재료를 찾아야 한다."""
+        self._write("GameAssembly.dll", b"MZ" + b"\0" * 30)
+        self._write("SNB_Data/il2cpp_data/Metadata/global-metadata.dat", b"\xaf\x1b\xb1\xfa")
+        so, md, labels = typetree.find_materials(self.tmp, None)
+        self.assertTrue(so.startswith(b"MZ"))
+        self.assertEqual(md[:4], b"\xaf\x1b\xb1\xfa")
+        self.assertIn("GameAssembly.dll", str(labels[0]))
+
+    def test_android_layout_still_wins_when_both_exist(self):
+        """안드로이드 경로가 있으면 그게 먼저다 — 기존 게임의 동작이 안 바뀐다."""
+        self._write("lib/arm64-v8a/libil2cpp.so", b"\x7fELF")
+        self._write("GameAssembly.dll", b"MZ")
+        self._write("assets/bin/Data/Managed/Metadata/global-metadata.dat", b"\xaf\x1b\xb1\xfa")
+        so, _md, labels = typetree.find_materials(self.tmp, None)
+        self.assertTrue(so.startswith(b"\x7fELF"), f"안드로이드가 우선이어야 한다: {labels[0]}")
+
+
+def _ms(fname, pid, cls, asm="Assembly-CSharp.dll", ns=""):
+    """MonoScript 대역 — add_env 가 보는 것만 채운다."""
+    return FakeObj("MonoScript", pid, FakeFile(fname),
+                   attrs={"m_ClassName": cls, "m_Namespace": ns, "m_AssemblyName": asm})
+
+
+class RegistryLendsOnDemand(unittest.TestCase):
+    """색인에 없는 파일을 가리키면 **그 번들을 그때 열어** 채운다.
+
+    **왜.** 미리 여는 "스크립트 전용 번들" 조건에 안 걸리고, 런 중 누적도 **순서**에
+    걸린다 — 앞쪽 번들이 뒤쪽 번들의 스크립트를 참조하면 그 시점엔 아직 색인에 없다.
+    SANABI 실측으로 누적만으로는 70.9% → 73.8% 밖에 못 올렸다(스크립트참조없음
+    69,263 → 62,299). 참조가 가리키는 파일 이름(`CAB-…`)은 `discover` 가 이미 아는
+    **번들 내부 SerializedFile 이름**이므로, 지도를 만들어 두면 **필요한 번들만**
+    한 번씩 열어 순서와 무관하게 풀 수 있다(실측으로 그 CAB 들은 `snb.bundle`·
+    `chap4.bundle`·`mari_assets_all.bundle` 같은 공용 번들이었다).
+
+    같은 파일을 두 번 열지 않는다 — 없는 것으로 판명돼도 기억한다.
+    """
+
+    def _obj(self, fname, pid):
+        o = FakeObj("MonoBehaviour", 1, FakeFile(fname))
+        o.read = lambda check_read=True: types.SimpleNamespace(
+            m_Script=types.SimpleNamespace(file_id=0, path_id=pid))
+        return o
+
+    def test_lender_fills_the_index_on_a_miss(self):
+        calls = []
+
+        def lender(fname):
+            calls.append(fname)
+            return FakeEnv([_ms("f1", 7, "Alpha")]) if fname == "f1" else None
+
+        reg = typetree.ScriptRegistry(lender=lender)
+        ref = reg.resolve(self._obj("f1", 7))
+        self.assertIsNotNone(ref, "빌려온 번들에서 풀려야 한다")
+        self.assertEqual(ref.cls, "Alpha")
+        self.assertEqual(calls, ["f1"])
+
+    def test_lender_is_asked_only_once_per_file(self):
+        calls = []
+
+        def lender(fname):
+            calls.append(fname)
+            return None                      # 그 번들에 없다
+
+        reg = typetree.ScriptRegistry(lender=lender)
+        for _ in range(4):
+            self.assertIsNone(reg.resolve(self._obj("missing", 3)))
+        self.assertEqual(calls, ["missing"], "없다고 판명된 파일을 다시 열면 안 된다")
+
+    def test_known_file_does_not_call_the_lender(self):
+        calls = []
+        reg = typetree.ScriptRegistry(lender=lambda f: calls.append(f))
+        reg.add_env(FakeEnv([_ms("f1", 7, "Alpha")]), "b")
+        self.assertEqual(reg.resolve(self._obj("f1", 7)).cls, "Alpha")
+        self.assertEqual(calls, [], "이미 아는 파일은 다시 열지 않는다")
+
+    def test_without_lender_behaves_as_before(self):
+        reg = typetree.ScriptRegistry()
+        self.assertIsNone(reg.resolve(self._obj("f1", 7)))
+
+
+class IndexUnderBothNames(unittest.TestCase):
+    """같은 SerializedFile 이 **여는 방식에 따라 다른 이름**으로 불린다.
+
+    **실측.** `globalgamemanagers.assets` 를 소스로 열면 그 안 MonoScript 의
+    `assets_file.name` 은 내부 이름(`8048103888263714719`)이다. 그런데 다른 번들이
+    그걸 참조할 때 `externals` 에 적힌 이름은 `globalgamemanagers.assets` 다.
+    키가 어긋나 **스크립트 3,871개를 색인해 두고도** 참조 2,033건을 못 풀었다.
+    그래서 넣을 때 **부르는 이름(alias)으로도** 같이 건다.
+    """
+
+    def _obj(self, fname, pid):
+        o = FakeObj("MonoBehaviour", 1, FakeFile(fname))
+        o.read = lambda check_read=True: types.SimpleNamespace(
+            m_Script=types.SimpleNamespace(file_id=0, path_id=pid))
+        return o
+
+    def test_alias_resolves_too(self):
+        reg = typetree.ScriptRegistry()
+        reg.add_env(FakeEnv([_ms("8048103888263714719", 7, "GameMain")]),
+                    "globalgamemanagers.assets", alias="globalgamemanagers.assets")
+        # 내부 이름으로도, 부르는 이름으로도 풀려야 한다
+        self.assertEqual(reg.resolve(self._obj("8048103888263714719", 7)).cls, "GameMain")
+        self.assertEqual(reg.resolve(self._obj("globalgamemanagers.assets", 7)).cls,
+                         "GameMain")
+
+    def test_alias_is_optional(self):
+        reg = typetree.ScriptRegistry()
+        reg.add_env(FakeEnv([_ms("f1", 7, "Alpha")]), "b")
+        self.assertEqual(reg.resolve(self._obj("f1", 7)).cls, "Alpha")
+        self.assertIsNone(reg.resolve(self._obj("b", 7)))
+
+    def test_alias_same_as_internal_does_not_double_count(self):
+        reg = typetree.ScriptRegistry()
+        reg.add_env(FakeEnv([_ms("f1", 7, "Alpha")]), "f1", alias="f1")
+        self.assertEqual(reg.count, 1, "같은 이름이면 한 번만 세야 한다")
+
+    def test_borrowed_env_is_indexed_under_the_requested_name(self):
+        """대여로 열었으면 **물어본 이름**으로도 걸려야 한다 — 그게 다시 물어볼 이름이다."""
+        reg = typetree.ScriptRegistry(
+            lender=lambda f: FakeEnv([_ms("inner-cab", 9, "Shared")]))
+        ref = reg.resolve(self._obj("outer-name", 9))
+        self.assertIsNotNone(ref)
+        self.assertEqual(ref.cls, "Shared")

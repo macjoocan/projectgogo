@@ -1,6 +1,7 @@
 # Royal Match (com.dreamgames.royalmatch) — levelscope 설정
 #
-# 레벨이 FlatBuffers 바이너리로 들어 있다. 이름이 `1`~`14300` 인 TextAsset 14,300개.
+# 레벨이 FlatBuffers 바이너리로 들어 있다. 38174 빌드는 이름이 `1`~`14500` 인
+# TextAsset 14,500개다.
 # Royal Kingdom 과 같은 스튜디오(Dream Games)라 형식은 같지만 **열거형이 다르다.**
 #
 # 이 게임은 슬롯 번호가 아니라 원래 필드 이름으로 나온다. 앱 안에 FlatBuffers
@@ -17,7 +18,7 @@ input:
   unity:
     data_file: assets/bin/Data/datapack.unity3d
     type: TextAsset
-    name_pattern: "[0-9]+"        # 순수 숫자 이름만 = 레벨 (14,300개)
+    name_pattern: "[0-9]+"        # 순수 숫자 이름만 = 레벨 (14,500개)
 
 codec: [flatbuffers]
 
@@ -33,7 +34,7 @@ summary:
 
 viewer:
   title: Royal Match 레벨 뷰어
-  subtitle: FlatBuffers 레벨 14,300개 · 타일·목표 이름은 앱 열거형에서 복원
+  subtitle: FlatBuffers 레벨 14,500개 · 타일·목표 이름은 앱 열거형에서 복원
   render: tiles
   icon_dir: icons/royalmatch
   tile_type_pattern: "type{}"
@@ -97,7 +98,7 @@ sprites:
     # 이 세션에서 표본을 직접 확인했다. Royal Kingdom 의 light 와 뜻이 다르다.
     - name: 오브제
       match: ['re:^light[_-]ball']
-# text 는 뺀다 — 이 게임은 레벨이 TextAsset 이라(14,300개) 넣으면 상한을 다 먹고
+# text 는 뺀다 — 이 게임은 레벨이 TextAsset 이라(14,500개) 넣으면 상한을 다 먹고
 # 정작 오디오·머티리얼을 못 연다. 레벨은 levels_decoded.zip 에 따로 들어간다.
 
 assets:
@@ -113,8 +114,8 @@ hierarchy:
   max_nodes: 400000
 
 notes:
-  - "확인됨: 레벨 14,300개 전부 FlatBuffers 로 해독. 보드 정합성(셀수 = 가로x세로) 14,300/14,300."
-  - "확인됨: 셀 타입 361종이 쓰이는데 전부 이름이 붙었다(미상 0). 앱의 TiledId 429개에서 왔다."
+  - "확인됨(38174): 레벨 14,500개 전부 FlatBuffers 로 해독. 보드 정합성(셀수 = 가로x세로) 14,500/14,500."
+  - "확인됨(38174): 새 타일 BathtubL=401·BathtubR=402를 포함해 사용 셀 타입 전부 이름이 붙었다(미상 0)."
   - "확인됨: 필드 이름은 앱의 FlatBuffers 생성 클래스에서 왔다 — 슬롯 번호가 아니라 Name/Move/Grid 다."
   - "확인됨: 목표는 GoalType 이름으로 나온다. 83종 사용 — 잔디 3,576 · 화병 2,077 · 젤리 1,705 …"
   - "확인됨: 보드 크기 9x11 이 10,203개로 최다. 9x31·9x37 같은 긴(스크롤) 보드도 있다."

@@ -27,6 +27,7 @@ import json
 import math
 import os
 import re
+import types
 import zipfile
 
 from . import container, discover, typetree, unity
@@ -250,6 +251,91 @@ class _Builder:
         return out
 
 
+def _script_lender(input_path, sources, log):
+    """`SerializedFile 이름 → 그걸 품은 번들의 env` 를 내주는 콜백. 없으면 None.
+
+    **왜 필요한가.** 미리 여는 "스크립트 전용 번들" 조건(MonoScript 100개 이상이고
+    MonoBehaviour 보다 많을 것)은 Royal Kingdom 처럼 정의를 한 곳에 몰아둔 게임을
+    위한 것이다. 스크립트가 콘텐츠 번들마다 흩어진 게임에서는 거의 아무것도 안
+    걸린다 — SANABI 는 소스 836개 중 602개가 MonoScript 를 갖는데 1개만 걸렸다.
+    런 중 누적(아래 add_env)도 **순서**에 걸린다: 앞쪽 번들이 뒤쪽 번들의 스크립트를
+    참조하면 그 시점엔 아직 색인에 없다(실측 70.9 → 73.8% 로만 올랐다).
+
+    `discover` 는 소스마다 **번들 내부 SerializedFile 이름**(`UnitySource.files`)을
+    이미 알고 있다. 참조가 가리키는 것도 그 이름(`CAB-…`)이므로 지도를 만들어 두면
+    **필요한 번들만** 한 번씩 열어 순서와 무관하게 풀 수 있다. SANABI 실측으로
+    그 CAB 들은 `snb.bundle`·`chap4.bundle`·`mari_assets_all.bundle` 같은 공용
+    번들이었다 — 미리 다 열면 836개지만, 실제로 필요한 것은 그중 일부다.
+    """
+    index = {}
+    for s in sources:
+        if not isinstance(s, discover.UnitySource):
+            continue
+        # 번들 내부 SerializedFile 이름 (`CAB-…`)
+        for f in s.files or ():
+            index.setdefault(f, s)
+        # **소스 자신의 이름도 넣는다.** 번들이 아닌 소스(kind=serialized)는 `files`
+        # 가 비어 있고, 다른 번들은 그걸 externals 에 **소스 이름 그대로** 적어
+        # 참조한다. 이게 없으면 SANABI 의 `globalgamemanagers.assets` 를 못 찾아
+        # 미해결 2,777건 중 2,033건이 그대로 남았다 — 스크립트 3,871개가 거기 있는데도.
+        index.setdefault(s.basename, s)
+    if not index:
+        return None
+
+    def lend(fname):
+        src = index.get(fname)
+        if src is None:
+            return None
+        data, _ = container.find_first(input_path, [src.name, f"*/{src.name}"])
+        if data is None:
+            return None
+        # env 를 그대로 돌려주면 번들이 계속 살아 있다. ScriptRegistry.add_env 는
+        # 값(ScriptRef)만 뽑으므로, 여기서 열고 바로 닫아도 색인은 유효하다.
+        with unity.load_bytes(
+                data, suffix=os.path.splitext(src.name)[1] or ".unity3d") as env:
+            return _ScriptEnvSnapshot(env)
+
+    return lend
+
+
+class _ScriptEnvSnapshot:
+    """`add_env` 가 보는 것만 남긴 얕은 사본 — 번들을 바로 닫기 위해.
+
+    `add_env` 는 MonoScript 오브젝트를 읽어 문자열 3개만 뽑는다. 그 읽기를 **여기서
+    미리** 끝내 두면 호출자가 env 를 닫아도 된다. reader 를 들고 있으면 번들 env
+    전체가 색인이 사는 동안 메모리에 붙잡힌다(CLAUDE.md).
+    """
+
+    def __init__(self, env):
+        self.objects = []
+        for o in env.objects:
+            if o.type.name != "MonoScript":
+                continue
+            try:
+                ms = o.read()
+                self.objects.append(_FrozenScript(
+                    unity.file_name(o), o.path_id,
+                    getattr(ms, "m_ClassName", "") or "",
+                    getattr(ms, "m_Namespace", "") or "",
+                    getattr(ms, "m_AssemblyName", "") or ""))
+            except Exception:  # noqa: BLE001 - 못 읽는 MonoScript 는 뺀다
+                continue
+
+
+class _FrozenScript:
+    """`add_env` 가 기대하는 모양(type.name / path_id / read())만 흉내낸다."""
+
+    def __init__(self, fname, path_id, cls, ns, asm):
+        self.type = types.SimpleNamespace(name="MonoScript")
+        self.path_id = path_id
+        self.assets_file = types.SimpleNamespace(name=fname)
+        self._v = types.SimpleNamespace(m_ClassName=cls, m_Namespace=ns,
+                                        m_AssemblyName=asm)
+
+    def read(self, check_read=True):
+        return self._v
+
+
 def _script_registry(input_path, sources, cfg, log):
     """스크립트 정의를 몰아둔 번들을 미리 열어 MonoScript 색인을 만든다.
 
@@ -272,10 +358,14 @@ def _script_registry(input_path, sources, cfg, log):
               if isinstance(s, discover.UnitySource)
               and s.type_counts.get("MonoScript", 0) >= min_scripts
               and s.type_counts.get("MonoScript", 0) > s.type_counts.get("MonoBehaviour", 0)]
+    reg = typetree.ScriptRegistry(lender=_script_lender(input_path, sources, log))
     if not picked:
-        return None
+        # 미리 열 "스크립트 전용 번들" 이 없어도 **빈 색인**을 돌려준다.
+        # 메인 루프가 여는 번들마다 여기에 쌓으므로(아래 add_env) 스크립트가
+        # 콘텐츠 번들에 흩어진 게임도 풀린다 — SANABI 는 소스 836개 중 602개가
+        # MonoScript 를 갖는데 이 조건에는 1개만 걸렸다.
+        return reg
 
-    reg = typetree.ScriptRegistry()
     for s in picked:
         data, _ = container.find_first(input_path, [s.name, f"*/{s.name}"])
         if data is None:
@@ -283,7 +373,9 @@ def _script_registry(input_path, sources, cfg, log):
         try:
             with unity.load_bytes(
                     data, suffix=os.path.splitext(s.name)[1] or ".unity3d") as env:
-                reg.add_env(env, s.basename)
+                # alias: 다른 번들은 이 파일을 **소스 이름**으로 부른다
+                # (내부 이름은 다르다 — ScriptRegistry.add_env 주석 참고)
+                reg.add_env(env, s.basename, alias=s.basename)
         except Exception as e:  # noqa: BLE001 - 못 열면 그냥 없이 간다
             log(f"[hierarchy] 스크립트 번들 {s.basename} 열기 실패: {e}")
             continue
@@ -293,6 +385,20 @@ def _script_registry(input_path, sources, cfg, log):
     log(f"[hierarchy] 스크립트 색인 {reg.count:,}개 등록 "
         f"({', '.join(f'{b}×{n}' for b, n in reg.sources[:3])}) — 번들 간 참조 해석용")
     return reg
+
+
+def _entry(path, kind, fname, source, **extra):
+    """index.json 의 항목 하나.
+
+    **`source` 가 핵심이다.** zip 안 파일 이름은 번들 내부 SerializedFile 이름이라
+    Addressables 게임에서는 `CAB-2555028b…` 같은 해시다. 어느 챕터인지 알 수 없어
+    63.9MB zip 을 열어도 쓸 수가 없다(SANABI 씬 139개가 전부 그랬다).
+    소스 번들 이름을 같이 남기면 `chap3_s13.unity.bundle` 로 이어진다.
+    """
+    out = {"path": path, "kind": kind, "file": fname,
+           "source": os.path.basename(str(source).replace("!", "/"))}
+    out.update(extra)
+    return out
 
 
 def _classify(index):
@@ -331,6 +437,13 @@ def extract_hierarchy(input_path, hier_cfg, out_dir, game="game", mono_cfg=None,
             suffix = os.path.splitext(label)[1] or ".unity3d"
             with unity.load_bytes(data, suffix=suffix) as env:
                 index = unity.ObjectIndex(env)
+                # 연 김에 이 번들의 MonoScript 를 색인에 넣는다. 런은 어차피 모든
+                # 소스를 한 번씩 열므로 추가 비용이 사실상 없고, 참조가 다른 번들을
+                # 가리키는 MonoBehaviour 가 그만큼 풀린다. 값(ScriptRef)만 남기므로
+                # 번들을 닫아도 색인은 유효하다.
+                if registry is not None:
+                    base = os.path.basename(str(label).replace("!", "/"))
+                    registry.add_env(env, base, alias=base)
                 if mono is None:
                     # MonoReader 하나를 모든 소스가 공유한다. 소스마다 만들면
                     # libil2cpp.so(112MB) + global-metadata.dat(20MB) 를 백엔드마다
@@ -354,8 +467,8 @@ def extract_hierarchy(input_path, hier_cfg, out_dir, game="game", mono_cfg=None,
                     if kind == "scene":
                         path = _unique(f"scenes/{_safe(fname)}.json", seen_paths)
                         n_roots = _write_scene(zf, path, fname, b, roots)
-                        entries.append({"path": path, "kind": "scene", "file": fname,
-                                        "roots": n_roots, "nodes": b.nodes})
+                        entries.append(_entry(path, "scene", fname, label,
+                                              roots=n_roots, nodes=b.nodes))
                         n_scenes += 1
                     else:
                         for name, tr in roots:
@@ -368,8 +481,8 @@ def extract_hierarchy(input_path, hier_cfg, out_dir, game="game", mono_cfg=None,
                                 n_dupes += 1
                             zf.writestr(path, _dump({"file": fname, "kind": "prefab",
                                                      "root": doc}))
-                            entries.append({"path": path, "kind": "prefab", "file": fname,
-                                            "name": name})
+                            entries.append(_entry(path, "prefab", fname, label,
+                                                  name=name))
                             n_prefabs += 1
                     n_nodes += b.nodes
                     truncated = truncated or b.truncated

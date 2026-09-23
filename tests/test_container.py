@@ -2,6 +2,7 @@
 import os
 import tempfile
 import unittest
+import zipfile
 
 from levelscope import container
 
@@ -163,3 +164,51 @@ class FindFirst(Tmp):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RealPath(unittest.TestCase):
+    """`path_of` — 실제 파일 경로가 있으면 준다. 없으면 None.
+
+    **왜 필요한가.** UnityPy 는 `.resS`/`.resource` 스트리밍 파일을 **원본 파일 옆**
+    에서 찾는다. bytes 로 올리면 그 형제를 못 만나 `FileNotFoundError: Resource file
+    <이름>.resS not found` 로 텍스처가 통째로 빠진다 — SANABI(Steam) 에서 실측으로
+    Sprite 121,220 장 중 2,238 장이 그렇게 사라졌다(파일은 디스크에 152MB 로 있었다).
+    폴더 입력이면 진짜 경로가 있으므로 그걸로 열면 해결된다.
+    """
+
+    def setUp(self):
+        self._td = tempfile.TemporaryDirectory()
+        self.tmp = self._td.name
+
+    def tearDown(self):
+        self._td.cleanup()
+
+    def test_dir_container_gives_a_real_path(self):
+        p = os.path.join(self.tmp, "a.assets")
+        with open(p, "wb") as f:
+            f.write(b"x")
+        c = container.DirContainer(self.tmp)
+        got = c.path_of("a.assets")
+        self.assertTrue(os.path.isfile(got))
+        self.assertEqual(os.path.abspath(got), os.path.abspath(p))
+
+    def test_zip_container_has_no_real_path(self):
+        """아카이브 안 엔트리에는 파일 경로가 없다 — None 이어야 한다(예외 아님)."""
+        zp = os.path.join(self.tmp, "a.zip")
+        with zipfile.ZipFile(zp, "w") as z:
+            z.writestr("b.assets", b"x")
+        for c in container.iter_containers(zp):
+            with c:
+                self.assertIsNone(c.path_of("b.assets"))
+                break
+
+    def test_real_path_helper_swallows_concat_segments(self):
+        """이어붙인 번들의 세그먼트는 경로가 없다 — 헬퍼가 None 으로 받아 준다."""
+        class Seg:
+            def path_of(self, name):
+                raise ValueError("이어붙인 번들의 세그먼트에는 파일 경로가 없습니다")
+        self.assertIsNone(container.real_path(Seg(), "x"))
+
+    def test_real_path_helper_returns_none_when_missing(self):
+        c = container.DirContainer(self.tmp)
+        self.assertIsNone(container.real_path(c, "does-not-exist.assets"))

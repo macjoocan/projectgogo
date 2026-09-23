@@ -68,6 +68,17 @@ class Container:
         """엔트리 크기(바이트). 내용을 읽지 않고 알 수 있으면 그렇게 한다."""
         return len(self.read(name))
 
+    def path_of(self, name):
+        """엔트리의 **실제 파일 경로**. 아카이브 안이라 없으면 None.
+
+        UnityPy 는 `.resS`/`.resource` 스트리밍 파일을 **원본 파일 옆**에서 찾는다.
+        bytes 로 올리면 그 형제를 못 만나 텍스처가 통째로 빠진다 — SANABI(Steam)
+        에서 Sprite 121,220 장 중 2,238 장이 `Resource file resources.assets.resS
+        not found` 로 사라졌다(그 파일은 디스크에 152MB 로 있었다).
+        폴더 입력이면 진짜 경로가 있으니 그걸로 열면 해결된다.
+        """
+        return None
+
     def close(self):
         pass
 
@@ -329,6 +340,21 @@ class ConcatView(Container):
 
     def __repr__(self):
         return f"<ConcatView {self.label}>"
+
+
+def real_path(c, name):
+    """`c.path_of(name)` 이 가리키는 실제 파일 경로. 없으면 None.
+
+    컨테이너마다 사정이 다르다 — 아카이브 엔트리에는 경로가 없고(None), 이어붙인
+    번들의 세그먼트는 `ConcatView.path_of` 가 ValueError 를 던진다(파일 하나 안의
+    일부라 경로로 열면 첫 번들만 읽힌다). 호출부마다 이 분기를 적지 않도록 여기서
+    한 번에 받아 준다. **존재하는 파일일 때만** 돌려준다.
+    """
+    try:
+        p = c.path_of(name)
+    except (ValueError, AttributeError, NotImplementedError):
+        return None
+    return p if p and os.path.isfile(p) else None
 
 
 def open_root(input_path):
