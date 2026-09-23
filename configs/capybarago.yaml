@@ -1,0 +1,65 @@
+# Capybara Go! — com.habby.capybara
+#
+# **레벨(데이터 테이블) 추출이 없다 — 데이터는 있지만 포맷을 아직 못 읽는다.**
+#
+# 데이터 테이블은 `tb<모듈>_<테이블>` 이름의 TextAsset 으로 들어 있다(assets zip 의
+# `text/` 참고): `tbchapter_chapter` 407KB · `tbgameskill_skill` 733KB ·
+# `tbitem_item` 633KB · `tbgamemember_member` 512KB · `tbroguedungeon_roguedungeon`
+# 795KB · `tbtowerchallenge_towerlevel` 440KB · `tblanguage_*`(현지화, 11.7MB 등).
+#
+# 포맷은 **Luban 바이너리**다(같은 번들에 `LubanSupport.dll` 이 있다). JSON 도 압축도
+# 아니고 길이 접두 문자열 + 고정폭 수치의 자체 직렬화다 — 실측 머리:
+#   tbchapter_chapter  812d010e "Chapter_Name_1"   (\x0e = 14 = 문자열 길이)
+#   tbitem_item        93db0100 6b09 "icon_coin"   (\x09 = 9)
+# `.txt`/`.bin` 로 갈려 보이는 것은 assets.py 의 확장자 휴리스틱이고 둘 다 같은 포맷이다.
+# 그래서 codec 자동 감지가 실패하며, survey 는 이걸 "커스텀 바이너리"로 지목했다.
+# **암호화가 아니므로 `--xor-scan` 은 대상이 아니다.**
+#
+# 읽으려면 스키마가 필요하다. Luban 은 생성 코드에 스키마를 담고, 이 게임은 HybridCLR
+# 이라 관리형 DLL 이 그대로 들어 있다(`HotFix.dll` 16.6MB · `Framework.dll`) — IL2CPP
+# 덤프보다 읽기 쉽다. Royal Kingdom 의 FlatBuffers 를 `tools/fbnames_from_dump.py` 로
+# 푼 것과 같은 접근이 가능하지만, 새 코덱과 스키마 추출이 필요한 별도 작업이다.
+#
+# 그래서 지금은 outputs 에 xlsx·zip·html 이 없다. 리소스와 계층만 뽑는다. 테이블 원본
+# 바이트는 `capybarago_assets.zip` 의 `text/` 에 그대로 들어 있다 —
+# "없다"와 "못 읽었다"는 다르다(CLAUDE.md).
+# (`run` 은 레벨 산출물을 고르지 않으면 수집·디코딩을 건너뛴다 — v1.29.0)
+#
+# 조사(survey, 870초 · 피크 0.74GB):
+#   Unity 2022.3.62f2 · IL2CPP · Unity 소스 2,285개
+#   Addressables 번들 1,919 · 에셋경로 14,768 (카탈로그 해독됨)
+#   Sprite 10,101 · Texture2D 4,930 · AudioClip 401 · Material 2,469 · Font 10
+#   Mesh 1,352 · AnimationClip 404 · TextAsset 2,367
+#   GameObject 360,346 · MonoBehaviour 380,887 · 씬 7개
+game: capybarago
+package: com.habby.capybara
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  # 실측 Sprite 10,101 + Texture2D 4,930. 기본값(1000)이면 조용히 잘린다.
+  max_count: 30000
+  categorize: true
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  # 실측 audio 401 + material 2,469 + font 10 + text 2,367 = 5,000 이상.
+  max_count: 30000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  # GameObject 360,346 — 기본값(200,000)이면 잘린다.
+  max_nodes: 800000
+
+notes:
+  - "조사: Unity 2022.3.62f2 · IL2CPP · Unity 소스 2,285개(Addressables 번들 1,919)"
+  - "소스가 2,285개라 단계마다 느리다. survey 의 discover 만 14분이었다"
+  - "TextAsset 2,367 = spine 1,708 + text 659. text 쪽에 tb* Luban 테이블과 C# DLL이 있다"
+  - "데이터 테이블은 Luban 바이너리 — 원본 바이트는 assets zip 의 text/ 에 있다(디코딩 미지원)"
+  - "번들이 잘게 쪼개져 있어 메모리 피크는 낮다(survey 0.74GB) — 병목은 시간이다"
+
+outputs: [sprites, assets, hierarchy]

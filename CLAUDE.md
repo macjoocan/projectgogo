@@ -313,6 +313,31 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   스프라이트 1,229 → 10,443, 계층 노드 2,044 → 112,901 이 됐다. 기준치를 적을 때는
   **스킵 수와 사유까지** 함께 적는다(예: "10,443 추출 / 11건 스킵 — 0x0 런타임 생성
   텍스처"). 그 수가 나중에 늘면 그게 신호가 된다.
+- 암살자 키우기 기준치(`highpixel.billion` v1.2.12, Unity 2022.3.62f3): TextAsset 93 →
+  **데이터 테이블 86개 · 디코딩 실패 0**. 나머지 7은 의도적으로 제외 — `_words_filter`
+  (욕설 필터) · `LineBreaking Leading/Following Characters`(Unity 줄바꿈 규칙) ·
+  Spine 4개(`skeleton`, `03_brush up_illust` 의 atlas+json). 앞의 셋은 survey 가
+  "디코딩 불가"로 지목하지만 **암호화가 아니라 JSON 이 아닌 것**이라 xor-scan 대상이
+  아니다. 스프라이트 14,102(스킵 5) · 에셋 357 · 계층 씬 2 / 프리팹 195 / 노드 129,983 ·
+  MonoBehaviour 복원 143,755/143,765(100.0%, 실패 10은 전부
+  `DamageNumbersPro.DamageNumberMesh`). 단계별 최고 커밋 2.90 / 5.34 / 3.30 / **11.82GB**.
+  **레벨 하나 = 테이블 하나**라 xlsx 는 목차가 된다(컬럼은 `Items` 개수 + IAP 설정 잡음).
+  항목 단위 행이 필요하면 플러그인 `split_levels` 가 필요하다.
+- Capybara Go 기준치(`com.habby.capybara` v1.8.13, Unity 2022.3.62f2): **Unity 소스
+  2,285개**(Addressables 번들 1,919 · 에셋경로 14,768). 스프라이트 15,019(스킵 12 —
+  Sprite 10,101 + Texture2D 4,930 = 15,031 과 일치) · 에셋 5,247(audio 401 ·
+  material 2,469 · font 10 · **spine 1,708** · text 659 — TextAsset 2,367 이 정확히
+  갈린다) · 계층 씬 2 / 프리팹 3,477 / **노드 360,346 = GameObject 수와 정확히 일치** ·
+  MonoBehaviour 복원 332,151/372,104(**89.3%**). 단계별 최고 커밋 1.77 / 1.93 / 10.98GB.
+  **복원율이 낮은 이유는 HybridCLR 이다** — 실패 상위가 `HotFix.UIAvatarCtrl`·`HotFix.UIItem`
+  같은 `HotFix.*` 클래스인데, 그 정의는 `libil2cpp.so`/`global-metadata.dat` 가 아니라
+  런타임에 올리는 관리형 `HotFix.dll`(16.6MB) 안에 있다. typetree 백엔드가 못 찾는 게 정상.
+  **데이터 테이블은 `tb<모듈>_<테이블>` 이름의 Luban 바이너리**다(`LubanSupport.dll` 동봉).
+  JSON 도 압축도 아니고 길이 접두 문자열 + 고정폭 수치라 codec 자동 감지가 실패한다 —
+  원본 바이트는 `_assets.zip` 의 `text/` 에 보존한다. 스키마는 `HotFix.dll` 에 있어
+  IL2CPP 덤프보다 뽑기 쉽지만 새 코덱이 필요한 별도 작업이다.
+  씬은 survey 7 / 계층 2 로 갈리는데, `scene-other_scenes_all_*.bundle` 이 내부파일 10개에
+  오브젝트 34개뿐인 껍데기라 나머지는 GameObject 가 없는 씬 스텁이다(노드 수 일치가 근거).
 - PixelFlow 기준치(2026-08 v): 레벨 2384(8세트, 메인 3db568… 2100개만 isValid=true),
   슈터 160,313(파이프 포함), 팔레트 34색. 새 버전에서 크게 다르면 사용자에게 보고.
 - Zen Match 기준치(v220000.1.762): TextAsset 4,502(main 4,493 + variant 9),

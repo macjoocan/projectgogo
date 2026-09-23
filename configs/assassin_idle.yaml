@@ -1,0 +1,62 @@
+# 암살자 키우기 (Assassin Idle) — highpixel.billion
+#
+# 방치형/RPG 성장 게임이다. 보드 그리드가 없으므로 board·palette 절이 없고
+# outputs 에서 html(그리드 뷰어)을 뺐다. 레벨이 아니라 **성장·장비 데이터 테이블**을
+# 뽑는다 — 컬럼 이름이 테이블마다 다르므로 fields: auto 로 표본에서 뽑는다.
+#
+# 조사(survey): Unity 2022.3.62f3 · IL2CPP · Unity 소스 7개
+#   data.unity3d 오브젝트 555,420 / Sprite 9,641 · Texture2D 4,466 · AudioClip 70
+#   Material 190 · Font 4 · AnimationClip 986 · GameObject 129,983 · TextAsset 93
+game: assassin_idle
+package: highpixel.billion
+
+input:
+  unity:
+    data_file: assets/bin/Data/data.unity3d
+    type: TextAsset
+    # 데이터 테이블은 이름이 곧 테이블명이다(캡처 그룹이 없으면 이름 전체가 id).
+    # TextAsset 93개 중 **데이터 테이블 89개**만 남기고 4종을 부정 룩어헤드로 뺀다.
+    # 화이트리스트(89개 이름)가 아니라 블랙리스트로 짠 이유: 게임이 테이블을 추가하면
+    # 자동으로 들어오고, 새 비데이터가 들어오면 디코딩 실패로 **눈에 보인다**.
+    #   _words_filter                    욕설 필터 목록 (JSON 아님)
+    #   LineBreaking Leading/Following   Unity 텍스트 줄바꿈 규칙 리소스 (JSON 아님)
+    #   skeleton / 03_brush up_illust    Spine 스켈레톤·아틀라스 — assets 의 spine 담당
+    # 앞의 셋은 survey 가 "디코딩 불가"로 지목했지만 암호화가 아니라 애초에 JSON이
+    # 아니다 — xor-scan 을 쫓을 대상이 아니라 제외할 대상이다. Spine 은 JSON 이라서
+    # 디코딩은 되지만 성장 테이블이 아니므로 레벨 표에 섞으면 안 된다.
+    name_pattern: "(?!_words_filter$)(?!LineBreaking )(?!skeleton)(?!03_brush up_illust).+"
+    set_name: main
+
+codec: ["json"]
+
+# 테이블마다 컬럼이 다르다(성장·장비·능력·강화…). 표본에서 자동 추론한다.
+fields: auto
+
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  # survey 실측 Sprite 9,641 + Texture2D 4,466. 기본값(1000)이면 조용히 잘린다.
+  max_count: 20000
+  categorize: true
+
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 20000
+
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  # GameObject 129,983 · MonoBehaviour 143,794 — 기본값(200,000)에 걸릴 수 있다.
+  max_nodes: 400000
+
+notes:
+  - "조사: Unity 2022.3.62f3 · IL2CPP · Addressables 번들 5개(catalog.json 해독됨)"
+  - "레벨이 아니라 성장·장비 데이터 테이블이다. 보드 없음 → html 뷰어 제외"
+  - "ReinForce 테이블 하나가 105MB JSON — 디코딩 때 메모리를 많이 쓴다"
+  - "_words_filter / LineBreaking* 는 게임 데이터가 아니라 제외 (암호화 아님)"
+
+# html 없음 — 그리드가 없는 장르다 (CLAUDE.md 기본 원칙)
+outputs: [xlsx, zip, sprites, assets, hierarchy]
