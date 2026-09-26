@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v node >/dev/null 2>&1 && node .claude/hooks/check-staging-scope.mjs || exit 0",
+            "command": "d=\"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null)}\"; s=\"$d/.claude/hooks/check-staging-scope.mjs\"; [ -n \"$d\" ] && [ -f \"$s\" ] && command -v node >/dev/null 2>&1 && node \"$s\" || exit 0",
             "if": "Bash(git *)",
             "statusMessage": "스테이징 범위 확인",
             "timeout": 10
