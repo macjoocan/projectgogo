@@ -1,10 +1,38 @@
 # 공유 프로젝트 메모리 — Claude Code / Codex
 
-갱신: 2026-09-23. 이 파일은 두 도구가 읽는 공유 프로젝트 메모리다.
+갱신: 2026-09-27. 이 파일은 두 도구가 읽는 공유 프로젝트 메모리다.
 별도 서비스의 내장 메모리를 동기화하거나 이미 실행 중인 Claude에 메시지를 보낸 것은 아니다.
 최근 작업의 빠른 요약은 이 파일, 상세 이력은 `HANDOFF.md`, 게시 증거는 아래 PUBLICATION 문서를 읽는다.
 
-## 새 세션 시작점 — 2026-09-23
+## 새 세션 시작점 — 2026-09-27
+
+- 최신 설치본/실행 로그 확인: 전체 추출 ZIP은 **1.004.3 기준**이며, 현재 설치본은 **1.006**이다. `post_run_installation_probe.json` 기준 파일 24,448→25,544개, 경로 추가 2,144개·제거 1,048개. 관련 해시 검사에서 관리 DLL 5개·네이티브 플러그인 1개·resources.assets·globalgamemanagers 변경, UnityPlayer.dll 동일. 실행이 업데이트를 일으켰다고 단정하지 않는다. 1.006 전체 재추출은 하지 않았다.
+- 1.006 관리 어셈블리 211개 정적 검사에서도 미확인 8개 클래스의 TypeDef/TypeRef 일치 없음(파싱 오류 0, 양성 대조 성공). PlayerSettings는 836바이트 판독·재작성 일치하나 1개 필드 의미는 여전히 미확인이다. 기존 산출물은 덮어쓰지 않았다.
+- 사용자가 제공한 `20260927-150552-Player.log` 검토: v1.006 시작, 새 게임 진입, 인트로 실행, 종료 절차 확인. 누락 스크립트 경고 12회는 기존 미확인 8개와 연결할 클래스명/객체 ID가 없어 동일 대상으로 확정할 수 없다. TriLib/GoogleToken/PlayerSettings 이름 및 추가 다운로드 관련 기록은 찾지 못했다. 로그 부재를 기능·다운로드 부재로 확대하지 않는다. 캐시 995개·씬 설정 6개 로드, GameBalance.LoadGameBalance 단계 기록 확인. 미확인 9건 추가 복원은 없다.
+- 이번 사용자 요청은 최신 작업 기록의 커밋·푸시다. 게시 대상은 MEMORY.md와 HANDOFF.md이며 기존 AGENTS.md 변경은 제외한다. out/의 추출물·진단 스크립트·로그·원본 DLL은 게시하지 않는다. 따라서 Git 게시가 전체 분석 자료 백업을 뜻하지 않는다. 실제 푸시 결과는 Git 원격 해시로 확인한다.
+
+- 최신 9건 후속: PlayerSettings 전체 836바이트 구조 판독·왕복 일치 성공. 엔진 원본 리더 `0x1813032d0`가 `insecureHttpOption` 뒤에 추가 1바이트(파일 offset 796, 값 0, 메모리 offset 0x266)를 읽지만 메타데이터 생성 경로는 누락한다. 원래 이름·의미는 미확인이다. `out/graveyardkeeper2/NINE_OBJECTS_STATUS.md`와 `player_settings_native_layout.json` 참조.
+- 나머지 8개 MB: 관리 DLL 210개 TypeDef 35,532 / TypeRef 22,189 전수 검사에서 해당 namespace/name 없음(오류 0, 양성 대조 성공). 기존 단순 바이트 검색보다 강한 근거다. 현재 분류는 **전체 바이트 구조 확보 1건(이름 미확인 필드 1개) + 클래스 정의 부족 8건**이다. 완전한 이름 있는 스키마 미확인 수는 9 유지. `graveyardkeeper2_native_layout.zip` 추가로 총 12개 ZIP. 기존 11개 전수 검사를 반복하지 않았다.
+
+- 추가 구조 복원: `graveyardkeeper2_structural_candidates.zip`(10항목)을 생성했다. 골격 52묶음·문자열 168개, 립싱크 15묶음·문자열 59개(빈 문자열 포함), 루트 골격 이름 3개를 배열 형태로 판독했다. 8개 MB의 익명 구조 표현은 payload 왕복 바이트 일치 확인. 원래 필드명/형식 스키마는 확보하지 못했으므로 완전 미해석 집계 9개는 유지한다. 민감 가능 문자열은 신규 후보에서 마스킹했다.
+- PlayerSettings는 로컬 TPK의 Unity 6000 계열 42개 버전 항목을 대조했다. 836바이트가 맞는 6000.4 후보도 해상도/참조 위치가 어긋나 기각했다. `structural_recovery_summary.json`, `deep_remaining_evidence.json`에 근거 보존. ZIP은 이제 11개이며 이번 신규 ZIP의 CRC/JSON/중복 검사를 통과했다. 앞선 10개 ZIP 검사를 이번에 다시 수행한 것은 아니다.
+
+- 추가 구조 복원: `graveyardkeeper2_structural_candidates.zip`(10항목)을 생성했다. 골격 52묶음·문자열 168개, 립싱크 15묶음·문자열 59개(빈 문자열 포함), 루트 골격 이름 3개를 배열 형태로 판독했다. 8개 MB의 익명 구조 표현은 payload 왕복 바이트 일치 확인. 원래 필드명/형식 스키마는 확보하지 못했으므로 완전 미해석 집계 9개는 유지한다. 민감 가능 문자열은 신규 후보에서 마스킹했다.
+- PlayerSettings는 로컬 TPK의 Unity 6000 계열 42개 버전 항목을 대조했다. 836바이트가 맞는 6000.4 후보도 해상도/참조 위치가 어긋나 기각했다. `structural_recovery_summary.json`, `deep_remaining_evidence.json`에 근거 보존. ZIP은 이제 11개이며 이번 신규 ZIP의 CRC/JSON/중복 검사를 통과했다. 앞선 10개 ZIP 검사를 이번에 다시 수행한 것은 아니다.
+
+- 최종 보완(이 절의 이전 집계보다 우선): 잔여 13개 추가 조사에서 Unity 내장 MonoScript 참조를 등록해 4개를 더 복원했다. 최신 잔여는 **MonoBehaviour 8개 + PlayerSettings 1개 = 9개**, 읽은 MonoBehaviour는 193,311/193,319개다. 완전 복원 불가를 영구적 한계로 단정하지 않는다.
+- 보완 산출물: `graveyardkeeper2_builtin_recovered.zip`(복원 4개), `graveyardkeeper2_unresolved_inspection.zip`(원본·부분 판독·조사 이력). 최신 판정은 `remaining_final.json`을 우선한다. 기존 ZIP에 병합하지 않았다. 총 10개 ZIP / 1,250,594항목 CRC 검사 통과. 미해석 8개는 DLL 210개에서 해당 클래스명 바이트가 없었고 세 백엔드에서 스키마를 확보하지 못했다. PlayerSettings는 836바이트 중 832바이트 후보 판독만 가능해 참고용으로 구분했다.
+- Graveyard Keeper 2 로컬 설치본의 원본 보존·변환 가능 데이터 추출 및 마무리를 완료했다. 안내는 `out/graveyardkeeper2/README.md`, 상세 검증은 같은 폴더의 `verification_20260927.json`이다. 아래 9/23의 착수·게시 준비 기록은 당시 이력이다.
+- 최종 ZIP 8개: 설치 원본 24,448개를 Unity 소스 24,173개와 보조 파일 275개로 보존했다. 원본 해시 대조 불일치 0, ZIP 내부 1,250,561항목 CRC 오류 0. 전체 코드를 디컴파일했거나 시스템 분석을 완료했다는 뜻은 아니다.
+- PNG 36,427개, 음원 7,246개, 독립 설정 에셋 7,473개, 장면 15개·프리팹 4,959개·노드 189,934개. 기타 객체 577,130개를 raw 및 가능한 JSON으로 보존했다.
+- MonoBehaviour 추가 복원 872개는 별도 `graveyardkeeper2_managed_recovered.zip`에 있다. 기존 hierarchy/SO ZIP에 병합되지 않았다. 전체 193,319개 중 193,307개를 읽었고 12개가 미해석이다. PlayerSettings 1개도 raw만 보존했다.
+- 이미지 제외 10개는 전체 Texture2D 소스 5,605개 전수 조사에서 모두 0×0 Font Texture로 확인했다. OBJ 제외 16개는 정점이 없는 메시다. 최신 근거는 `exception_evidence.json`; 최초 예외 목록에는 후속 복원분도 포함된다.
+- 사용자 지시: 콘솔 창을 띄우지 않는다. 이번 마무리는 Node 도구에서 `shell:false`, `windowsHide:true`로 `pythonw.exe`를 직접 실행했다. CMD/PowerShell 경유 금지. 파일 읽기는 Node 파일 API를 사용했다. 순차 실행·낮은 우선순위·CPU affinity 1·프로세스 트리 커밋 감시 3GiB를 유지했다.
+- 다음 단계는 사용자가 추출물을 확인한 뒤 요청하는 해석·보고서다. 자동 재추출·보고서 작성·Git 게시를 하지 않는다. 이번에는 README와 메모리만 정리했고 커밋/푸시는 하지 않았다. 기존 AGENTS.md 변경은 보존했다.
+- 콘솔 원인 설명 정정: 사용자가 제시한 Codex Windows daemon 이슈 #48422/#48090에서 같은 현상을 확인했다. Python 실행기만의 문제라고 단정하지 않는다. 직접 실행 우회는 자식 프로세스의 콘솔 미생성만 검증한 것이다. Codex 자체 보조 프로세스까지 해결됐다고 말하지 않는다. CLI 버전·데몬 상태의 현장 확인 및 설정 변경·종료는 수행하지 않았다.
+- 공용 관찰 기록의 현재 상태는 `C:/Users/macjo/.claude/skill-observations/`에서 확인한다. 9/23의 관찰 리뷰 대기 문구를 현재 상태로 재사용하지 않는다.
+
+## 이전 시작점 — 2026-09-23
 
 - Graveyard Keeper 2의 확정 범위는 **전체 추출**이다. 사용자가 결과를 본 뒤 정리를 별도 요청하기로 했다. 지금 해석 보고서를 만들거나 특정 밸런스 분석으로 범위를 좁히지 않는다.
 
