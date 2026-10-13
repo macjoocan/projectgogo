@@ -1,4 +1,29 @@
+﻿## Heroll follow-up: dates and native structural diagnosis (2026-09-22)
+
+See `out/heroll/FOLLOWUP.md`. Dates: 1216 scalar values and 261 empty arrays match CSV; 528 UTC populated values, 688 raw-zero defaults; 5 negative checks passed. Runtime consumption unverified. Shop extra four bytes are zero in all420 rows; name/type unknown. Field tokens: all30678 at absolute offset mod16=0 fail tag validation, all92034 others pass. ELF sections and a bounded mapped JNI function sample remain unvalidated. Native field recovery still450/77275; do not repeat full extraction or present dump.cs as usable. Existing4ZIPs unchanged. D: HDD confirmed but idle-time snapshot cannot prove prior slowdown. New scripts/report under ignoredout; no core edits, game execution, or publication.
+
 # Shared Work Handoff
+
+## Current handoff — 2026-10-13
+
+Read [docs/DKBI_HISTORY.md](docs/DKBI_HISTORY.md) and the latest block at the top of [MEMORY.md](MEMORY.md) first. Dated sections below retain historical evidence and superseded failures.
+
+DKBI's latest observed source reports remain dated2026-10-08. This update checks existing reports and documents; it does not execute the original game or rerun extraction. Native mesh/texture preservation and saved candidate geometry checks do not establish active original rendering or a playable field. Native Shader import success was retracted after Unity rewrote compiled data; raw-preserving bundle adapters remain incompatible. A true Shader-bearing bundle control is the next unperformed test.
+
+Local REA6.4.0 adapter tests cover a two-file static JS fixture and capabilities only. Native provider is not configured; PE/CLI managed analysis does not decode IL2CPP metadata. Local implementation and npm installation are outside this documentation commit. Latest levelscope regression run:512 tests executed,3 skipped,0 failures. Older Heroll450-field failures below are superseded by the later77,261/77,275-field validation, not current status.
+
+Public Git scope: authored history/techniques/memory only. Original binaries, extracted assets/tables, native disassembly/program payloads and output reports stay local. Existing unrelated uncommitted source changes are preserved.
+
+## Heroll 2.0.3 local extraction (2026-09-22)
+
+- User selected Downloads Heroll XAPK, package com.percent.aos.rollinghero/code115024946, Unity6000.2.15f1/metadata31. Original SHA256 f197e7b5d48df6ee047a802c23c60d8423575cccfaa67134341d97ddea7dfc53 rechecked unchanged. Start with `out/heroll/README.md` and `TABLE_INDEX.md`.
+- Prepared three APKs and reassembled13numeric split groups with source/part/hash inventory. Unassembled survey saw95,581objects; complete discovery sees332,361 across5,404sources including2builtins. Earlier surveys stopped due repeated nested-APK/header reads are superseded, not final baselines.
+- Existing pipeline used via local `run_pipeline.py`, reusing only immutable directory metadata and giving exact existing filenames priority over glob syntax. A bracketed font bundle had been silently missed; source-set comparison caught53objects and corrected survey totals plus assets/sprites. All5,402nonbuiltin asset sources are covered. Missing bundle has noGameObject; existing hierarchy covers allGameObject sources. No common-core modifications.
+- `Heroll_tables.zip`:164MemoryPack-framed tables/14,593rows, all binarySHA256 match embedded table metadata. PairedCSV supplies schema, keys and independent ordinary-value comparison; full payload consumed. Fully named schemas163. ShopProductList420rows has an additional4-byte member preserved verbatim as `__unmapped_member0_bytes`, without inventing a name/type; remaining20fields agree withCSV. Enum labels are observedCSV mappings, DateTime rawbits/ticks retained; timezone/CSV-date equivalence unverified. Embedded table BundleVersion2.0.2/dev is not package version2.0.3 or proof of active server settings.
+- Final artifacts:13,496PNG and24zero-sized textures skipped; assets489WAV/447materials/18fonts/337TextAssets; hierarchy9scenes/468prefabs/74,540nodes. PNG counts include Sprite/Texture2D, not unique artworks. Two material Infinity literals made strictJSON-safe with explicit nonfinite markers; exact original export bytes retained in assetsZIP and nonfinite_repairs.json.
+- Important limit: custom-field backend initialization failed in all3readers. AttachedMonoBehaviour fields450/77,275read,76,825null. Separate Il2CppDumper exits0 but logs many structural failures; dump.cs and partial shop_metadata_fields.json are NOT valid reconstruction evidence. Investigation found implausible type indices/tokens and invalid string data; exact cause/protection status not established. No execution/bypass attempted to fill the gap.
+- Final `artifact_validation.json`:4ZIP CRCs, PNG validity, WAV frame lengths, strictJSON, case-insensitive path uniqueness, independent hierarchy node tally, zero-texture reread, source coverage, original hash and4negative bounded-reader fixtures passed. Component-field/native limitations remain explicit. Individual stage logs and table validation carry evidence.
+- Runtime: existing BlenderPython3.13 and isolated dependencies, sequential5GiB process-tree caps. Hierarchy peak2.107GiB; final validation0.353GiB. Source config `configs/heroll.yaml`; helper scripts/output under ignored `out/heroll/`. No game/CDN access, prototype edits or Heroll commit/push. Previous unrelated dirty code/tests/configs preserved. No full rerun needed; next work should target specific table analysis or independently scoped field-recovery investigation.
 
 ## Installation 1.006 and user-provided runtime log (2026-09-27; latest)
 
@@ -535,3 +560,58 @@ Top Heroes 1.120.8 원본 XAPK의 `FibMatrix.Config` 바이너리 설정 묶음 
 - Claude Code는 새 세션에서 이 문서의 `Top Heroes result`를 기준으로 이어서 작업한다.
 - Clash of Critters는 리소스·계층 분석은 즉시 가능하지만, 밸런스 테이블은 위 암호화 제한을
   전제로 범위를 잡는다.
+
+### Heroll native progress 2026-09-22
+See out/heroll/native/RECOVERY_PROGRESS.md for verified loader/IL2CPP code reconstruction and exact next tracing addresses. Prior native-blocked descriptions are superseded only for code decompression; metadata and custom fields remain unresolved. No binary resources published.
+
+### Heroll metadata breakthrough 2026-09-22
+Native code and metadata now recovered.164 table classes/59 enum types crosschecked; ShopProductList extra member is ProductType. Cached typetrees from three isolated backends avoid the observed5GiB combined-backend memory stop. Resume/final status: out/heroll/native/RECOVERY_PROGRESS.md; full hierarchy validation is the remaining active step.
+
+
+## Heroll 최종 완료 — 2026-09-22
+
+- 현재 진입점: `out/heroll/README.md`, 재현 순서 `out/heroll/FOLLOWUP.md`. 초기 실패 상태는 native/*before_native*로 보존했다.
+- 코드와 별도 메타데이터 복원, 122,712개 필드 토큰 검증, 테이블 164개/14,593행 모두 이름·타입 확인. ShopProductList.ProductType 계산 속성과 실제 serializer 순서 확인; CSV/바이너리 원본 보존. 관찰 enum 59종과 날짜 1,216개/빈 배열 261개 대조 통과.
+- 최종 계층: 씬 9 / 프리팹 468 / 노드 74,540 / 전체 컴포넌트 160,575 / MonoBehaviour 77,275 중 77,261 필드 복원(99.9819%). 기존450에서 증가. 이전 계층과 topology·개수 일치, GameObject 소스294개 전부 포함. 최종 ZIP SHA256 f8833b19232783d52b23af66519a4b25984e06b0bfd52dacd06f195cd392994c.
+- 미복원14개는 원본 script pointer0인32바이트 객체13개 + Ddangddang.CustomScreenShot.CustomScreenShot184바이트1개. 전체31,843타입 정의에 해당 클래스 없음. native/unresolved_objects.zip에 raw·해시·출처 보존; fields:null 유지. 현재 패키지에서 확인할 근거 없는 이름을 추측하지 않는다.
+- 파일을 bytes로 로드할 때 임의 이름이 붙어 외부 참조가 틀리던 문제는 canonical filename + registry 우선으로 해결. 타입트리 m_Enabled 정렬, 이름 있는 Array를 vector/Array로 정규화. VInspector Dictionary 정의는131후보 필드의 네이티브 제네릭 타입을 대조해 Unity.Rendering 동명 타입과 구분.
+- 중간 잘못된 배열 판독 작업에서 약9GB 증가 관찰 후 자체 프로세스 종료. C 확장 대신 bounded Python reader + 별도 프로세스5GiB 감시. 최종174초/외부 측정1.587GiB/exit0. HDD 고장 여부나 과거 모든 멈춤 원인으로 확대 해석하지 않는다.
+- 최종4개 ZIP 해시 확인, tables/hierarchy CRC·엄격JSON 재검사, assets/sprites 이전 내용 검증은 해시 일치로 유지. 원작 실행·게임/CDN 요청 없음. 공통 코어 기존 dirty 변경은 건드리지 않음. 공개 대상은 ANALYSIS_KNOWHOW.md / EXTRACTION_HISTORY.md 직접 작성 기법·이력만.
+
+Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 기법·히스토리 문서 2개만 공개, 리소스 제외. 로컬 결과 진입점 out/heroll/README.md.
+
+
+
+## Plants on Fire 정적 추출 최종 정리 — 2026-09-22
+- 진입점 out/plantsonfire/README.md, FINAL_VALIDATION.json. ZIP7개 최종 검증 통과, 입력 SHA256 변동 없음.
+- CSV54개/5,649행, 씬2/프리팹594/노드2,358, 부착MB2,661 및 독립219 포함 전체2,880 모두 필드 판독.
+- DOTS152개 컨테이너/archetype/chunk 수량 대조 통과, 파일별 엔티티 레코드 합614; 보조3개 보존. 컴포넌트별 모든 필드 의미 복원은 미완료이며 전체 디코딩100%로 표현하지 않음.
+- PNG기본1,086개, 게임Mesh21개/기본13개. FrameAnimationAuthoring57, 일반Clip1은UI. 기존캐릭터리그 재사용 미검증.
+- 머티리얼 비유한수 표준JSON 태그 변환 및 원문TXT 보존. CSV열불일치4개/카탈로그 미존재6경로 유지. 리소스는 로컬만.
+- 사용자가 추출 마무리를 우선 요청. 캐릭터1개 외형 변경 테스트는 그 이후 작업이며 아직 실행하지 않음.
+
+
+### Plants DOTS 추가 해석 (이전 정리 이후)
+152파일의 Entity ID614, 외부버퍼303 분리/경계검증. 타입92종 중73종 해시 exact match, 미일치19종 null. 타입이름debugsection없음. 원인단정/값오프셋추정 금지. Entity외 필드값 전체해석은 아직 미완료. 상세 out/plantsonfire/DOTS_REMAINING.md 및 PlantsOnFire_dots_details.zip. 총8 ZIP 재검증통과. 3D 테스트 계속보류.
+
+## Royal Match 스크린샷 보드 식별 — 2026-09-28
+- 사용자 실제 복귀 스크린샷: reactivation-405 / 00405v01_RA. 복귀90개 전체 기존 FlatBuffers 해독기와 configs/royalmatch.yaml 이름 지도 사용. 수동 전사한 고정 장애물67칸 좌표와 목표4종 유일 일치. 9×11, IceCrusher5/Bush6/Hat3/Pink18. 일반405와 다른 판.
+- 기본Move27, 화면42로 +15 차이. 적용 원인과 405 선택 이유는 미확인; 이전1005/901 단정 철회. 기존 시뮬레이터의 StartReactivationProgress 상태 분기 누락은 발견됐지만 해당 사례 원인으로 단정하지 않는다. 설명용 시뮬레이터를 확정 예측기로 사용하지 않는다.
+- 결과: D:\99.기타\out_royalmatch\returning_user_report\LIVE_DISCREPANCY.md, screenshot_match_verification.json, match_screenshot_board.py, reactivation_405_structure.svg, reactivation_decoded/90 JSON. 보드 식별만 검증; 랜덤 색·부스터 제외. 코어/기존 dirty 파일 보존. 게임 실행/서버 접근/새 게시 없음.
+
+
+## Royal Match 이미지 레벨 뷰어 개선 — 2026-09-28
+- 사용자 지정 ../out_royalmatch/RoyalMatch_viewer.html 갱신. 기존 파일은 RoyalMatch_viewer_이미지개선전_20260928_171603.html로 보존. 일반14,300 + 복귀90 =14,390개; 일반/복귀 필터·정확한 번호/범위 검색·일반405↔복귀405·일반1115↔복귀405 비교·24개 페이지·SVG 저장.
+- 이미지90개 연결, 사용타입227종 표현 / 미연결146종 번호·이름 유지. 이름·형태 확인한 스프라이트와 목표/대표 이미지 구분. 꽃밭 사각형·얼음 연속칸 합치기, 받침 부품 조립, 사슬 연결점 오매핑 정정. 주머니/우편함/쿠키는 Spine3.8 공식 파서+삼각형 렌더로 대표 포즈 복원. 게임 실행/서버 연결/외부 데이터 전송 없음.
+- 일반맵·이미지는 기존112233.xapk 추출본, 복귀맵은제공38174. 버전동일성/실시간난수/시작부스터/추가이동/런타임상태 재현 아님. 기본R칸과 선택 가능한 색블록예시 구분.
+- 검증: 전체14,390개 격자·3,057,905 그리기요소, 복귀405 꽃밭6/얼음기둥5/받침5/모자3 일치, Node DOM대역 초기화·페이지·검색·비교 검사 통과. 공유scene명령 오프라인PNG로1115/405 시각확인. Playwright연결 및 로컬URL정책 제한으로 실제 브라우저 레이아웃/E2E 미검증. 코어변경 없음.
+- 재현/후속: ../out_royalmatch/viewer_upgrade/README.md, build_viewer.py, viewer.js, art_mapping.json, installation.json. HTML 28.8MB→11.1MB. Bush/flower Spine atlas크기불일치, clipping필요포즈 임의복원 금지. 리소스·뷰어는로컬만, Git게시 없음.
+
+## REA 선택 연동 — 2026-10-13
+- 사용자 morluto/rea 기능 취합 요청. 기존 dirty core/README/MANUAL 변경 보존, 공통 CLI 변경 없이 tools/rea_bridge.py + tests/test_rea_bridge.py + tools/REA_INTEGRATION.md 신규.
+- npm REA6.4.0을 out/rea_runtime에만 고정 설치(143패키지), ignore-scripts/omit optional, Node24.18.0. MCP setup/전역 등록/Frida 설치/게임 실행/서버 접속 미수행. upstream HEAD18831491cfb5cb98abbffce0cb04dae12a90fe28 검토; npm과HEAD 동일성 단정 없음.
+- bridge: JS/Electron 정적 분석, 일반managed PE/CLI inspect/members, native analyze/search/decompile 호출 및 capabilities. 기본 계획 출력; --execute 필요. Node CLI direct argv, Windows 기존 watchdog 자손 private commit 합산 cap1.5GB/timeout240s/출력256MB 주기감시. OS hardlimit 아님. 대형 JSON 통째 로딩 안 함. 고유 out/rea 실행폴더에 원문/로그/receipt/plan 보존; exit0=process_completed이며 의미완전복원 아님.
+- 실제 합성JS2파일 분석: out/rea/rea-hwy2rnkm/evidence.json, parsed2/failure0/import-export 후보 source-range 보존, commit0.369GB/4.53초. capabilities out/rea/rea-pim4l2_c/evidence.json commit0.907GB/4.02초. Ghidra not_configured. Native실분석/managed실DLL/웹관찰/WASM/MCP등록은 아직 미검증 또는 미연결.
+- REA managed는 IL2CPP metadata 해독기 아님. 기존 Unity/DOTS/PPtr/FlatBuffers 유지. DKBI metadata39/등록/RVA/셰이더호환을 자동 해결했다는 주장 금지. Native는 엔진 준비 후 작은 함수부터.
+- 최종 python -m unittest discover -s tests -t .:512 tests OK, skipped3. 추가테스트7개(인자, SHA, 실패기록, timeout). 초기 .3초 timeout샘플은 Windows interpreter시작 전에 종료돼 partial본문검사 실패; 2초 여유로 수정해 전체 통과. 실제 게임 검증 아님.
+- 다음: tools/REA_INTEGRATION.md 사용법. Python tools/rea_bridge.py capabilities --execute 또는 javascript --input <추출JS폴더> --execute. 자동GUI/배치 통합 및 native Ghidra 환경 연결은 후속. 커밋/푸시 없음.
