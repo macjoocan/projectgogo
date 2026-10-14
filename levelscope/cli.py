@@ -23,7 +23,7 @@ import os
 import sys
 import zipfile
 
-from . import container, decode, extract, palette as pal_mod, schema, viewer, xorscan
+from . import container, decode, extract, palette as pal_mod, schema, unity, viewer, xorscan
 
 
 # ─────────────────────────── 설정·플러그인 ───────────────────────────
@@ -537,6 +537,7 @@ def run(args):
 # ─────────────────────────── inspect / detect / ls ───────────────────────────
 
 def inspect(args):
+    unity.set_fallback_version(getattr(args, "unity_version", None))
     cfg = _load_config(args.config)
     result = extract.collect_levels(args.input, cfg["input"])
     print(f"레벨 파일 {len(result.records)}개 ({result.source})")
@@ -806,6 +807,8 @@ def build_parser():
     p.add_argument("--config", required=True)
     p.add_argument("--input", required=True)
     p.add_argument("--chars", type=int, default=3000)
+    p.add_argument("--unity-version", default=None,
+                   help="번들 헤더에 Unity 버전이 없을 때 쓸 값")
     p.set_defaults(func=inspect)
 
     p = sub.add_parser("detect", help="인코딩 체인 자동 감지 (설정 없이도 가능)")

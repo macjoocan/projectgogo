@@ -409,6 +409,22 @@ class Parser(unittest.TestCase):
             ["assets", "--input", "x", "--kinds", "audio, spine"])
         self.assertEqual(cli._sources_arg(args.kinds), ["audio", "spine"])
 
+    def test_inspect_accepts_unity_version(self):
+        args = cli.build_parser().parse_args(
+            ["inspect", "--config", "c", "--input", "x",
+             "--unity-version", "2019.4.41f1"])
+        self.assertEqual(args.unity_version, "2019.4.41f1")
+
+    def test_inspect_sets_unity_version_before_collecting(self):
+        args = argparse.Namespace(config="c", input="x", chars=100,
+                                  unity_version="2019.4.41f1")
+        empty = types.SimpleNamespace(records=[], source="unity")
+        with mock.patch.object(cli, "_load_config", return_value={"input": {}}), \
+             mock.patch.object(cli.unity, "set_fallback_version") as set_version, \
+             mock.patch.object(cli.extract, "collect_levels", return_value=empty):
+            cli.inspect(args)
+        set_version.assert_called_once_with("2019.4.41f1")
+
     def test_hierarchy_flags(self):
         args = cli.build_parser().parse_args(
             ["hierarchy", "--input", "x", "--scenes-only", "--no-fields", "--no-typetree"])

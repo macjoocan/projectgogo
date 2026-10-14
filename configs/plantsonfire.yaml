@@ -1,0 +1,21 @@
+﻿game: PlantsOnFire
+input: {}
+codec: auto
+fields: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 50000
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 50000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 200000
+typetree:
+  unity_version: 2022.3.62f3
+outputs: [sprites, assets, hierarchy]

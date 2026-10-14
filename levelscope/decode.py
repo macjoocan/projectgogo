@@ -17,6 +17,7 @@
   aes_ecb:<hexkey>           AES-ECB 복호화+PKCS7 언패딩
   msgpack              MessagePack 파싱 → obj (pip install msgpack)
   json                 JSON 파싱 → obj
+  fibmatrix            FibMatrix Meta.bytes 파싱 → obj
 
 ■ 자동 감지 (설정 codec: auto)
   detect_chain(raw)이 매직바이트·문자 집합 검사로 체인을 추론해 (steps, obj) 반환.
@@ -239,8 +240,18 @@ def _s_flatbuffers(v):
         raise CodecError(f"FlatBuffers 아님: {e}") from e
 
 
+@step("fibmatrix")
+def _s_fibmatrix(v):
+    """FibMatrix ``Meta.bytes``를 테이블/원시 블록 dict로 복원."""
+    from . import fibmatrix
+    try:
+        return fibmatrix.decode(_to_bytes(v))
+    except fibmatrix.FibMatrixError as e:
+        raise CodecError(f"FibMatrix 아님: {e}") from e
+
+
 #: 구조 파싱 스텝 — 여기까지 오면 체인 종료
-TERMINAL_STEPS = ("json", "msgpack", "flatbuffers")
+TERMINAL_STEPS = ("json", "msgpack", "flatbuffers", "fibmatrix")
 
 
 def apply_step(v, spec):
@@ -310,6 +321,11 @@ def _is_zlib_head(head):
     return head[:1] == b"\x78" and head[1:2] in _ZLIB_2ND
 
 
+def _is_fibmatrix_head(head):
+    """압축 FibMatrix 래퍼: flag(1) + 원본 크기(u32 LE) + gzip."""
+    return len(head) >= 8 and head[:1] == b"\x01" and head[5:8] == b"\x1f\x8b\x08"
+
+
 def _try(v, spec):
     try:
         return apply_step(v, spec)
@@ -323,8 +339,9 @@ def _looks_structured(obj):
 
 def looks_compressed(b):
     """압축/인코딩 매직으로 시작하는 바이트인지 — 진단·XOR 검증에서 공유."""
-    head = bytes(b[:6])
-    return any(head.startswith(m) for m, _ in MAGICS) or _is_zlib_head(head)
+    head = bytes(b[:8])
+    return (any(head.startswith(m) for m, _ in MAGICS) or _is_zlib_head(head)
+            or _is_fibmatrix_head(head))
 
 
 def detect_chain(raw, max_depth=8):
@@ -334,6 +351,11 @@ def detect_chain(raw, max_depth=8):
         # 1) bytes: 압축/인코딩 매직 검사
         if isinstance(v, (bytes, bytearray)):
             b = bytes(v)
+            if _is_fibmatrix_head(b):
+                nv = _try(b, "fibmatrix")
+                if nv is not None:
+                    steps.append("fibmatrix")
+                    return steps, nv
             if b[:2] in (b"\xff\xfe", b"\xfe\xff"):
                 nv = _try(b, "utf16")
                 if nv is not None:

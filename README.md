@@ -51,6 +51,10 @@ py -m levelscope run --config configs\zenmatch.yaml --input "D:\99.기타\AAA.xa
 py -m levelscope ls      --input <apk경로>
 py -m levelscope detect  --input <apk경로>              :: 암호화 의심 시 --xor-scan
 py -m levelscope inspect --config configs\mygame.yaml --input <apk경로>
+:: 헤더에 Unity 버전이 없는 단일 번들이면 --unity-version 2019.4.41f1
+
+:: FibMatrix Meta.bytes 게임 — 테이블별 JSON/raw zip
+py tools\decode_fibmatrix.py --input <apk경로> --out out\meta_decoded.zip
 
 :: 레벨과 무관한 리소스는 설정 없이도 바로 뽑을 수 있습니다
 :: (--source 기본값 auto = Addressables 번들까지 자동 발견)
@@ -70,7 +74,8 @@ apk · xapk · obb · zip 파일과 압축 해제 폴더를 모두 받습니다.
 ## 디코딩
 
 `codec: auto`로 두면 인코딩 체인을 자동 감지합니다 (gzip/zlib/bz2/xz/zstd/lz4/brotli,
-base64·base64url·hex, `xxx:` 접두어, UTF-16, msgpack, 중첩 깊이 8). 명시 체인도 지원합니다.
+base64·base64url·hex, `xxx:` 접두어, UTF-16, msgpack, FibMatrix, 중첩 깊이 8).
+명시 체인도 지원합니다.
 
 레벨이 **FlatBuffers 바이너리**인 게임은 `codec: [flatbuffers]` 를 씁니다. `.fbs` 스키마
 없이도 구조를 복원하며(필드명은 슬롯 번호), 표본 전체로 슬롯 타입을 확정합니다.
@@ -114,11 +119,12 @@ levelscope/          파이프라인 코어
   report_xlsx.py     xlsx                viewer.py   HTML 뷰어
   cli.py             run/inspect/detect/ls/survey/sprites/assets/hierarchy
   flatbuf.py         스키마 없는 FlatBuffers 해독 (codec: flatbuffers)
+  fibmatrix.py       FibMatrix Meta.bytes 설정 테이블 해독
   plugins/           게임 플러그인 (pixelflow, zenmatch, sheepnsheep, royalkingdom)
 plugins/             프로젝트 전용 확장 자리
 configs/             게임 설정 + template.yaml + icons/<게임>/
 tests/               회귀 테스트 — python -m unittest discover -s tests -t .
-tools/               verify_baseline.py (실제 APK 기준치 대조)
+tools/               verify_baseline.py · decode_fibmatrix.py
 ```
 
 ## 검증 상태 (게임 4종)
@@ -170,3 +176,10 @@ Royal Kingdom (`gg.com.dreamgames.royalkingdom`, v1.9.0에서 추가 검증):
   가 콘솔에 섞여 나올 수 있습니다. TypeTreeGeneratorAPI 내부 DLL이 찾지 못한 클래스에
   대해 직접 출력하는 메시지로, 다음 백엔드로 폴백되므로 무해합니다 — 최종 복원율은
   실행 끝의 `[typetree]` 줄이 정본입니다.
+
+
+## 선택형 코드 분석 연동
+
+REA 정적 분석 어댑터의 설치·명령·검증 범위는 [REA_INTEGRATION.md](tools/REA_INTEGRATION.md)에 정리했다.
+`python tools/rea_bridge.py capabilities`는 계획을 출력하고 `--execute`로 실행한다.
+게임 에셋 추출과 별도 경로이며 IL2CPP 복원이나 원작 화면 동등성을 자동 보장하지 않는다.

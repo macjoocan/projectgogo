@@ -1,0 +1,28 @@
+# Sandtrix 1.8.4 (25), com.EveryDayGames.Sandtrix.
+# Local package only. Task assets are MonoBehaviours, not standalone level JSON.
+game: Sandtrix
+input:
+  levels_glob: assets/__no_confirmed_level_files__/*.json
+codec: auto
+fields: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 2000
+assets:
+  sources: auto
+  kinds: [audio, material, font, text]
+  max_count: 2000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 20000
+outputs: [sprites, assets, hierarchy]
+notes:
+  - "Unity 2022.3.49f1 / IL2CPP. Survey: 202 sprites, 293 textures, 8 audio clips."
+  - "No Addressables catalog found. This does not prove absence of all remote content."
+  - "TextAssets are haptic/font templates, not confirmed levels or encrypted balance tables."
+  - "Follow-up out/sandtrix/extract_settings.py: 24 mapped tasks + 26 mini tasks, 65 shapes, 2 Odin balance assets."
+  - "Read out/sandtrix/README.md before interpreting collections or runtime behavior."

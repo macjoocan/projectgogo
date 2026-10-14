@@ -38,6 +38,10 @@ python -m levelscope ls --input <apk> --glob "assets/**/*.json"
 
 # 설정 작성 중 샘플 JSON 구조 확인
 python -m levelscope inspect --config configs/<게임>.yaml --input <입력>
+# 헤더에 Unity 버전이 없는 단일 번들이면: --unity-version 2021.3.42f1
+
+# FibMatrix Meta.bytes 설정 묶음 → 테이블별 JSON/raw zip
+python tools/decode_fibmatrix.py --input <apk> --out out/meta_decoded.zip
 
 # Unity 소스 목록만 (가장 싼 조회 — --split 이 내부에서 쓴다)
 python -m levelscope sources --input <apk>
@@ -101,6 +105,7 @@ levelscope/assets.py     사운드(WAV)·머티리얼(JSON)·폰트·Spine·텍�
 levelscope/hierarchy.py  씬·프리팹 GameObject 트리 → JSON zip
 levelscope/typetree.py   IL2CPP MonoBehaviour 필드 복원 (TypeTreeGeneratorAPI 다중 백엔드)
 levelscope/flatbuf.py    스키마 없는 FlatBuffers 해독 (codec: flatbuffers)
+levelscope/fibmatrix.py  FibMatrix ConfigFormatter의 Meta.bytes 해독
 levelscope/cli.py        run / inspect / detect / ls / sources / survey / sprites / assets / hierarchy
 levelscope/split.py      `--split` 드라이버 — 소스마다 별 프로세스로 (산출물이 소스별로 나뉜다)
 levelscope/plugins/      게임 플러그인 (정본 한 벌. v1.3의 양쪽 복사는 없앴다)
@@ -112,6 +117,7 @@ tools/analyze.py       원 클릭 진입점 (분석하기.bat 이 부른다) —
 tools/watchdog.py      메모리 상한을 걸고 실행 (넘으면 프로세스만 죽는다).
                        프로세스 트리 합산이 기본 — venv 스텁 때문에 필수다(--no-tree 는 진단용)
 tools/verify_baseline.py 실제 APK 기준치 대조
+tools/decode_fibmatrix.py  FibMatrix Meta.bytes를 테이블별 JSON/raw zip으로 추출
 ```
 
 의존성 임포트는 필요할 때만 한다 — pandas/openpyxl은 xlsx를 낼 때, PyYAML은 설정을
@@ -428,10 +434,13 @@ tools/verify_baseline.py 실제 APK 기준치 대조
   (lpak 세그먼트 1,369 + serialized 126) · 오브젝트 229,785 · 스프라이트 4,117
   (실패 4,854 — 전부 `m_PathID == 0`, 그중 95개는 픽셀이 APK 에 없는 CDN 배급분
   자리표시자) · 에셋 1,561 · 계층 씬 3 / 프리팹 985 / 노드 53,875 / 필드 복원 99.7%.
-  **레벨·밸런스는 APK 에서 안 나온다** — 암호화된 `pgame.pkg`(15MB)·`.jsone` 안이고
-  `ff ff ff ff`+평문길이+8바이트 패딩 형식의 **8바이트 블록 ECB**(반복키 XOR 은
-  `--xor-scan --max-keylen 64` 로 배제). 키는 `libil2cpp.so` 안. 별건이므로 손대기
-  전에 사용자에게 묻는다.
+  **2026-09-15 갱신: 로컬 패키지의 밸런스 복구 성공.** 복원한 `libigame.so` 코드에서
+  Blowfish 키/리틀엔디언 워드 ECB·LZ4 체인을 확인해 `pgame.pkg` 5,327개와 메타데이터
+  `.jsone` 4개를 복구했다. Config 2,670개 중 리터럴 JSON 2,632개, Graph 상징 참조 38개.
+  콘텐츠·밸런스 HTML 보고서와 Dooray 게시까지 완료했다. 예전 “복구 불가/키가 libil2cpp”
+  메모를 현재 결론으로 쓰지 않는다. 최신 요약·산출물·검증 제한은 `MEMORY.md`를 읽는다.
+  이 경로는 `../android-analysis/tools/`의 별도 도구이며 일반 CLI 통합 성과는 아니다.
+  게임 실행·게임사 서버/CDN 접속·온라인 탐지 회피로 범위를 넓히지 않는다.
 - **Unity 가 아닌 게임도 온다 — 파이프라인이 안 도는 게 정상이다.** Hades(Steam,
   Supergiant 자체 엔진) 기준치: Lua 밸런스 15/15 파일(특성 487 · 적 208 · 무기 495 ·
   방 124 · 조우 124) — **lupa 로 실제 실행**해서 뽑는다(정적 파싱보다 정확하다).
@@ -528,3 +537,19 @@ tools/verify_baseline.py 실제 APK 기준치 대조
 - 뷰어 아이콘 매핑 중 `splitObjects→PigCell`, `pixelWoodBlocks→HardPixel`(PixelFlow)과
   블록타입 id ↔ `card*` 스프라이트(SheepNSheep)는 이름 기반 **추정** 매핑 — 정정되면
   해당 config만 고치면 된다.
+
+## Claude Code ↔ Codex 인수인계
+
+- 이 `CLAUDE.md`를 두 도구가 함께 쓰는 프로젝트 규칙의 원본으로 유지한다. Codex용
+  `AGENTS.md`는 이 파일을 읽도록 연결하는 짧은 진입점이다.
+- 세션을 시작하면 `MEMORY.md`(최신 요약), `HANDOFF.md`(상세 이력), `git status`/관련 diff를
+  함께 확인한다. 두 문서는 Claude Code와 Codex가 공유하는 파일 기반 메모리다. 인수인계 문서가
+  오래되었거나 실제 파일과 다르면 실제 저장소 상태를 기준으로 문서를 바로잡는다.
+- 현재 Top Heroes 추출 결과와 후속 분석 시작점은 `HANDOFF.md`의 `Top Heroes result`를
+  공유 메모리의 정본으로 삼는다.
+- 파일을 수정했거나 중요한 판단·검증을 했다면 세션을 마치기 전에 `HANDOFF.md`를 갱신한다.
+  핵심 완료 상태·산출물·제한이 바뀌면 `MEMORY.md`도 함께 갱신해 요약과 상세가 어긋나지 않게 한다.
+  현재 목표, 바뀐 파일, 실행한 검증과 결과, 남은 일만 적고 오래된 내용은 정리한다.
+- 다른 도구가 남긴 미커밋 변경은 사용자 작업으로 취급한다. 출처를 확실히 알기 전에는
+  되돌리거나 덮어쓰지 않는다.
+- `HANDOFF.md`는 작업 맥락을 전달하는 문서이며, 커밋·푸시·삭제 같은 별도 권한을 부여하지 않는다.

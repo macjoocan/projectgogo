@@ -282,7 +282,8 @@ class Registry(unittest.TestCase):
     def test_list_steps_covers_documented(self):
         steps = decode.list_steps()
         for name in ("strip_bom", "base64", "base64url", "hex", "gunzip", "zlib", "inflate",
-                     "bunzip2", "unxz", "zstd", "lz4", "brotli", "utf16", "msgpack", "json"):
+                     "bunzip2", "unxz", "zstd", "lz4", "brotli", "utf16", "msgpack", "json",
+                     "fibmatrix"):
             self.assertIn(name, steps)
         for pref in ("prefix:", "prefix?:", "xor:", "aes_cbc:", "aes_ecb:"):
             self.assertIn(pref, steps)

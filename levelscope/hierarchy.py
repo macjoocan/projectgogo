@@ -552,12 +552,19 @@ def _dump(doc):
     그래서 allow_nan=False로 먼저 시도하고, 걸리면 그때만 값을 훑어 정리한다
     (정상 문서에서 전체 순회를 한 번 더 하지 않기 위해).
     """
+    # 문자열 필드에 UTF-8로 인코딩 못 하는 외톨이 서로게이트(byte 0xff 를 surrogateescape
+    # 로 읽은 '\udcff' 등)가 실제로 들어 있다 — 타입트리가 비문자 필드를 문자열로 읽거나
+    # 바이너리성 문자열일 때. 그냥 .encode("utf-8") 하면 "surrogates not allowed" 로
+    # 계층 산출이 통째로 실패한다(Wizard of Legend 실측). backslashreplace 로 인코딩하면
+    # 그 문자가 JSON 규격상 유효한 `\uXXXX` 이스케이프 바이트로 나가므로 산출은 유효한
+    # JSON 이고 json.load 로 원문(서로게이트)까지 되읽힌다. 정상 문서(서로게이트 없음)는
+    # 바뀌지 않아 바이트 동일 — test_hierarchy 의 두 경로 일치 검사를 그대로 통과한다.
     try:
         return json.dumps(doc, ensure_ascii=False, indent=1, default=str,
-                          allow_nan=False).encode("utf-8")
+                          allow_nan=False).encode("utf-8", "backslashreplace")
     except ValueError:
         return json.dumps(_finite(doc), ensure_ascii=False, indent=1, default=str,
-                          allow_nan=False).encode("utf-8")
+                          allow_nan=False).encode("utf-8", "backslashreplace")
 
 
 def _finite(v, depth=0):

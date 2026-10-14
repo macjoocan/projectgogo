@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-10-14 선택형 REA 연동
+
+`tools/rea_bridge.py`로 정적 JS/.NET/native 분석, 저장 Evidence 요약·페이지·버전 비교,
+HAR 항목 선택 및 native snapshot 재사용을 연결했다. 기본 계획 출력이며 실제 실행은
+`--execute`로 요청한다. 원문/종료 상태/입력 SHA와 프로세스 트리 상한을 보존한다.
+실측 범위와 설치 방법은 `tools/REA_INTEGRATION.md`를 읽는다.
+계층 JSON은 UTF-8로 인코딩할 수 없는 외톨이 surrogate도 JSON escape로 보존한다.
+
+---
+
+## 1.31.0
+
+**FibMatrix `Meta.bytes` 설정 묶음을 게임 코드를 실행하지 않고 해독한다.**
+`levelscope/fibmatrix.py`가 게임의 `ConfigFormatter` 바이너리 포맷(바깥 gzip,
+상수 풀, 가변 길이 행, int/float/string/배열)을 읽고,
+`tools/decode_fibmatrix.py`가 APK/XAPK 안의 파일을 찾아 테이블별 JSON과 raw 블록을
+zip으로 만든다. Top Heroes 1.120.8 실측: **824개 테이블 · 525,789행**.
+`detect`도 바깥 래퍼의 gzip 시그니처를 확인해 `codec: ["fibmatrix"]`로 자동 판별한다.
+
+`inspect`에 `--unity-version`을 추가했다. 헤더에 버전이 없는 Unity 번들을 설정이
+정확히 가리키는 경우에도 `UnityPy.config.FALLBACK_UNITY_VERSION`을 먼저 설정하므로
+샘플 구조 확인이 가능하다.
+
+---
+
 ## 1.30.0
 
 **타입트리 백엔드가 죽어 있던 환경 버그 수정 — `capstone.dll` 로딩.** IL2CPP

@@ -103,3 +103,8 @@ GitHub에 아래 파일들이 있다는 뜻이 아니다.
 메모리 감시: 분석용 별도 프로세스 commit cap1536MB, RSS stop1280MB,
 여유 RAM 시작6GiB/중단4GiB, timeout240초. 종료코드·로그·실제 파일 내용을 함께 확인한다.
 독립 작은 Shader 비교 피크 RSS약82.6MB. 게임 전체 추출을 다시 돌릴 이유가 아니다.
+- Action 측 최신 셰이더 control 보고: 현재 Unity6000.3.15 Shader+Material baseline 및 UnityPy1.25.4 unmodified roundtrip 모두 actual bundle load/support/64px GPU green 대조 통과. class48 DFS-normalized2306fields/typeHash 일치. 정본 `C:/00.SVN/Action/dkbi-replica/reference/shader_control_validation.json`. 원작 TerrainLit 재사용은 여전히 미해결이며 파생 검토 셰이더와 구분한다.
+- Action 사용자 요청으로 DKBI 마을 복원도 오늘 중단. 최종 회신 bmv7nv11t-1t의 보고: Town70child/76396 native MeshMaterial pairs/mesh1334/material535/texture490 원본 추출 완료. Unity mesh1333/texture490 readback PASS; material39 validated/40files created/496pending. 이전 재질 검증 중이라는 표현을 전체535 검증 완료로 읽지 않는다. 전체 Town 씬/GPU 미완료.
+- 최초 NPC 표본은 원문105objects/75sprites/10clips/2textures와 sourceShaderSHA 일치 근거 보존. PNG/Unity NPC 실행 없음. npc_00_0002의 _baseLUT==_lookupTexture256x1/skinLUTnull은 Action 신규 표본이며, PC base45+skin15를 복제하지 않는다. LUT 합성 body/autoGen/MPB/NPC 실제 활성/카메라/nav/입력/전투 동등성 unknown 유지.
+- Action 재개 정본: `C:/00.SVN/Action/docs/DKBI_TOWN_RESUME_20261014.md`. 우리 기존 연구 진입점은 `../out_dkbi/systems_recovery_20261008/README.txt`. 양쪽 신규 추출/실험은 오늘 시작하지 않는다.
+- 브리지 회신 queued만으로 도착이라 주장하지 않는다. 재전송 MCP에서 delivered 확인 후 Action bmv7nmb8s-1s 및 bmv7nv11t-1t로 1q/1r 수신 확인 완료. 작업 중 ack 지연이었으며 전달 실패로 확정하지 않는다.

@@ -615,3 +615,18 @@ Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 
 - REA managed는 IL2CPP metadata 해독기 아님. 기존 Unity/DOTS/PPtr/FlatBuffers 유지. DKBI metadata39/등록/RVA/셰이더호환을 자동 해결했다는 주장 금지. Native는 엔진 준비 후 작은 함수부터.
 - 최종 python -m unittest discover -s tests -t .:512 tests OK, skipped3. 추가테스트7개(인자, SHA, 실패기록, timeout). 초기 .3초 timeout샘플은 Windows interpreter시작 전에 종료돼 partial본문검사 실패; 2초 여유로 수정해 전체 통과. 실제 게임 검증 아님.
 - 다음: tools/REA_INTEGRATION.md 사용법. Python tools/rea_bridge.py capabilities --execute 또는 javascript --input <추출JS폴더> --execute. 자동GUI/배치 통합 및 native Ghidra 환경 연결은 후속. 커밋/푸시 없음.
+
+
+## 2026-10-14 종료 인계 — 기능 강화 게시 및 DKBI 마을 진행
+
+- REA 선택형 정적 분석 어댑터 `tools/rea_bridge.py` 및 `tools/REA_INTEGRATION.md`를 게시 대상으로 정리했다. JS/managed/native, 저장 결과 summary/modules/compare, HAR 항목 선택, native snapshot을 연결했다. REA6.4.0 격리 설치 및 Ghidra12.1.4/JDK21 연결은 로컬 `out/` 설정으로 보존하며 설치물은 Git에 넣지 않는다. 기본 계획 출력, `--execute` 실행, 프로세스 트리 메모리/시간/출력 상한을 유지한다.
+- 자체 JS/HAR 및 1KB PE의 정적 실측 통과. native 함수 MOV/RET와 return0x2a 복원, 원본 실행 없음. 같은 native overview snapshot 재사용 36.86초→3.95초, normalized_result 동일. 이것은 DKBI 메서드/RVA/게임 규칙 해결이나 원작 셰이더 호환성 해결을 뜻하지 않는다.
+- FibMatrix 디코더/추출 도구, inspect --unity-version, 계층 JSON 외톨이 surrogate 보존 처리를 함께 게시한다. 검증 전 survey 설정 초안, 백업 메모리, 게임 원본 리소스, 추출 결과, 외부 도구 설치물은 게시하지 않는다.
+- Action 측 최신 셰이더 control 보고: 현재 Unity6000.3.15 Shader+Material baseline 및 UnityPy1.25.4 unmodified roundtrip 모두 actual bundle load/support/64px GPU green 대조 통과. class48 DFS-normalized2306fields/typeHash 일치. 정본 `C:/00.SVN/Action/dkbi-replica/reference/shader_control_validation.json`. 원작 TerrainLit 재사용은 여전히 미해결이며 파생 검토 셰이더와 구분한다.
+- Action 사용자 요청으로 DKBI 마을 복원도 오늘 중단. 최종 회신 bmv7nv11t-1t의 보고: Town70child/76396 native MeshMaterial pairs/mesh1334/material535/texture490 원본 추출 완료. Unity mesh1333/texture490 readback PASS; material39 validated/40files created/496pending. 이전 재질 검증 중이라는 표현을 전체535 검증 완료로 읽지 않는다. 전체 Town 씬/GPU 미완료.
+- 최초 NPC 표본은 원문105objects/75sprites/10clips/2textures와 sourceShaderSHA 일치 근거 보존. PNG/Unity NPC 실행 없음. npc_00_0002의 _baseLUT==_lookupTexture256x1/skinLUTnull은 Action 신규 표본이며, PC base45+skin15를 복제하지 않는다. LUT 합성 body/autoGen/MPB/NPC 실제 활성/카메라/nav/입력/전투 동등성 unknown 유지.
+- Action 재개 정본: `C:/00.SVN/Action/docs/DKBI_TOWN_RESUME_20261014.md`. 우리 기존 연구 진입점은 `../out_dkbi/systems_recovery_20261008/README.txt`. 양쪽 신규 추출/실험은 오늘 시작하지 않는다.
+- 브리지 회신 queued만으로 도착이라 주장하지 않는다. 재전송 MCP에서 delivered 확인 후 Action bmv7nmb8s-1s 및 bmv7nv11t-1t로 1q/1r 수신 확인 완료. 작업 중 ack 지연이었으며 전달 실패로 확정하지 않는다.
+- 게시에는 원격 main의 Hades/Graveyard Keeper/DKBI 문서를 보존한 별도 worktree `../levelscope-publish-20261014`를 사용한다. 원래 로컬 작업 폴더의 미커밋 변경/백업은 그대로 남긴다. 최신 기능 사용은 원격 main 또는 게시 worktree를 기준으로 한다.
+
+- 게시 worktree 검증: `python -m unittest discover -s tests -t .` 541개 실행 / 3개 skipped / 실패0 (8.645초). 기존 원격 테스트까지 합친 범위이며 앞선 로컬517개와 구분한다.

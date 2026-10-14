@@ -1,0 +1,29 @@
+# Heroll 2.0.3 (115024946), com.percent.aos.rollinghero.
+# Use out/heroll/input_prepared: 13 Play Asset Delivery split groups reassembled.
+game: Heroll
+input: {}
+codec: auto
+fields: auto
+sprites:
+  sources: auto
+  types: [Sprite, Texture2D]
+  max_count: 100000
+assets:
+  sources: auto
+  kinds: [audio, material, font, spine, text]
+  max_count: 100000
+hierarchy:
+  sources: auto
+  scenes: true
+  prefabs: true
+  fields: full
+  max_nodes: 500000
+typetree:
+  unity_version: 6000.2.15f1
+outputs: [sprites, assets, hierarchy]
+notes:
+  - "Local static extraction only; use README under out/heroll for verified counts and limitations."
+  - "Do not use the unassembled XAPK source counts as a completeness baseline."
+  - "Use out/heroll/run_pipeline.py: cached immutable directory index and exact bracketed filename matching."
+  - "164 tables / 14593 rows; all schemas named and native-verified, including ShopProductList.ProductType."
+  - "Hierarchy: 77261/77275 fields restored; 13 null script pointers and 1 missing native type preserved. Use guard_hierarchy.py with cached typetrees; see out/heroll/FOLLOWUP.md."

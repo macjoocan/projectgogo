@@ -33,6 +33,15 @@ class DumpValidJson(unittest.TestCase):
     def test_plain_document(self):
         self.assertEqual(json.loads(hierarchy._dump({"a": [1, "안녕"]})), {"a": [1, "안녕"]})
 
+    def test_dump_orphan_surrogate_writes_valid_utf8_json(self):
+        """바이너리성 문자열의 외톨이 서로게이트도 계층 산출 전체를 막지 않아야 한다."""
+        orphan = chr(0xDCFF)
+
+        blob = hierarchy._dump({"value": f"before{orphan}after"})
+
+        self.assertIn(b"\\udcff", blob)
+        self.assertEqual(json.loads(blob), {"value": f"before{orphan}after"})
+
     def test_nan_is_sanitized_to_valid_json(self):
         """json 기본값은 NaN 리터럴을 뱉는데 그건 JSON이 아니라 뷰어가 파싱에 실패한다."""
         blob = hierarchy._dump({"v": float("nan"), "w": [float("inf"), 2.0]})
