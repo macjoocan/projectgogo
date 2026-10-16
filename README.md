@@ -1,8 +1,37 @@
-# levelscope — 모바일 게임 데이터 추출·요약·시각화 파이프라인
+# levelscope — 게임 데이터 추출·분석·검증 도구와 사례 노하우
 
 APK/XAPK/OBB/폴더에서 게임 데이터와 리소스를 찾아 디코딩하고, 산출물을 자동 생성합니다.
 **장르를 가리지 않습니다** — 퍼즐·매치3뿐 아니라 RPG·방치형·슈터의 데이터 테이블도 같은
 경로로 뽑습니다. 보드 그리드를 그리는 HTML 뷰어만 보드형 게임 전용입니다.
+
+Unity 모바일 게임을 위한 공통 CLI를 중심으로, PC 게임·ECS·셰이더·모션을 분석하며 작성한
+연구 스크립트와 실패·검증 노하우도 보존합니다. **사례 연구에서 판독한 기능이 모두 공통 CLI에
+자동 통합된 것은 아닙니다.** 게임별 추가 판독과 입력 의존성은 각 문서를 확인하세요.
+
+## 최신 성과와 진입점 — 2026-10-16
+
+| 영역 | 현재 제공하는 것 | 시작 문서 |
+|---|---|---|
+| APK 언패킹·데이터 추출 | APK/XAPK/split/OBB/PAD·Addressables 탐색, 코덱 체인, FlatBuffers·FibMatrix, 레벨/설정/리소스/계층 출력 | [전체 작업 순서](GUIDE.md), [명령 매뉴얼](MANUAL.md) |
+| 언패킹·분석 노하우 | 원본 식별, PPtr·64bit ID, native TypeTree/IL2CPP 폴백, 소비 코드 추적, 프로세스 메모리 감시, 실패/정정 기록 | [공통 노하우](ANALYSIS_KNOWHOW.md), [전체 추출 이력](EXTRACTION_HISTORY.md) |
+| APK·미니앱 이식 사례 | Royal Smash/MiniApp의 런타임 배치·물리·시스템·UI, Goods Hunt의 trigger·성장·목표·FX, DKBI ECS·셰이더 및 기타 사례 | [최신 사례 요약](docs/APK_MINIAPP_KNOWHOW_20261016.md), [원문 전체 색인](docs/REFERENCE_CASES_ALL.md) |
+| 사례 재현 코드 | 직접 작성한 분석·참조 연결·검사 Python 스크립트110개, UEViewer scale/sidecar/export-index 소스 변경 패치 | [연구 코드와 실행 주의](tools/case_studies/README.md) |
+| 선택형 코드 분석 | REA 기반 JS/managed/native 정적 분석 및 저장 결과 요약·비교 | [REA 사용법과 검증 범위](tools/REA_INTEGRATION.md) |
+| 모션 보정 | 독립 Blender Motion Remap0.2: 본 매핑·참조 자세·루트·2본 IK·접지·골반·명시 컨트롤 프로필·평가 스킨 export | [사용법](tools/motion_remap/README.md), [모션 노하우](docs/MOTION_REMAP_KNOWHOW.md) |
+
+원문 설명160건과 연구 스크립트는 기존 작업의 출처·한계를 보존한 자료입니다.
+연구 스크립트 일부는 로컬 경로를 사용하거나 import 때 실행하므로 먼저 읽고 독립 입력/출력으로
+실행해야 합니다. **게임 리소스·추출 테이블·원본 바이너리·Blend/GLB·이미지·음원은 저장소에 포함하지 않습니다.**
+
+현재 검증: Python 전체 **556개 실행, 3개 건너뜀, 실패0**. 게시한 사례 스크립트110개는
+Python 문법 검사, UEViewer 변경 패치는 기준 소스에 `git apply --check`를 통과했습니다.
+원작 전체 재추출이나 모든 게임의 플레이·GPU 정합성을 새로 검증한 결과는 아닙니다.
+
+현재 미해결인 생성 캐릭터 손바닥·어깨 보정은 [독립 연구 상태](docs/MULTI_SKINNING_RESUME_20261016.md)에
+분리했습니다. 실패 후보5개는 미채택이며, Blend 원본 커브 보존을 GLB native 시간키 보존으로
+확대하지 않습니다. 원작 서버 규칙·실행 화면 동등성도 데이터 추출 성공과 별개입니다.
+
+## 빠른 시작
 
 처음 보는 게임을 처음부터 끝까지 뜯는 순서는 **[GUIDE.md](GUIDE.md)** 에 있습니다 —
 어떤 명령을 어떤 순서로, 무엇을 확인하고, 어디서 막히는지까지.
@@ -27,19 +56,6 @@ py -m levelscope survey --input <아무 apk> --configs configs
 
 ## 설치 (Windows)
 
-APK·언패킹·미니앱 이식의 누적 방법은 [공통 노하우](ANALYSIS_KNOWHOW.md),
-[전체 추출 이력](EXTRACTION_HISTORY.md), [최신 APK·미니앱 정리](docs/APK_MINIAPP_KNOWHOW_20261016.md),
-[사례별 원문 전체 색인](docs/REFERENCE_CASES_ALL.md)에서 확인할 수 있습니다.
-직접 작성한 [사례 연구 스크립트](tools/case_studies/README.md)도 보존했으며,
-게임 리소스와 추출 데이터는 포함하지 않습니다.
-
-추출한 스킨·뼈대 모션을 다른 캐릭터에 옮기는 독립 Blender 도구는
-[Motion Remap 사용법](tools/motion_remap/README.md)을 참고하세요.
-원본 보존형 자세 참조·본 매핑·일괄 bake·2본 IK·접지 잠금·지면/골반 보정과
-컨트롤 리그/B-Bone 평가 스킨 내보내기를 제공하며,
-[검증 범위와 보정 노하우](docs/MOTION_REMAP_KNOWHOW.md)를 별도로 기록합니다.
-일반 데이터 추출 CLI와 분리된 선택 기능입니다.
-
 ```bat
 py -m pip install -r requirements.txt
 ```
@@ -47,9 +63,10 @@ py -m pip install -r requirements.txt
 UnityPy는 Unity 에셋에서 레벨·팔레트·스프라이트를 꺼낼 때 필요합니다.
 `detect` / `ls` 는 pandas·openpyxl·PyYAML 없이도 동작합니다.
 
-`hierarchy` 의 컴포넌트 **필드 값**에는 `TypeTreeGeneratorAPI` 와 .NET 8+ 런타임이
-추가로 필요합니다 (IL2CPP 빌드는 스크립트 필드 구조를 번들에 담지 않기 때문).
-없어도 실행은 되며, 이름·타입까지만 나오고 필드는 `null` 로 남습니다.
+`hierarchy`의 컴포넌트 필드는 원본 native TypeTree가 있으면 이를 우선 사용합니다.
+필드 구조가 없는 IL2CPP 빌드는 `TypeTreeGeneratorAPI`와 .NET 8+ 등 추가 백엔드가 필요할 수
+있습니다. 복원할 수 없는 필드는 누락/실패로 구분하며 이름·타입만 있는 결과를 전체 필드 복원이라
+판정하지 않습니다.
 
 ## 실행
 
@@ -75,7 +92,7 @@ py -m levelscope assets    --input <apk경로> --out out   :: 사운드·머티�
 py -m levelscope hierarchy --input <apk경로> --out out   :: 씬·프리팹 계층
 ```
 
-`run_pixelflow.bat` 더블클릭으로도 실행됩니다(입력 경로는 bat 파일 안에서 수정).
+대화형 분석 진입점은 `analyze.bat` 또는 `분석하기.bat`입니다.
 새 설정을 시험할 때는 `--limit 20` 을 붙여 앞 20개만 먼저 돌려보세요.
 
 ## 입력
@@ -137,10 +154,16 @@ levelscope/          파이프라인 코어
 plugins/             프로젝트 전용 확장 자리
 configs/             게임 설정 + template.yaml + icons/<게임>/
 tests/               회귀 테스트 — python -m unittest discover -s tests -t .
-tools/               verify_baseline.py · decode_fibmatrix.py
+tools/               verify_baseline.py · decode_fibmatrix.py · rea_bridge.py
+  motion_remap/      독립 Blender 모션 보정 도구와 검증 코드
+  case_studies/      입력 의존적인 사례 연구 코드·검사·파서 변경 패치
+docs/                최신 노하우·사례 원문 색인·DKBI/모션 연구 인계
 ```
 
-## 검증 상태 (게임 4종)
+## 초기 추출 기준치 — 4종 baseline 보존
+
+아래는 해당 버전/당시 입력의 기준치입니다. 최신 사례 전체 지원 범위는 상단의
+[전체 추출 이력](EXTRACTION_HISTORY.md)과 [원문 색인](docs/REFERENCE_CASES_ALL.md)을 확인하세요.
 
 레벨 파이프라인:
 
@@ -183,12 +206,12 @@ Royal Kingdom (`gg.com.dreamgames.royalkingdom`, v1.9.0에서 추가 검증):
 세 게임 모두 초안이 사람이 쓴 설정과 일치했고, PixelFlow는 생성된 초안을 **손대지 않고**
 돌려 레벨 2,384개를 찾아 30개 디코딩(실패 0)에 성공했습니다.
 
-- 합성 데이터 회귀 테스트 347개
+- 이 초기 기준치 기록 당시 합성 회귀 테스트347개. 현재 전체 실행 결과는 상단의556개 검사입니다.
 - xlsx의 Summary 수식은 Excel에서 열 때 자동 계산됩니다.
 - `hierarchy` 실행 중 `Error generating tree nodes: Sequence contains no matching element`
   가 콘솔에 섞여 나올 수 있습니다. TypeTreeGeneratorAPI 내부 DLL이 찾지 못한 클래스에
-  대해 직접 출력하는 메시지로, 다음 백엔드로 폴백되므로 무해합니다 — 최종 복원율은
-  실행 끝의 `[typetree]` 줄이 정본입니다.
+  대해 직접 출력하는 메시지입니다. 다음 백엔드 폴백이 성공했는지 확인하고, 실행 끝의
+  `[typetree]` 복원율과 실제 누락 목록을 판정 기준으로 사용합니다.
 
 
 ## 선택형 코드 분석 연동

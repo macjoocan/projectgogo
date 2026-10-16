@@ -716,3 +716,6 @@ Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 
 
 추가 사용자 지시로 Motion Remap 외 APK/미니앱 노하우까지 게시 범위를 확장했다. 직접 작성한 설명160건(과거 작업 폴더 이력 포함)/연구 Python110개를 선별, 원본 리소스·복구 데이터·게임 바이너리·컴파일 셰이더·Blender/GLB/이미지 제외. 공개 실행형 범용 CLI가 아닌 연구 스크립트는 입력 의존성/import시 실행 주의를 명시했다. 게시 코드 문법 검증과 기존 전체556test/skip3 통과. 원작 재실행/전체 재추출/Unity 검사를 새로 하지 않았다. 문서/스크립트 출처 및 해시는 tools/case_studies/publication_manifest.json. 최신 MEMORY/EXTRACTION_HISTORY/ANALYSIS_KNOWHOW 링크를 추가했다.
 
+## 2026-10-16 README 최신화
+
+사용자 추가 요청으로 README 첫 화면에 공통 추출/누적 노하우/APK·미니앱 사례/연구 코드/REA/Motion Remap 진입점을 정리했다. 설명160건·연구 스크립트110개·556tests/skip3과 리소스 제외 정책, 연구 코드와 범용 CLI 차이, GLB 시간키 및 스키닝 미해결을 명시했다. 과거4종/347test 표는 초기 기준치로 한정하고 TypeTree native 우선·폴백 실패 검증 안내와 실제 bat 진입점을 정정했다. 문서 변경이며 원작 재실행/추가 추출은 하지 않았다.
