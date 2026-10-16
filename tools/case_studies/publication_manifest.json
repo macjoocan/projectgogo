@@ -1,0 +1,1902 @@
+{
+  "records": [
+    {
+      "source": "D:\\99.기타\\out_clashofcritters\\ANALYSIS_PROGRESS_2026-09-15.md",
+      "target": "docs/reference-cases/out_clashofcritters/ANALYSIS_PROGRESS_2026-09-15.md",
+      "source_sha256": "d74dd60ad53e9b3cef4ddbac034cf67f9c0af3689f172d3652b62240927f36d2",
+      "published_sha256": "d74dd60ad53e9b3cef4ddbac034cf67f9c0af3689f172d3652b62240927f36d2",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_clashofcritters\\LDPLAYER_CHECK_2026-09-17.md",
+      "target": "docs/reference-cases/out_clashofcritters/LDPLAYER_CHECK_2026-09-17.md",
+      "source_sha256": "264a64db533156194cfffda6e8d2edfea56467b3dae39c31b0998e9fa723f211",
+      "published_sha256": "264a64db533156194cfffda6e8d2edfea56467b3dae39c31b0998e9fa723f211",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_cookierun\\READABLE_TABLES.md",
+      "target": "docs/reference-cases/out_cookierun/READABLE_TABLES.md",
+      "source_sha256": "3b55ad8b30a6b41dea877abb6cd66c8a4c358ddb0533699a6ef6227c01418579",
+      "published_sha256": "3b55ad8b30a6b41dea877abb6cd66c8a4c358ddb0533699a6ef6227c01418579",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_cookierun\\RECOVERY_RESULT.md",
+      "target": "docs/reference-cases/out_cookierun/RECOVERY_RESULT.md",
+      "source_sha256": "400808c53695b308a9efe9c902b5a9a901b0439d12f93767e223730a1b5e7787",
+      "published_sha256": "400808c53695b308a9efe9c902b5a9a901b0439d12f93767e223730a1b5e7787",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_cubeaway\\CubeAway_rules.md",
+      "target": "docs/reference-cases/out_cubeaway/CubeAway_rules.md",
+      "source_sha256": "4b58a71d651594ef10285a575ddb8a664227d7b38c4dadc18e34ac58cd816fa2",
+      "published_sha256": "4b58a71d651594ef10285a575ddb8a664227d7b38c4dadc18e34ac58cd816fa2",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_cubeaway\\README.md",
+      "target": "docs/reference-cases/out_cubeaway/README.md",
+      "source_sha256": "b9ee2dd87c337a7828d0e6b83b09c33a08119aad6c63b1d3c75e7f63a42f20ad",
+      "published_sha256": "b9ee2dd87c337a7828d0e6b83b09c33a08119aad6c63b1d3c75e7f63a42f20ad",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_factorio\\ART_RESOURCES.md",
+      "target": "docs/reference-cases/out_factorio/ART_RESOURCES.md",
+      "source_sha256": "c8d2bcdf1531fffc4bc9f8b175ace7543055f3a4b743ca6dee979555c21a557c",
+      "published_sha256": "3128d73b784f1b3501cb3226d73e0af9ab792fd2f0c4bbcb1aada0d3b6a85e42",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_factorio\\DATA_BALANCE.md",
+      "target": "docs/reference-cases/out_factorio/DATA_BALANCE.md",
+      "source_sha256": "033ae1dc3d67252379557eeaa6473318ae7ca5435e7cf25cfe1be5f8c4ec35c1",
+      "published_sha256": "4d48d6fc1bd91c8108c65ed8881627be5a6e4de7a491baa8c22e3a9854e5c86f",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_factorio\\MAP_GENERATION.md",
+      "target": "docs/reference-cases/out_factorio/MAP_GENERATION.md",
+      "source_sha256": "5444729b3aa6715a4feb7e2c01bcec653a036ac3e4aa51d9936c1c123da61258",
+      "published_sha256": "fb8c3f9eb3a50a7e08e3c76b37e2b23595e650ca3651d7b2c2a156c297be8f20",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_factorio\\README.md",
+      "target": "docs/reference-cases/out_factorio/README.md",
+      "source_sha256": "6f38f263192e089f449027bc32b58ecbde6f3aaa699b11a38b72860aa07df7f1",
+      "published_sha256": "928962a3fb65fc9dce0fd50721b693cc7aa431c257c130fba6f2c47b87a68106",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\booster_goal_audit_20261015\\GOALS_AND_AUDIO.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/booster_goal_audit_20261015/GOALS_AND_AUDIO.md",
+      "source_sha256": "43bf6aa93feac33359ca1ddce90daf5d4f0ed202ac7e96566110412f1892a6d5",
+      "published_sha256": "43bf6aa93feac33359ca1ddce90daf5d4f0ed202ac7e96566110412f1892a6d5",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\booster_goal_audit_20261015\\LIGHTNING_UPGRADE_STATE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/booster_goal_audit_20261015/LIGHTNING_UPGRADE_STATE.md",
+      "source_sha256": "fff468580d0b4394ba4bb3df85bed6ceaeac002a524a9404012112d52e93cdb3",
+      "published_sha256": "fff468580d0b4394ba4bb3df85bed6ceaeac002a524a9404012112d52e93cdb3",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\booster_goal_audit_20261015\\POWERUPS.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/booster_goal_audit_20261015/POWERUPS.md",
+      "source_sha256": "e664d884ba004b1e91aefcfd4ab0f89bc418deaa5c6c7670e6e5f752f52c141a",
+      "published_sha256": "e664d884ba004b1e91aefcfd4ab0f89bc418deaa5c6c7670e6e5f752f52c141a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\booster_goal_audit_20261015\\PREBOOSTERS.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/booster_goal_audit_20261015/PREBOOSTERS.md",
+      "source_sha256": "d00658eba65a8b7a8acfa00b0ce9f0543ae64c2610cfd5101cba56ea3db720a8",
+      "published_sha256": "d00658eba65a8b7a8acfa00b0ce9f0543ae64c2610cfd5101cba56ea3db720a8",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\booster_goal_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/booster_goal_audit_20261015/README.md",
+      "source_sha256": "4ac70bdde5a7f4a06ffc0661e3e3de775a7f2c5ab8603c75f0bac0ff76bfb2de",
+      "published_sha256": "4ac70bdde5a7f4a06ffc0661e3e3de775a7f2c5ab8603c75f0bac0ff76bfb2de",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\card_fx_asset_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/card_fx_asset_audit_20261015/README.md",
+      "source_sha256": "80b6805fa431183900f8bc59fe15128d37c95fa6b81f58733ab440ab6505561a",
+      "published_sha256": "80b6805fa431183900f8bc59fe15128d37c95fa6b81f58733ab440ab6505561a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\card_pool_code_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/card_pool_code_audit_20261015/README.md",
+      "source_sha256": "18710a984374b32b4f10b78e08e3a0350f02f8fb489855a6e5ebc35179dc96a6",
+      "published_sha256": "18710a984374b32b4f10b78e08e3a0350f02f8fb489855a6e5ebc35179dc96a6",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\card_projection_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/card_projection_audit_20261015/README.md",
+      "source_sha256": "dd275f5808dbd33e5ae2350bd433f10ef165799ff635799976690f50000359e8",
+      "published_sha256": "dd275f5808dbd33e5ae2350bd433f10ef165799ff635799976690f50000359e8",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\CAMERA_BLEND_DAMPING.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/CAMERA_BLEND_DAMPING.md",
+      "source_sha256": "ab34f0532a0d8637cdcade5982b0073ca9458e26c39e3ded1f782c5407ae4545",
+      "published_sha256": "cc48c81eef4472e8171024403da05388ad9f27c96d4cf0436fbd5bed64598d86",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\CAMERA_INITIAL_TRANSITION.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/CAMERA_INITIAL_TRANSITION.md",
+      "source_sha256": "83e2f8bf93d7316d65423dfef4b88406a62921cf899900c1d2c8923f0de1195c",
+      "published_sha256": "73050a5df8fc631918ebfe39859fad86099e13915bd09e97b440febbf19f07cd",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\FIRST_INPUT_TIMER_GATE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/FIRST_INPUT_TIMER_GATE.md",
+      "source_sha256": "a84a6d43ea15df20ed4b0d15fedf25933227498d29a3b1ba5734ef08e719846d",
+      "published_sha256": "c7bda396eb83dc744c2703cc8b6e6354902ec23d9669841a61a1446eee95bb2c",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\FOLLOWUP_STATUS.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/FOLLOWUP_STATUS.md",
+      "source_sha256": "09048cbe1c1f58c1ca751d2faff2526fcc6c50dc084db6c2a7ed66f0aab877bf",
+      "published_sha256": "6ca183b6ece040a154796692f83cdf5650710d4aa1d6a54166c10a1c6289a143",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\GROUND_AND_TRIGGER.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/GROUND_AND_TRIGGER.md",
+      "source_sha256": "b0c6cc29984938544d587aa6fb1169263110513b1067ed7bab123e08664d6393",
+      "published_sha256": "32ed3a9388584a34a401d727efa667addb889fde83d5d572f06d944aded94680",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\GROUND_TOPOLOGY_REFERENCE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/GROUND_TOPOLOGY_REFERENCE.md",
+      "source_sha256": "1148676b0641294cf891a089a94d4531a75bddd2db608b1d399a11510dbb1f9f",
+      "published_sha256": "8b5404cfc1bef88fac959e23443dc80a5bb040d51ac9dbe5d219b646f62e6cbb",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\LEVEL3_LIGHTING_REFERENCE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/LEVEL3_LIGHTING_REFERENCE.md",
+      "source_sha256": "78e46ecd8a5312a8a0f7d27b44ba2e6a616c42c9997352a00c6b988069fde2ee",
+      "published_sha256": "bcb7c31b372b5243299c2d7dbd06abd0ef9db8f4cd92721225cb29a83c2fcc93",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\PROP_ACTIVATION.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/PROP_ACTIVATION.md",
+      "source_sha256": "81c3060d75bdaf4413cfd6730f20f2799a9e5a59bda38a6814d42ba66bd1bf1a",
+      "published_sha256": "79d906ecfada1ce118e981e74b843bdd46020a021b9141755c5b7b3dcad7c67b",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\PULLER_FORCE_REFERENCE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/PULLER_FORCE_REFERENCE.md",
+      "source_sha256": "7bcfe70237f8eebdca9af6204d0743a4b0248dbb31be58f62cf59a1cd5ed2531",
+      "published_sha256": "d69bb6e264252b866eab3c4f4043a090c238d3e4d67b4c83cd06867aca28b3db",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/README.md",
+      "source_sha256": "fc375a8953daeec2ecbf15d17f308a7cf0cb320e703aa2a1ce8d3ae27820b09b",
+      "published_sha256": "93f3cee3fd429c719d6d3fafe63a8cc78d2fe0ca9b03d19ffa2964be27e8ec85",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\SCORE_GROWTH_CALLBACK.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/SCORE_GROWTH_CALLBACK.md",
+      "source_sha256": "02765e5d9e833189edfdb7047268783ebdbb366ab0ab174dfbf91ff2e2633c51",
+      "published_sha256": "b917f239b031609c490cbcfcc2445a862e7c78d2cd8a778248d6fe67d0ac4d8d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\code_audit_20261014\\SPECIAL_PROP_BRANCHES.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/code_audit_20261014/SPECIAL_PROP_BRANCHES.md",
+      "source_sha256": "6757dad478c4988b635f788a85ee576037a787840d48259ade5619717c1cb4de",
+      "published_sha256": "caa7bb18e5894d59f11ac8dbb77b3a43bf758181410fd2cef3dbb665c7d2b313",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\ALL_MODES_EXISTING_EVIDENCE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/ALL_MODES_EXISTING_EVIDENCE.md",
+      "source_sha256": "7e0369bb89c844f44562295076be26d440d58370be0d86b5add7af01e762bf4a",
+      "published_sha256": "7e0369bb89c844f44562295076be26d440d58370be0d86b5add7af01e762bf4a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\BIG_PROP_PARENT_TRS.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/BIG_PROP_PARENT_TRS.md",
+      "source_sha256": "efc29478a65b4aa9f6c18eb97b0cbe073f3234098d75b42c625ab9e327c93f46",
+      "published_sha256": "efc29478a65b4aa9f6c18eb97b0cbe073f3234098d75b42c625ab9e327c93f46",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\BIG_PROP_SHRINK.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/BIG_PROP_SHRINK.md",
+      "source_sha256": "40681ea0dba3b6d80fa31b5b6b98c0a6915818b0ba1ab255352bfef30db8e9ae",
+      "published_sha256": "8adfb7e7593ff3d57516452c7c6fb8e6950d6803232bde4375e676af6bf6af70",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\BOMB_FLOW_EXISTING_VALUES.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/BOMB_FLOW_EXISTING_VALUES.md",
+      "source_sha256": "1424d6632dad6fa96fb2cf24624478199625e9ca3def3d977a5f17f514e14482",
+      "published_sha256": "1424d6632dad6fa96fb2cf24624478199625e9ca3def3d977a5f17f514e14482",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\DROP_TRANSITION.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/DROP_TRANSITION.md",
+      "source_sha256": "09ffdc8056a975993980f089b49389c1e670d170a0253b8407d156ba31697a1e",
+      "published_sha256": "da7c7bc7020f168fe3793120f68c782cd6ba6c149f000aade9c762da655379de",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\EATEN_Y_COORDINATE_RECHECK.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/EATEN_Y_COORDINATE_RECHECK.md",
+      "source_sha256": "1975f7a45a233ad903630ba53299dd438fd0f0894aa3474ef4acbf8cc845e24a",
+      "published_sha256": "1975f7a45a233ad903630ba53299dd438fd0f0894aa3474ef4acbf8cc845e24a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\MODE_THEMES_AND_BOMB_DDA.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/MODE_THEMES_AND_BOMB_DDA.md",
+      "source_sha256": "212522bb3205c76033034f99ecc9e45a6b23ab5ef8f4b36db8c8b667f268c81a",
+      "published_sha256": "212522bb3205c76033034f99ecc9e45a6b23ab5ef8f4b36db8c8b667f268c81a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\NORMAL_THEME_INPUT_BOUNDARY.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/NORMAL_THEME_INPUT_BOUNDARY.md",
+      "source_sha256": "402bc63693d05e7892dbf9d5ec456a8ca1fcebd6e4db77e43a9de7244b6475b2",
+      "published_sha256": "402bc63693d05e7892dbf9d5ec456a8ca1fcebd6e4db77e43a9de7244b6475b2",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\PLACED_BOMB_AND_ZERO_GOALS.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/PLACED_BOMB_AND_ZERO_GOALS.md",
+      "source_sha256": "b9f7e2ed84599051ae031105ca651ccb47d62bb06f0bdf48310f559bdee3a1ef",
+      "published_sha256": "b9f7e2ed84599051ae031105ca651ccb47d62bb06f0bdf48310f559bdee3a1ef",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\PLACEMENT_ROOT_TRS_RECHECK.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/PLACEMENT_ROOT_TRS_RECHECK.md",
+      "source_sha256": "2b845ba2070d341042effbafe6259689950ca36a383992f4858ac4b4a085497f",
+      "published_sha256": "2b845ba2070d341042effbafe6259689950ca36a383992f4858ac4b4a085497f",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\PROP_AUTO_SLEEP_REFERENCE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/PROP_AUTO_SLEEP_REFERENCE.md",
+      "source_sha256": "b4336caf81a1a299999bdd2173fa52dcc49ad5c5f7eeb3495b903e562eea5a6c",
+      "published_sha256": "b4336caf81a1a299999bdd2173fa52dcc49ad5c5f7eeb3495b903e562eea5a6c",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/README.md",
+      "source_sha256": "6acb6f398776ba6997c7d2bafbcc0d413da047ef8555e5bd3e8216f4bae294da",
+      "published_sha256": "f7d88289c9df35b56caff91cdb0c3f08ee86949b5f4a94e0cc83d456d161026a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\SIZE_GAUGE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/SIZE_GAUGE.md",
+      "source_sha256": "e8e9d17180d28f0ad965175929e56fdab1f80fd4b22ef15a87d2c949ac89e43f",
+      "published_sha256": "d54afa33ff515c2ab046dc40403d4e8b05d066eeff47b60f5954fb441509c841",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\drop_gauge_audit_20261015\\STACK_DROP_PHYSICS.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/drop_gauge_audit_20261015/STACK_DROP_PHYSICS.md",
+      "source_sha256": "7b3a5c3aca93d173e2e5648a572db36a5e6d85973a804e142d73567d95b2708a",
+      "published_sha256": "7b3a5c3aca93d173e2e5648a572db36a5e6d85973a804e142d73567d95b2708a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\end_flow_audit_20261015\\FLOW.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/end_flow_audit_20261015/FLOW.md",
+      "source_sha256": "c3d2a8b53b8a4658c2c0713ca314d42e4c01e814575fdcd629a90d669c1ddb05",
+      "published_sha256": "c3d2a8b53b8a4658c2c0713ca314d42e4c01e814575fdcd629a90d669c1ddb05",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\end_flow_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/end_flow_audit_20261015/README.md",
+      "source_sha256": "02ed72c5f29a26d6b30d32cf6637ba666aaa32b09190f7df75ca452d753e4bd0",
+      "published_sha256": "02ed72c5f29a26d6b30d32cf6637ba666aaa32b09190f7df75ca452d753e4bd0",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\ending_fx_shader_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/ending_fx_shader_audit_20261015/README.md",
+      "source_sha256": "783df1c348ad52a06ba7c7210d590cdca21c57e7853d7d02228e4d385eb29328",
+      "published_sha256": "783df1c348ad52a06ba7c7210d590cdca21c57e7853d7d02228e4d385eb29328",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\ending_spine_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/ending_spine_audit_20261015/README.md",
+      "source_sha256": "a6b374be22e0f86d9cada5dee21ac7a2ee10347c0c9e9da6b74e1d7afc97c362",
+      "published_sha256": "a6b374be22e0f86d9cada5dee21ac7a2ee10347c0c9e9da6b74e1d7afc97c362",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\fx_existing_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/fx_existing_audit_20261015/README.md",
+      "source_sha256": "57e929daf3ffe93c53933f260ec8af7db5538db4ab78d07a2f2676c40f718dce",
+      "published_sha256": "57e929daf3ffe93c53933f260ec8af7db5538db4ab78d07a2f2676c40f718dce",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\goal_card_code_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/goal_card_code_audit_20261015/README.md",
+      "source_sha256": "52712eac4bf54e6f0a2ef58e34354a81e89ac975fe7959d084000bf1a48da2d9",
+      "published_sha256": "52712eac4bf54e6f0a2ef58e34354a81e89ac975fe7959d084000bf1a48da2d9",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\goal_card_code_audit_20261015\\README_UTF8.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/goal_card_code_audit_20261015/README_UTF8.md",
+      "source_sha256": "52712eac4bf54e6f0a2ef58e34354a81e89ac975fe7959d084000bf1a48da2d9",
+      "published_sha256": "52712eac4bf54e6f0a2ef58e34354a81e89ac975fe7959d084000bf1a48da2d9",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\goal_card_ui_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/goal_card_ui_audit_20261015/README.md",
+      "source_sha256": "d86161042294fc572bebe8763f12373a8be43b8fb2b2d11eb7def2b947950441",
+      "published_sha256": "d86161042294fc572bebe8763f12373a8be43b8fb2b2d11eb7def2b947950441",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\goal_fly_ui_audit_20261015\\FLY_BRANCH_GATE.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/goal_fly_ui_audit_20261015/FLY_BRANCH_GATE.md",
+      "source_sha256": "59b4468fdecd46b0b0b0015c0c96539c7d9a5759f5fce3ee00fe3d3bb87a5d80",
+      "published_sha256": "59b4468fdecd46b0b0b0015c0c96539c7d9a5759f5fce3ee00fe3d3bb87a5d80",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\goal_fly_ui_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/goal_fly_ui_audit_20261015/README.md",
+      "source_sha256": "c7c5716c2042500df784696c2a1aa6eb041a30ad101910fc6a3ce241f9101c1b",
+      "published_sha256": "c7c5716c2042500df784696c2a1aa6eb041a30ad101910fc6a3ce241f9101c1b",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\growth_fx_code_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/growth_fx_code_audit_20261015/README.md",
+      "source_sha256": "d4aa7c8c6cd64e832ab5aa0637638e40bd2322e1962ea9cbf77078af679210d4",
+      "published_sha256": "d4aa7c8c6cd64e832ab5aa0637638e40bd2322e1962ea9cbf77078af679210d4",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\growth_fx_shader_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/growth_fx_shader_audit_20261015/README.md",
+      "source_sha256": "9e5dfaf06fafeb6264fb8a49da55e288712cb636877b5e8066cc00a015de7d71",
+      "published_sha256": "9e5dfaf06fafeb6264fb8a49da55e288712cb636877b5e8066cc00a015de7d71",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\ingame_handoff_20261014\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/ingame_handoff_20261014/README.md",
+      "source_sha256": "31d5a8c4a76b9595689e4c044efa4680950e23fa5bfed44bd5800ee832b02e76",
+      "published_sha256": "b3bcd66d128dede90d6f9c31e59469253e854344b340c602f74467e5a7e9a3cb",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\OBJ_COORDINATE_EXPORT_20261015.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/OBJ_COORDINATE_EXPORT_20261015.md",
+      "source_sha256": "a0fb12296a871fb76d0d028f2c6ded27127ceb17ae6a44c67c76e60f2863b00c",
+      "published_sha256": "a0fb12296a871fb76d0d028f2c6ded27127ceb17ae6a44c67c76e60f2863b00c",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\player_fx_material_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/player_fx_material_audit_20261015/README.md",
+      "source_sha256": "01ce3c043e9fc082f60ca88d196770cda17677125d771e3b247f391bef4b2c78",
+      "published_sha256": "01ce3c043e9fc082f60ca88d196770cda17677125d771e3b247f391bef4b2c78",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\prop_shader_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/prop_shader_audit_20261015/README.md",
+      "source_sha256": "4b1621ac4d600c2a71c61964c6d946c66f7878a9844c95a23c0e8db83fa3e706",
+      "published_sha256": "4b1621ac4d600c2a71c61964c6d946c66f7878a9844c95a23c0e8db83fa3e706",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/README.md",
+      "source_sha256": "2bf0be9ebd45825d5bfe30d5cf138ff0f7cfa72c345e0ca0e308e815cddf9c74",
+      "published_sha256": "d5bdb79e8bbffc7f33146471bf4895b12e75c19ec8f39412839ed96cd9ea6329",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\shader_audit_20261014\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/shader_audit_20261014/README.md",
+      "source_sha256": "acdc2af673df797d494edd31aee9f53d655262a44fd6f926e7fe86878346c8bf",
+      "published_sha256": "3f94ee890abb398aef711e2c8776c60c92286b8a2fc17aa4022a377e9776707e",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\shield_shader_audit_20261015\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/_reference/shield_shader_audit_20261015/README.md",
+      "source_sha256": "cc111db206f3d0eae864b68f2b0a7d46decd1bec2250c84e9356dfe53ce99fbe",
+      "published_sha256": "cc111db206f3d0eae864b68f2b0a7d46decd1bec2250c84e9356dfe53ce99fbe",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\README.md",
+      "target": "docs/reference-cases/out_goodshunt/README.md",
+      "source_sha256": "d3b008ea0adb0e64752e05636aa4c1cec6d509abf6c56121c28e255e5e321d8c",
+      "published_sha256": "98d19f4f32abd4be2b3149bdb487b330a7487aefe3b343b7b107f2c818c17992",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodspuzzle\\README.md",
+      "target": "docs/reference-cases/out_goodspuzzle/README.md",
+      "source_sha256": "eb111fb65489732beac577f58b1429625d8761f04028cef7bfcbc4321adddd82",
+      "published_sha256": "eb111fb65489732beac577f58b1429625d8761f04028cef7bfcbc4321adddd82",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\HANDOFF.md",
+      "target": "docs/reference-cases/out_hatintime/_reference/HANDOFF.md",
+      "source_sha256": "39d1151adfad5d874cf6eb225076205a9ad3ae4b65c868a21a2dad4e26bba3e3",
+      "published_sha256": "39d1151adfad5d874cf6eb225076205a9ad3ae4b65c868a21a2dad4e26bba3e3",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\README.md",
+      "target": "docs/reference-cases/out_hatintime/_reference/README.md",
+      "source_sha256": "ea16e280d8e5ef0f9eaca9e3020a08b7fb47291f3fd109ac490ea3d0b3f85b66",
+      "published_sha256": "ea16e280d8e5ef0f9eaca9e3020a08b7fb47291f3fd109ac490ea3d0b3f85b66",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_java800\\STATIC_INSPECTION.md",
+      "target": "docs/reference-cases/out_java800/STATIC_INSPECTION.md",
+      "source_sha256": "17ccc3bd9b28543175c8f7939be37f4bc15b72e12ec4c31153455ce74161c96d",
+      "published_sha256": "17ccc3bd9b28543175c8f7939be37f4bc15b72e12ec4c31153455ce74161c96d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_meowdoku\\ANSWER_miniapp_2.md",
+      "target": "docs/reference-cases/out_meowdoku/ANSWER_miniapp_2.md",
+      "source_sha256": "38c5e4701d6ffba72a23ccbd523e3d4f771e3c6697ea675b2f26d7bc3689d1ff",
+      "published_sha256": "38c5e4701d6ffba72a23ccbd523e3d4f771e3c6697ea675b2f26d7bc3689d1ff",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_meowdoku\\Meowdoku_레벨진행_AB테스트.md",
+      "target": "docs/reference-cases/out_meowdoku/Meowdoku_레벨진행_AB테스트.md",
+      "source_sha256": "146be3fd8f9077d39e1981803ec13bc9c8014724731196bc0233b38a57c1390c",
+      "published_sha256": "e7ca1a314a2d2644dde0cfcde4e8d820078364c8d599fe34478591a32ba3f048",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_meowdoku\\README.md",
+      "target": "docs/reference-cases/out_meowdoku/README.md",
+      "source_sha256": "286ccd51758e2fcaf8dc7e3929205402691c13e516b5b4b1d7d3a881a262166a",
+      "published_sha256": "286ccd51758e2fcaf8dc7e3929205402691c13e516b5b4b1d7d3a881a262166a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_mindustry\\README.md",
+      "target": "docs/reference-cases/out_mindustry/README.md",
+      "source_sha256": "c566887860634a9c4afd73e98f8620fc22dc0afc799d6ef44b8c6b0c1eea93c5",
+      "published_sha256": "c566887860634a9c4afd73e98f8620fc22dc0afc799d6ef44b8c6b0c1eea93c5",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalmatch\\BLOCK_DROP_FLOW_FACTORS_REPORT.md",
+      "target": "docs/reference-cases/out_royalmatch/BLOCK_DROP_FLOW_FACTORS_REPORT.md",
+      "source_sha256": "9a6f81431f9d2909b8f0e18df7dbc77bb0ce80ddbefc2a639168dd4705f9f18e",
+      "published_sha256": "a67d52ac8c9ce52e1c0dfcd292304ad912bd1ebca092c7723b7df8c0af26bb0d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\block_texture_handoff\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/block_texture_handoff/README.md",
+      "source_sha256": "17b22a8b9304e06af01b6e975655fc8acb58f5044e4efc1556d07c7150bd8f35",
+      "published_sha256": "17b22a8b9304e06af01b6e975655fc8acb58f5044e4efc1556d07c7150bd8f35",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\camera_ground_audit_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/camera_ground_audit_20260929/README.md",
+      "source_sha256": "2ac2d844fde03ae13b2d4fd6b59f45831ed75367499be0198d4579ab64d4f8e9",
+      "published_sha256": "69a4bdfcca10fd510691c6eaa4d756455386d9fba0c00a49be7057944b214eeb",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\cannon_world_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/cannon_world_analysis/README.md",
+      "source_sha256": "24c9bcbf5b1c13cc36398b1ef4747a0081945a9ad4c83b96c1ef990131bcb972",
+      "published_sha256": "24c9bcbf5b1c13cc36398b1ef4747a0081945a9ad4c83b96c1ef990131bcb972",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\CDN_OFFLINE_ASSESSMENT.md",
+      "target": "docs/reference-cases/out_royalsmash/CDN_OFFLINE_ASSESSMENT.md",
+      "source_sha256": "9a9f21b8da86c06e039d932c3dbde0e8edeae9de762a338a7661315d0a8ef387",
+      "published_sha256": "9a9f21b8da86c06e039d932c3dbde0e8edeae9de762a338a7661315d0a8ef387",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\CDN_PUBLIC_RESULT.md",
+      "target": "docs/reference-cases/out_royalsmash/CDN_PUBLIC_RESULT.md",
+      "source_sha256": "d48160503d416ff3386c9f12f770eb63c07efa46b55d976f20e00ee16d12070b",
+      "published_sha256": "d48160503d416ff3386c9f12f770eb63c07efa46b55d976f20e00ee16d12070b",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\CLAUDE_CDN_HANDOFF_7125873e.md",
+      "target": "docs/reference-cases/out_royalsmash/CLAUDE_CDN_HANDOFF_7125873e.md",
+      "source_sha256": "1e6073408484bf4ab3e2254d485a742ab65782b8a7d5dad70746ec93f78d35e4",
+      "published_sha256": "1e6073408484bf4ab3e2254d485a742ab65782b8a7d5dad70746ec93f78d35e4",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\codex_request_20260929_jar_sprites.md",
+      "target": "docs/reference-cases/out_royalsmash/codex_request_20260929_jar_sprites.md",
+      "source_sha256": "118aa1041ff641c3bbc2095c08255b0ef393f6552d0036dc9d66b6cde0739d18",
+      "published_sha256": "118aa1041ff641c3bbc2095c08255b0ef393f6552d0036dc9d66b6cde0739d18",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\codex_request_20260929_stabilize_and_rope.md",
+      "target": "docs/reference-cases/out_royalsmash/codex_request_20260929_stabilize_and_rope.md",
+      "source_sha256": "67cfadf3d993ef4a336957e355758bb0ec2f10972779768eed748cba9a83d722",
+      "published_sha256": "67cfadf3d993ef4a336957e355758bb0ec2f10972779768eed748cba9a83d722",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\destruction_fx_audit\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/destruction_fx_audit/README.md",
+      "source_sha256": "1cad4cfda8cd112493c5d605a37e49bb097a4f25bf87d71be4701c16a68c9d81",
+      "published_sha256": "1cad4cfda8cd112493c5d605a37e49bb097a4f25bf87d71be4701c16a68c9d81",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\DISPOSABLE_LAB_PREFLIGHT.md",
+      "target": "docs/reference-cases/out_royalsmash/DISPOSABLE_LAB_PREFLIGHT.md",
+      "source_sha256": "0ca6decf88c35b8acfa61253c5bf7dc9d4d6d7065ec4164486fc902439cc9cde",
+      "published_sha256": "0ca6decf88c35b8acfa61253c5bf7dc9d4d6d7065ec4164486fc902439cc9cde",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\DISPOSABLE_LAB_STATUS.md",
+      "target": "docs/reference-cases/out_royalsmash/DISPOSABLE_LAB_STATUS.md",
+      "source_sha256": "c1095e2746a552a2da6d1e04b0ea4be50a597f1a2d3eba9a730d9a1981e83c95",
+      "published_sha256": "c1095e2746a552a2da6d1e04b0ea4be50a597f1a2d3eba9a730d9a1981e83c95",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\FINAL_OFFLINE_CONCLUSION.md",
+      "target": "docs/reference-cases/out_royalsmash/FINAL_OFFLINE_CONCLUSION.md",
+      "source_sha256": "24614645cd4d35b91e7f7304e24afee22fbec9bc1615b6fa40408126355cb43d",
+      "published_sha256": "24614645cd4d35b91e7f7304e24afee22fbec9bc1615b6fa40408126355cb43d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\force_mode_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/force_mode_analysis/README.md",
+      "source_sha256": "f52d3c83befcdded80dd3c38d6e87f21de0489d4943ef1a735da65c436387aff",
+      "published_sha256": "f52d3c83befcdded80dd3c38d6e87f21de0489d4943ef1a735da65c436387aff",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\ingame_art_audit_20260928\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/ingame_art_audit_20260928/README.md",
+      "source_sha256": "c56668e56e9170a64b1969479ca8eac2e6b104307a054382eae36943b0b62db7",
+      "published_sha256": "c56668e56e9170a64b1969479ca8eac2e6b104307a054382eae36943b0b62db7",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\ingame_art_audit_20260928\\shader_equations.md",
+      "target": "docs/reference-cases/out_royalsmash/ingame_art_audit_20260928/shader_equations.md",
+      "source_sha256": "56d4b1f50321d10f96a05e3a4156056c7d6789a345ea3121af3af31081726b23",
+      "published_sha256": "56d4b1f50321d10f96a05e3a4156056c7d6789a345ea3121af3af31081726b23",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\investigation_20260929_jar_and_lv31_33.md",
+      "target": "docs/reference-cases/out_royalsmash/investigation_20260929_jar_and_lv31_33.md",
+      "source_sha256": "5a1ae8e1d3a6f5b0b9badbbd8e0eb406bf3cb92674907569ac1e2a6590914543",
+      "published_sha256": "5a1ae8e1d3a6f5b0b9badbbd8e0eb406bf3cb92674907569ac1e2a6590914543",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\items_events_handoff_20260929\\EVENTS.md",
+      "target": "docs/reference-cases/out_royalsmash/items_events_handoff_20260929/EVENTS.md",
+      "source_sha256": "e13388275c9d3f2c29137f8dc8365ac922ac62874c6f42d8b8ab7ed4ea87f8c5",
+      "published_sha256": "e13388275c9d3f2c29137f8dc8365ac922ac62874c6f42d8b8ab7ed4ea87f8c5",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\items_events_handoff_20260929\\INTEGRATION.md",
+      "target": "docs/reference-cases/out_royalsmash/items_events_handoff_20260929/INTEGRATION.md",
+      "source_sha256": "68308a86d92cb3f0800772e28babf58275ba4864761901e9daef2eb2bf3b46d7",
+      "published_sha256": "68308a86d92cb3f0800772e28babf58275ba4864761901e9daef2eb2bf3b46d7",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\items_events_handoff_20260929\\ITEMS.md",
+      "target": "docs/reference-cases/out_royalsmash/items_events_handoff_20260929/ITEMS.md",
+      "source_sha256": "1416045a474ba09f01531341ec3e17a635cc38c8af9bb38d88370829d60fcc40",
+      "published_sha256": "1416045a474ba09f01531341ec3e17a635cc38c8af9bb38d88370829d60fcc40",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\items_events_handoff_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/items_events_handoff_20260929/README.md",
+      "source_sha256": "f6dee20592dd39ba7d0f8ebbfced5c2c8782eb35f4f83445ebaf98f923fd19a9",
+      "published_sha256": "f6dee20592dd39ba7d0f8ebbfced5c2c8782eb35f4f83445ebaf98f923fd19a9",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\level144_spawn_audit\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/level144_spawn_audit/README.md",
+      "source_sha256": "e41193797eff8640a79f367dfdb2604b09d6c5772b9fa665af7cfeb66322f9f7",
+      "published_sha256": "e41193797eff8640a79f367dfdb2604b09d6c5772b9fa665af7cfeb66322f9f7",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\level_structure_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/level_structure_analysis/README.md",
+      "source_sha256": "068d27a675a46f1852225a7f7d5666214439284904cc8cdb317eaf4fafae22e0",
+      "published_sha256": "068d27a675a46f1852225a7f7d5666214439284904cc8cdb317eaf4fafae22e0",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\LICENSE_REPAIR_ASSESSMENT.md",
+      "target": "docs/reference-cases/out_royalsmash/LICENSE_REPAIR_ASSESSMENT.md",
+      "source_sha256": "be4c5a253e6a3e9fb00cd25c397c8b748d28efb54eaadaa23762f2504fcbb994",
+      "published_sha256": "be4c5a253e6a3e9fb00cd25c397c8b748d28efb54eaadaa23762f2504fcbb994",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\LOCAL_LEVEL_FINDINGS.md",
+      "target": "docs/reference-cases/out_royalsmash/LOCAL_LEVEL_FINDINGS.md",
+      "source_sha256": "297250e36d1df14535fd5cde6d173ec7f6280747b25c4422f9cceeb8ca236be3",
+      "published_sha256": "297250e36d1df14535fd5cde6d173ec7f6280747b25c4422f9cceeb8ca236be3",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\CLOSED_bmum988nt-x.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/CLOSED_bmum988nt-x.md",
+      "source_sha256": "6241066dfb5cff43aebfc450fb5a3f4ab63b87410b191c0a6421e3abd57d48b6",
+      "published_sha256": "6241066dfb5cff43aebfc450fb5a3f4ab63b87410b191c0a6421e3abd57d48b6",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/README.md",
+      "source_sha256": "777817a6c134a7f8d3f7b3807213edefe5658a5ed64507700eea27f302024cfd",
+      "published_sha256": "777817a6c134a7f8d3f7b3807213edefe5658a5ed64507700eea27f302024cfd",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\REPLY_bmum8cgi3-o.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/REPLY_bmum8cgi3-o.md",
+      "source_sha256": "171e9232d9a80e6d97e487cdb7a6b5d45d0cd580e2d2b2527ec14500db1b55a6",
+      "published_sha256": "171e9232d9a80e6d97e487cdb7a6b5d45d0cd580e2d2b2527ec14500db1b55a6",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\REPLY_bmum8x1we-t.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/REPLY_bmum8x1we-t.md",
+      "source_sha256": "26da43025858623659805d4988e1048eac96b28b1166792f759085dec3658843",
+      "published_sha256": "26da43025858623659805d4988e1048eac96b28b1166792f759085dec3658843",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\REPLY_bmum93tqo-v.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/REPLY_bmum93tqo-v.md",
+      "source_sha256": "5d59854591dd2c4aa704213bd54f0938bb49c4efdf0d6ebd7c9fefb28c751e9c",
+      "published_sha256": "5d59854591dd2c4aa704213bd54f0938bb49c4efdf0d6ebd7c9fefb28c751e9c",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\RESOLUTION_bmum8phao-r.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/RESOLUTION_bmum8phao-r.md",
+      "source_sha256": "55b69f470ca188f444a8a706d5e3ecfc55520ea0a32800e378a83ba51b312b0d",
+      "published_sha256": "55b69f470ca188f444a8a706d5e3ecfc55520ea0a32800e378a83ba51b312b0d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\lv2_runtime_audit_20260929\\RUNTIME_10_LEVELS_bmum9i6p8-11.md",
+      "target": "docs/reference-cases/out_royalsmash/lv2_runtime_audit_20260929/RUNTIME_10_LEVELS_bmum9i6p8-11.md",
+      "source_sha256": "eafc5a412d82d9d17b30cfe37586274e45c74fd5d4eef4581d1881422d52a0db",
+      "published_sha256": "eafc5a412d82d9d17b30cfe37586274e45c74fd5d4eef4581d1881422d52a0db",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\material_recovery_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/material_recovery_20260929/README.md",
+      "source_sha256": "7b56aa275a37f1caa252ea3a1160d09d40fa6e041037f2ce3174c8b9898e4a76",
+      "published_sha256": "b9964a3bb9d313ab70c4dcdafc66b5e7a6cfaa75d2fc23594ab05d3c8149b51d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\obstacle_layer_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/obstacle_layer_analysis/README.md",
+      "source_sha256": "e2db20d0de79a226ee0055e4653d64b8af9e082d79ce23182bbb2f019f777a96",
+      "published_sha256": "e2db20d0de79a226ee0055e4653d64b8af9e082d79ce23182bbb2f019f777a96",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\physics_application_audit\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/physics_application_audit/README.md",
+      "source_sha256": "c5de3de20d2838fadb46ef315bc17c25b5632001ac417d346c5a044fe04eedec",
+      "published_sha256": "c5de3de20d2838fadb46ef315bc17c25b5632001ac417d346c5a044fe04eedec",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\physics_recheck_20260916\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/physics_recheck_20260916/README.md",
+      "source_sha256": "93ca89d0cb071775321b5d14c05e37b8597e3760d5d2203d20c01678fc94df79",
+      "published_sha256": "93ca89d0cb071775321b5d14c05e37b8597e3760d5d2203d20c01678fc94df79",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\physics_recheck_20260916_1920\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/physics_recheck_20260916_1920/README.md",
+      "source_sha256": "80f9a1a107585382fb4a1e54570d7e4e96ac310953ef7921386647b1a54af614",
+      "published_sha256": "80f9a1a107585382fb4a1e54570d7e4e96ac310953ef7921386647b1a54af614",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\pinata_collider_audit_20260928\\COLLIDER_INDEX.md",
+      "target": "docs/reference-cases/out_royalsmash/pinata_collider_audit_20260928/COLLIDER_INDEX.md",
+      "source_sha256": "7a1babdf60703a66b8c50c18c68b7321a240386726cd2f4e1d6847fed500da73",
+      "published_sha256": "7a1babdf60703a66b8c50c18c68b7321a240386726cd2f4e1d6847fed500da73",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\pinata_collider_audit_20260928\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/pinata_collider_audit_20260928/README.md",
+      "source_sha256": "c6d9e3e14846e58801cc817a347adb5cb86dda472361b2c69fca1861554efb82",
+      "published_sha256": "c6d9e3e14846e58801cc817a347adb5cb86dda472361b2c69fca1861554efb82",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\quality_inertia_audit_20260928\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/quality_inertia_audit_20260928/README.md",
+      "source_sha256": "cee7eb6094f5f0e12c91dfa0e30ecc63770f48c5d373a597344ad08b7d451146",
+      "published_sha256": "cee7eb6094f5f0e12c91dfa0e30ecc63770f48c5d373a597344ad08b7d451146",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/README.md",
+      "source_sha256": "8789552b721dc9c95c6952269831a7163fab7dc74aa77c46ea105d6cc74daebb",
+      "published_sha256": "8ed5234bc933d752675e26e563e60c6ad40ac5148b8e15cb92e7dd627374e0a4",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\remaining_audit_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/remaining_audit_20260929/README.md",
+      "source_sha256": "8d451572fc074f372a9ea35ce1741a061d4985cba143947556698f3f3d801620",
+      "published_sha256": "8d451572fc074f372a9ea35ce1741a061d4985cba143947556698f3f3d801620",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\remaining_audit_20260929\\well_done_fireworks_diagnosis.md",
+      "target": "docs/reference-cases/out_royalsmash/remaining_audit_20260929/well_done_fireworks_diagnosis.md",
+      "source_sha256": "589852e4fbd271c6ef77ed648f2692148d866f41792977c138747c105cdb3e81",
+      "published_sha256": "7fa936890846cdebddd6ced4c3ad2951aaca21b0d76b3d0c65580c6fb6d3c7bf",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\shader_program_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/shader_program_analysis/README.md",
+      "source_sha256": "ae5a430e53d0077fbc2a3b04dec291cd60af7b28d9cbaa91c5fbe27780edbc47",
+      "published_sha256": "ae5a430e53d0077fbc2a3b04dec291cd60af7b28d9cbaa91c5fbe27780edbc47",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\shader_variant_analysis\\CLAUDE_MASK_CANNON_REPLY.md",
+      "target": "docs/reference-cases/out_royalsmash/shader_variant_analysis/CLAUDE_MASK_CANNON_REPLY.md",
+      "source_sha256": "49ea55118844a6a897fa7d81f6acdc893d4307b7ac1e818683c77df915334886",
+      "published_sha256": "49ea55118844a6a897fa7d81f6acdc893d4307b7ac1e818683c77df915334886",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\shader_variant_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/shader_variant_analysis/README.md",
+      "source_sha256": "7041eeeb3a5e3069117689ac0b1f7493d11c35fe78970e72ff2b9c4f8d3749cc",
+      "published_sha256": "7041eeeb3a5e3069117689ac0b1f7493d11c35fe78970e72ff2b9c4f8d3749cc",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\sound_handoff\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/sound_handoff/README.md",
+      "source_sha256": "519166f1d9ef1804fb62b034c8c77b1828f824b4deb6ecb92278f06b67fccf06",
+      "published_sha256": "519166f1d9ef1804fb62b034c8c77b1828f824b4deb6ecb92278f06b67fccf06",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\01_STABILIZATION.md",
+      "target": "docs/reference-cases/out_royalsmash/stabilize_rope_jar_20260929/01_STABILIZATION.md",
+      "source_sha256": "e0bfe46be91a8760e0c3eb6d41a1552ab9f441c1ac53a6178a34a5eb0e4129e4",
+      "published_sha256": "e0bfe46be91a8760e0c3eb6d41a1552ab9f441c1ac53a6178a34a5eb0e4129e4",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\02_ROPE_PINATA.md",
+      "target": "docs/reference-cases/out_royalsmash/stabilize_rope_jar_20260929/02_ROPE_PINATA.md",
+      "source_sha256": "513bdc684ec47d9fd9c37679bdf3e2b07bebbe711702dda7eece8c807d69870c",
+      "published_sha256": "513bdc684ec47d9fd9c37679bdf3e2b07bebbe711702dda7eece8c807d69870c",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\03_JAR_CALL_PATH.md",
+      "target": "docs/reference-cases/out_royalsmash/stabilize_rope_jar_20260929/03_JAR_CALL_PATH.md",
+      "source_sha256": "65ad19be6219f328350f0be94ed3b8319ae6cc41d72ac0ae87790bc09b856b64",
+      "published_sha256": "65ad19be6219f328350f0be94ed3b8319ae6cc41d72ac0ae87790bc09b856b64",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\DELIVERY.md",
+      "target": "docs/reference-cases/out_royalsmash/stabilize_rope_jar_20260929/DELIVERY.md",
+      "source_sha256": "bc7ca62f205041ef18e4c424d49bad40146052023666c304069b87fe1ce32dea",
+      "published_sha256": "bc7ca62f205041ef18e4c424d49bad40146052023666c304069b87fe1ce32dea",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/stabilize_rope_jar_20260929/README.md",
+      "source_sha256": "4377aa7b54dff3c29bc8b65b34e7ac9a5dfd49cae7ac7bbb1500e4a8952ddc83",
+      "published_sha256": "4377aa7b54dff3c29bc8b65b34e7ac9a5dfd49cae7ac7bbb1500e4a8952ddc83",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\start_item_cycle_20260929\\PURCHASE_AD_WIRING.md",
+      "target": "docs/reference-cases/out_royalsmash/start_item_cycle_20260929/PURCHASE_AD_WIRING.md",
+      "source_sha256": "8b4cb5b711d8e8817d1c12afbd9606804113cdec7c8e741647fae2d9569846bc",
+      "published_sha256": "8b4cb5b711d8e8817d1c12afbd9606804113cdec7c8e741647fae2d9569846bc",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\start_item_cycle_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/start_item_cycle_20260929/README.md",
+      "source_sha256": "313218baf6a886106219144117db0cd76dc79e06540885fa0af598b6fe3fb114",
+      "published_sha256": "313218baf6a886106219144117db0cd76dc79e06540885fa0af598b6fe3fb114",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\STATIC_PHYSICS_RESULT.md",
+      "target": "docs/reference-cases/out_royalsmash/STATIC_PHYSICS_RESULT.md",
+      "source_sha256": "7efff59a32360c49a1409d1a018b87c5548c46ae92d9cae3bc852efbef415827",
+      "published_sha256": "7efff59a32360c49a1409d1a018b87c5548c46ae92d9cae3bc852efbef415827",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\systems_audit_20260929\\IMPLEMENTATION_CHECKLIST.md",
+      "target": "docs/reference-cases/out_royalsmash/systems_audit_20260929/IMPLEMENTATION_CHECKLIST.md",
+      "source_sha256": "eb3825e488b2ddda346b0958d11fa08a6861c65527549d624406aa0503bdd372",
+      "published_sha256": "eb3825e488b2ddda346b0958d11fa08a6861c65527549d624406aa0503bdd372",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\systems_audit_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/systems_audit_20260929/README.md",
+      "source_sha256": "ea4f2012902690272da8ffb3ebbd96a4fa595bc7c9852a4733cb74e39b1d23ea",
+      "published_sha256": "ea4f2012902690272da8ffb3ebbd96a4fa595bc7c9852a4733cb74e39b1d23ea",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\ui_followup_20260929\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/ui_followup_20260929/README.md",
+      "source_sha256": "ac4d3bfc8b0cd16bb6070f9a133515c31e19701a1cffad500b055930c2947a87",
+      "published_sha256": "ac4d3bfc8b0cd16bb6070f9a133515c31e19701a1cffad500b055930c2947a87",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\ui_followup_20260929\\REPLY_bmum5q8ke-b.md",
+      "target": "docs/reference-cases/out_royalsmash/ui_followup_20260929/REPLY_bmum5q8ke-b.md",
+      "source_sha256": "edd276fc8722c8f5dc4c7b5c5eac0bb6548a1a56af6dfdc72716fcda08837939",
+      "published_sha256": "edd276fc8722c8f5dc4c7b5c5eac0bb6548a1a56af6dfdc72716fcda08837939",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\variant_collider_audit_20260928\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/variant_collider_audit_20260928/README.md",
+      "source_sha256": "cc31884720a8828673105424f471575de0523bf355e31b85caed9f8e37d2c569",
+      "published_sha256": "cc31884720a8828673105424f471575de0523bf355e31b85caed9f8e37d2c569",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\visual_settings_analysis\\README.md",
+      "target": "docs/reference-cases/out_royalsmash/visual_settings_analysis/README.md",
+      "source_sha256": "d2078faa20165967ae6f2197a4748949b58a40523da6642506ae22bdbf83d489",
+      "published_sha256": "d2078faa20165967ae6f2197a4748949b58a40523da6642506ae22bdbf83d489",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_soulbound\\BALANCE_SYSTEMS.md",
+      "target": "docs/reference-cases/out_soulbound/BALANCE_SYSTEMS.md",
+      "source_sha256": "13065c4aef242c86ae69c0d7d40c8fe92fc096e93b9e38a587a277d09174b035",
+      "published_sha256": "13065c4aef242c86ae69c0d7d40c8fe92fc096e93b9e38a587a277d09174b035",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_soulbound\\DATA_STRUCTURE.md",
+      "target": "docs/reference-cases/out_soulbound/DATA_STRUCTURE.md",
+      "source_sha256": "88577cbe5d90b7c62f1367100d78e5cb8257c320abd544ddc634497855e5b4d4",
+      "published_sha256": "88577cbe5d90b7c62f1367100d78e5cb8257c320abd544ddc634497855e5b4d4",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_soulbound\\IMAGE_STAGE_REPORT.md",
+      "target": "docs/reference-cases/out_soulbound/IMAGE_STAGE_REPORT.md",
+      "source_sha256": "57d1d0a871cf4c7909d49a099f6165c8f538775445eb241120768a27dafdd9bc",
+      "published_sha256": "930628d01284ffd367b45a04015478ff9a864c40110ae14e70eafb0a8f14e59d",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_soulbound\\MAP_PRODUCTION.md",
+      "target": "docs/reference-cases/out_soulbound/MAP_PRODUCTION.md",
+      "source_sha256": "51672c467f84e3aeb8ebfca13246562a8338bb634987ed2b491ee186a85eae4f",
+      "published_sha256": "51672c467f84e3aeb8ebfca13246562a8338bb634987ed2b491ee186a85eae4f",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_soulbound\\README.md",
+      "target": "docs/reference-cases/out_soulbound/README.md",
+      "source_sha256": "6c3c176d491d324c7cc45018989c5370aff5dda6bd66aa6774df7b2275685f5d",
+      "published_sha256": "28babb334cd89ffd8e0521e6a8fa813ddef7e121cf75de78af75d6de0db62b23",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_stardewvalley\\README.md",
+      "target": "docs/reference-cases/out_stardewvalley/README.md",
+      "source_sha256": "73c276666759e6468577793536b88047e718d0d5a6df9797dfb7ec4a098cfe60",
+      "published_sha256": "73c276666759e6468577793536b88047e718d0d5a6df9797dfb7ec4a098cfe60",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\analyze_ldplayer.py",
+      "target": "tools/case_studies/goodshunt/analyze_ldplayer.py",
+      "source_sha256": "389ddf5bedd3ea6faa30ba83b7bf76a43c87adc3fced36ec7e9f85dd38770b2c",
+      "published_sha256": "389ddf5bedd3ea6faa30ba83b7bf76a43c87adc3fced36ec7e9f85dd38770b2c",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\bounded_typetree.py",
+      "target": "tools/case_studies/goodshunt/bounded_typetree.py",
+      "source_sha256": "175356d4f8daf227f35d6092cde62f4e05d6ec8a490a4a9452060ecc175d92aa",
+      "published_sha256": "175356d4f8daf227f35d6092cde62f4e05d6ec8a490a4a9452060ecc175d92aa",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\build_hole_trigger_chain.py",
+      "target": "tools/case_studies/goodshunt/build_hole_trigger_chain.py",
+      "source_sha256": "35e5b9c2b52b9a2caf3021cb846d57659a1423d308233fc196b57f60b61e0bf3",
+      "published_sha256": "a6fa278932086dd7813ca4dab29de029684b6278e4843e24194fcb5c4abe4cfa",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\build_ingame_handoff.py",
+      "target": "tools/case_studies/goodshunt/build_ingame_handoff.py",
+      "source_sha256": "3d2293d658314a8de22000126fd1c320f11eb220b04f3048f877c4cdc6530c78",
+      "published_sha256": "3d2293d658314a8de22000126fd1c320f11eb220b04f3048f877c4cdc6530c78",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\build_player_chain.py",
+      "target": "tools/case_studies/goodshunt/build_player_chain.py",
+      "source_sha256": "a957289c1defca9c656ac043feafd799852b07d39b68702bcfd38c4732521ae2",
+      "published_sha256": "a054e4b2b25e29761233e467ae73f64b51752f97eeab8136f7a5438c828b12d8",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\build_prop_native_chain.py",
+      "target": "tools/case_studies/goodshunt/build_prop_native_chain.py",
+      "source_sha256": "2d72d46e4581bb900baf71fc55477eb667fa001f5e5618e69029ace0d26a756e",
+      "published_sha256": "e321c918e2b5fd80dc29636c42765ade51aeba8edc1baf1ebeb3db1e7d6f1cb2",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\cache_backend.py",
+      "target": "tools/case_studies/goodshunt/cache_backend.py",
+      "source_sha256": "3a08fb0684ff87c75ef8107fc35985eb93760c86ab6046332160fc852f192519",
+      "published_sha256": "3a08fb0684ff87c75ef8107fc35985eb93760c86ab6046332160fc852f192519",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\cached_reader.py",
+      "target": "tools/case_studies/goodshunt/cached_reader.py",
+      "source_sha256": "469daa87eee59137754267f8a4246f71ff29de54d61be96a3416781a559f54a0",
+      "published_sha256": "469daa87eee59137754267f8a4246f71ff29de54d61be96a3416781a559f54a0",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\capture_ldplayer.py",
+      "target": "tools/case_studies/goodshunt/capture_ldplayer.py",
+      "source_sha256": "0c68d58d821f7b0188bd4a1a5a7e8d59202950bc0e6bec87b59be8a47a342a17",
+      "published_sha256": "0c68d58d821f7b0188bd4a1a5a7e8d59202950bc0e6bec87b59be8a47a342a17",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\export_file_refs.py",
+      "target": "tools/case_studies/goodshunt/export_file_refs.py",
+      "source_sha256": "b7996ace348e549a415cb76120d5066dd5b4f90fd280c1e1325c03a09d3814e6",
+      "published_sha256": "b7996ace348e549a415cb76120d5066dd5b4f90fd280c1e1325c03a09d3814e6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\export_native.py",
+      "target": "tools/case_studies/goodshunt/export_native.py",
+      "source_sha256": "6abf36225bff943525988049a2465c4bdea8e2cbde5c3b1e09c8c3c51212d7ec",
+      "published_sha256": "6abf36225bff943525988049a2465c4bdea8e2cbde5c3b1e09c8c3c51212d7ec",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_big_parent_chain_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_big_parent_chain_20261015.py",
+      "source_sha256": "0ec493045b5957ed7637f4f62fb7ef5b830a8034cc3a719f4aacd0ff78d3a2da",
+      "published_sha256": "0ec493045b5957ed7637f4f62fb7ef5b830a8034cc3a719f4aacd0ff78d3a2da",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_card_fx_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_card_fx_20261015.py",
+      "source_sha256": "9f024a6b57560493604b3aa344d6433d5479f2e0ded3261a06c0e68d8af9d935",
+      "published_sha256": "9f024a6b57560493604b3aa344d6433d5479f2e0ded3261a06c0e68d8af9d935",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_card_fx_shaders_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_card_fx_shaders_20261015.py",
+      "source_sha256": "8f536c5ed4f97107e21109ce1b6dc9efec436146160984c71cd46cbd5a853fba",
+      "published_sha256": "cd938aef5304215b94d1664d35a52fe4246d8d2c6e2113ce0ed2667f39c585fc",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_card_projection_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_card_projection_20261015.py",
+      "source_sha256": "dd16abcc7ea48a07316c73044634440f4c9d05d54ed08877d7cc895128d01ddc",
+      "published_sha256": "dd16abcc7ea48a07316c73044634440f4c9d05d54ed08877d7cc895128d01ddc",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_drop_gauge_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_drop_gauge_20261015.py",
+      "source_sha256": "65f3910413f9a049190d3218e48a717d2ade1d43a3db658c9eb85609c0a8df5e",
+      "published_sha256": "b922c8b28f1cccc44e0825cf0b4515210fb09eb71e75068ae26e3394d6aa84aa",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_end_ui_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_end_ui_20261015.py",
+      "source_sha256": "f87282d0b3d305552c47e4a80f9df0c3d3fb500d80d37960a237b1e1a630ba79",
+      "published_sha256": "f87282d0b3d305552c47e4a80f9df0c3d3fb500d80d37960a237b1e1a630ba79",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_ending_fx_shader_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_ending_fx_shader_20261015.py",
+      "source_sha256": "194d9edc6ebcf3ce069e8ef2694c7ef7808f0a61272bd965efebae31f412f5f8",
+      "published_sha256": "194d9edc6ebcf3ce069e8ef2694c7ef7808f0a61272bd965efebae31f412f5f8",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_ending_spine_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_ending_spine_20261015.py",
+      "source_sha256": "71cc4add6cb5f3ab0ef335ccd0bf7b50de1e3ca5619fd45b282f9d6ff1565bb2",
+      "published_sha256": "71cc4add6cb5f3ab0ef335ccd0bf7b50de1e3ca5619fd45b282f9d6ff1565bb2",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_exit_sprite_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_exit_sprite_20261015.py",
+      "source_sha256": "8e962c42c0e7fcecd4e9dc5d968c4bc55ae1ecda170c555eac3f5a019735626e",
+      "published_sha256": "8e962c42c0e7fcecd4e9dc5d968c4bc55ae1ecda170c555eac3f5a019735626e",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_goal_card_ui_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_goal_card_ui_20261015.py",
+      "source_sha256": "faf9c26dbc14efe5bf0c769831bb555e8771ea4276ebac80c99ec86bd155ba02",
+      "published_sha256": "faf9c26dbc14efe5bf0c769831bb555e8771ea4276ebac80c99ec86bd155ba02",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_goal_fly_ui_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_goal_fly_ui_20261015.py",
+      "source_sha256": "94415a991ac5734aec5849f9d0e22d2e13145ef0296218fab6268b4f8eb8209d",
+      "published_sha256": "94415a991ac5734aec5849f9d0e22d2e13145ef0296218fab6268b4f8eb8209d",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_growth_fx_shaders_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_growth_fx_shaders_20261015.py",
+      "source_sha256": "7626fc3bb391359675bc8ee3e950613eabb267e281f5272f308bf08165a40106",
+      "published_sha256": "7626fc3bb391359675bc8ee3e950613eabb267e281f5272f308bf08165a40106",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_level3_light_chain.py",
+      "target": "tools/case_studies/goodshunt/extract_level3_light_chain.py",
+      "source_sha256": "090a7fa2dc2b32957e00dcf2ada84f936bed92d4fc9c2e9d345f0a667255d355",
+      "published_sha256": "8be3de69f18ecc6e82f20e38f532f9bba61a7603c532b314b1456d770acd621b",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_levels.py",
+      "target": "tools/case_studies/goodshunt/extract_levels.py",
+      "source_sha256": "66ee5f4e277d7227e6cb3be34a47e6ca558be14bb5e97d6f5134be134a5710cb",
+      "published_sha256": "66ee5f4e277d7227e6cb3be34a47e6ca558be14bb5e97d6f5134be134a5710cb",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_player_fx_materials_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_player_fx_materials_20261015.py",
+      "source_sha256": "5c2e699650a169f7b26d89cb32a977bc70cbe5a4f18c3d3c8832538cbae39740",
+      "published_sha256": "5c2e699650a169f7b26d89cb32a977bc70cbe5a4f18c3d3c8832538cbae39740",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_prop_omnishade_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_prop_omnishade_20261015.py",
+      "source_sha256": "bac141244099293308d539ac25e2001d15e726609215b9f1cb7a13b4eb2efd2a",
+      "published_sha256": "bac141244099293308d539ac25e2001d15e726609215b9f1cb7a13b4eb2efd2a",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_shader_glsl.py",
+      "target": "tools/case_studies/goodshunt/extract_shader_glsl.py",
+      "source_sha256": "9a1cfebdd4a9b3b1b9fe583bc626bc0bdeb190e8535ea067eea576df54dd1cf0",
+      "published_sha256": "16382d2e707eb77ff9c05a99ff1f37df2f9e6a2d22d17d38c92c17337e740295",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_shield_shader_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_shield_shader_20261015.py",
+      "source_sha256": "f80d8b9fb7399d060845295ded87e80a1254e3829541c365734f15a7dc351dbd",
+      "published_sha256": "f80d8b9fb7399d060845295ded87e80a1254e3829541c365734f15a7dc351dbd",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\extract_stack_physics_20261015.py",
+      "target": "tools/case_studies/goodshunt/extract_stack_physics_20261015.py",
+      "source_sha256": "97b1b5185b49bba0cb016fb0883409be0a4b365a2704d88c817bb338357a15bc",
+      "published_sha256": "97b1b5185b49bba0cb016fb0883409be0a4b365a2704d88c817bb338357a15bc",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\finalize_ldplayer.py",
+      "target": "tools/case_studies/goodshunt/finalize_ldplayer.py",
+      "source_sha256": "9ea12a0edfe8f75708fda59b5b80dfce140af93fa3e277c4d406bfdd377d73a8",
+      "published_sha256": "9ea12a0edfe8f75708fda59b5b80dfce140af93fa3e277c4d406bfdd377d73a8",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\find_growth_fx_callers_20261015.py",
+      "target": "tools/case_studies/goodshunt/find_growth_fx_callers_20261015.py",
+      "source_sha256": "b96a06827ab3fa6e033442eee00585415f45eac53a08c27b5819e3a760ceedb1",
+      "published_sha256": "b96a06827ab3fa6e033442eee00585415f45eac53a08c27b5819e3a760ceedb1",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\hierarchy_cached.py",
+      "target": "tools/case_studies/goodshunt/hierarchy_cached.py",
+      "source_sha256": "76af8666063ba4c67f0640e505249a222189a4fbb0b9d31456251796ee5cb12b",
+      "published_sha256": "76af8666063ba4c67f0640e505249a222189a4fbb0b9d31456251796ee5cb12b",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_bomb_followup_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_bomb_followup_20261015.py",
+      "source_sha256": "6acce8f007a4426185b04e4ce3525115818ad2b11864dc3219dfa5ef2ec21cea",
+      "published_sha256": "6acce8f007a4426185b04e4ce3525115818ad2b11864dc3219dfa5ef2ec21cea",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_booster_followup_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_booster_followup_20261015.py",
+      "source_sha256": "89a3051a0319877bdcc580f96b5b9cae39fc63584d0052b5cd4dfb7e5d685c13",
+      "published_sha256": "89a3051a0319877bdcc580f96b5b9cae39fc63584d0052b5cd4dfb7e5d685c13",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_booster_ui_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_booster_ui_20261015.py",
+      "source_sha256": "686340700a40d0d219eccd512e38872b7aac55c62de93a181024a25bafa5ea34",
+      "published_sha256": "686340700a40d0d219eccd512e38872b7aac55c62de93a181024a25bafa5ea34",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_card_pool_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_card_pool_20261015.py",
+      "source_sha256": "ce2237b614b25c3f5bebc799cff487878726f34c72cde10845679cca2acc6e4b",
+      "published_sha256": "368ee709867b56e8d91438fa603344380a6efd03bc5c66d26c4312070bc3e9d6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_end_flow_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_end_flow_20261015.py",
+      "source_sha256": "5d95bc0cfdc158d17c109721b521e936e06d4754f6475963910d8cca63c976ef",
+      "published_sha256": "5d95bc0cfdc158d17c109721b521e936e06d4754f6475963910d8cca63c976ef",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_end_literals_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_end_literals_20261015.py",
+      "source_sha256": "6511b34c4b4a2568448627a59cbfa20ab315c1862017807e56e786ec613adca6",
+      "published_sha256": "6511b34c4b4a2568448627a59cbfa20ab315c1862017807e56e786ec613adca6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_fx_existing_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_fx_existing_20261015.py",
+      "source_sha256": "63987efb0db8c917be1d275f5ff711df219bdde43ae5deca7e29dfed9061f716",
+      "published_sha256": "63987efb0db8c917be1d275f5ff711df219bdde43ae5deca7e29dfed9061f716",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_goal_card_code_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_goal_card_code_20261015.py",
+      "source_sha256": "66716d39129999d1f0e905ff82f1a38e583f6177eaee600afcf5d7af79693b25",
+      "published_sha256": "a8e9b32dbc9372ca45419fc61119e9091b6f1b1f736fd090a3d58f22b87bc67a",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_goal_fly_literals_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_goal_fly_literals_20261015.py",
+      "source_sha256": "7b7ff9b48b0b18b0ff9d2a3f032a2cd53ed32218d4309a2e0959729383a9e4b9",
+      "published_sha256": "7b7ff9b48b0b18b0ff9d2a3f032a2cd53ed32218d4309a2e0959729383a9e4b9",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_growth_fx_code_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_growth_fx_code_20261015.py",
+      "source_sha256": "2db299719a774352db259dad49942665dc11c274ee9dc959cfd9e11b3de481c2",
+      "published_sha256": "2db299719a774352db259dad49942665dc11c274ee9dc959cfd9e11b3de481c2",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_ingame_boosters_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_ingame_boosters_20261015.py",
+      "source_sha256": "c01d36253d72b7b3889caf084fefb232b751cc7320cef851dccc642eded2756d",
+      "published_sha256": "c01d36253d72b7b3889caf084fefb232b751cc7320cef851dccc642eded2756d",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_lightning_upgrade_generics_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_lightning_upgrade_generics_20261015.py",
+      "source_sha256": "0e15fcd10fdf09eaf447f3e696be796431506f466713918cc57f57b50c7ed76a",
+      "published_sha256": "0e15fcd10fdf09eaf447f3e696be796431506f466713918cc57f57b50c7ed76a",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_logo_alpha_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_logo_alpha_20261015.py",
+      "source_sha256": "a6181d7073453f40454e58864555dcf2303c9672635d337975425842b3e48953",
+      "published_sha256": "a6181d7073453f40454e58864555dcf2303c9672635d337975425842b3e48953",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_logo_followup_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_logo_followup_20261015.py",
+      "source_sha256": "5526a56a516808dd2173ab40eea8a94fca6183e8e5fcc87f486cabd9313ac174",
+      "published_sha256": "5526a56a516808dd2173ab40eea8a94fca6183e8e5fcc87f486cabd9313ac174",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_logo_vector_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_logo_vector_20261015.py",
+      "source_sha256": "25749b4706156155adaa1a021190c3fb178c47cbbe3d0dee3b328e57f92a64dc",
+      "published_sha256": "25749b4706156155adaa1a021190c3fb178c47cbbe3d0dee3b328e57f92a64dc",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\inspect_mode_theme_20261015.py",
+      "target": "tools/case_studies/goodshunt/inspect_mode_theme_20261015.py",
+      "source_sha256": "3b12b384b0cd3936b3dfdcbc32f01ae0bf4d9cef2636fbbcdc571ff64f3f5f05",
+      "published_sha256": "3b12b384b0cd3936b3dfdcbc32f01ae0bf4d9cef2636fbbcdc571ff64f3f5f05",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\ldplayer_hierarchy.py",
+      "target": "tools/case_studies/goodshunt/ldplayer_hierarchy.py",
+      "source_sha256": "10ea093b4469965c346e24300dcccaf0b40abdf64c3d3f75e3df9cc531ee71f8",
+      "published_sha256": "10ea093b4469965c346e24300dcccaf0b40abdf64c3d3f75e3df9cc531ee71f8",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\package_existing_fx_20261015.py",
+      "target": "tools/case_studies/goodshunt/package_existing_fx_20261015.py",
+      "source_sha256": "08e691d365879b57f6061e02b4460ec0daed4681bab0c18f2677ee36d32d2817",
+      "published_sha256": "08e691d365879b57f6061e02b4460ec0daed4681bab0c18f2677ee36d32d2817",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\resolve_booster_literals_20261015.py",
+      "target": "tools/case_studies/goodshunt/resolve_booster_literals_20261015.py",
+      "source_sha256": "a0aae58673f9b4e4a9b8820e346229807f0c76ff427ff46e08118587b85dad6b",
+      "published_sha256": "a0aae58673f9b4e4a9b8820e346229807f0c76ff427ff46e08118587b85dad6b",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\resolve_mart_theme_array_20261015.py",
+      "target": "tools/case_studies/goodshunt/resolve_mart_theme_array_20261015.py",
+      "source_sha256": "27574f40efb2ff917829aacd3267fc3ea732de4deef749a84ab5cb7f3a6f31f6",
+      "published_sha256": "27574f40efb2ff917829aacd3267fc3ea732de4deef749a84ab5cb7f3a6f31f6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\summarize_growth_fx_20261015.py",
+      "target": "tools/case_studies/goodshunt/summarize_growth_fx_20261015.py",
+      "source_sha256": "cb5dde0114b5ac54ff536306a31a33873d72166dac77c0fce93c255f72dfd6aa",
+      "published_sha256": "cb5dde0114b5ac54ff536306a31a33873d72166dac77c0fce93c255f72dfd6aa",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\trace_normal_theme_input_20261015.py",
+      "target": "tools/case_studies/goodshunt/trace_normal_theme_input_20261015.py",
+      "source_sha256": "2194267b6d04146406defc8b6670f66eb32c3b2d1bc1e2ebc9ebb6bdd5dc9e21",
+      "published_sha256": "2194267b6d04146406defc8b6670f66eb32c3b2d1bc1e2ebc9ebb6bdd5dc9e21",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\verify_ending_fx_shader_20261015.py",
+      "target": "tools/case_studies/goodshunt/verify_ending_fx_shader_20261015.py",
+      "source_sha256": "9cc4fe7891397c16c836716c3c88710ce0ae1aa06afa468051ce8e4b0602c074",
+      "published_sha256": "9cc4fe7891397c16c836716c3c88710ce0ae1aa06afa468051ce8e4b0602c074",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\verify_exports.py",
+      "target": "tools/case_studies/goodshunt/verify_exports.py",
+      "source_sha256": "deb04296ef5e87569c8af19513e2c9361edd5ceee184dda5d23ab0c62e5f31fe",
+      "published_sha256": "deb04296ef5e87569c8af19513e2c9361edd5ceee184dda5d23ab0c62e5f31fe",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\verify_goal_card_ui_20261015.py",
+      "target": "tools/case_studies/goodshunt/verify_goal_card_ui_20261015.py",
+      "source_sha256": "1e0b27ae50b4891a45e3ab5e17b5200a261a2fbddeaf0b33a975f2adf374fa68",
+      "published_sha256": "1e0b27ae50b4891a45e3ab5e17b5200a261a2fbddeaf0b33a975f2adf374fa68",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\verify_goal_fly_ui_20261015.py",
+      "target": "tools/case_studies/goodshunt/verify_goal_fly_ui_20261015.py",
+      "source_sha256": "023cb1a2ad18c8c3282c26bb3fcf27f98b4900fdb26b2586256274c6f5c8a232",
+      "published_sha256": "023cb1a2ad18c8c3282c26bb3fcf27f98b4900fdb26b2586256274c6f5c8a232",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\verify_player_fx_materials_20261015.py",
+      "target": "tools/case_studies/goodshunt/verify_player_fx_materials_20261015.py",
+      "source_sha256": "e5cbb30b2eec0515c80fbfe574eadfa8293dcd163bf0dc7b7876e77a63ebec7b",
+      "published_sha256": "e5cbb30b2eec0515c80fbfe574eadfa8293dcd163bf0dc7b7876e77a63ebec7b",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\audit_schema.py",
+      "target": "tools/case_studies/dkbi/audit_schema.py",
+      "source_sha256": "0595f0648a250d87a964a17fb6a5e76f286b426e424115744cfa61c0e1bf8f4d",
+      "published_sha256": "0595f0648a250d87a964a17fb6a5e76f286b426e424115744cfa61c0e1bf8f4d",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\audit_shader_source_availability.py",
+      "target": "tools/case_studies/dkbi/audit_shader_source_availability.py",
+      "source_sha256": "1a17b010a4c608b9689f2f9c9513980f265b0f3d1f3158afc11b27b61d4070ea",
+      "published_sha256": "1a17b010a4c608b9689f2f9c9513980f265b0f3d1f3158afc11b27b61d4070ea",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\bind_field_shared_components.py",
+      "target": "tools/case_studies/dkbi/bind_field_shared_components.py",
+      "source_sha256": "60cc4d3689b09c546b78655d1f7a4ad4b00ccc291ec7caa73b64c148755e67a6",
+      "published_sha256": "60cc4d3689b09c546b78655d1f7a4ad4b00ccc291ec7caa73b64c148755e67a6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\crosscheck_light_transforms.py",
+      "target": "tools/case_studies/dkbi/crosscheck_light_transforms.py",
+      "source_sha256": "c1132cd9cea9dc4f5298d973a890fafa5162ed8b8941a27bca132e87a99caabb",
+      "published_sha256": "c1132cd9cea9dc4f5298d973a890fafa5162ed8b8941a27bca132e87a99caabb",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\decode_first_render_binding.py",
+      "target": "tools/case_studies/dkbi/decode_first_render_binding.py",
+      "source_sha256": "17c98331908f0e92ccdc12338914b22f1ca8506e2eb9e4b90d4d3484a3596db6",
+      "published_sha256": "17c98331908f0e92ccdc12338914b22f1ca8506e2eb9e4b90d4d3484a3596db6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\decode_graph_fields.py",
+      "target": "tools/case_studies/dkbi/decode_graph_fields.py",
+      "source_sha256": "ce381dde5fb9fbbf3d4b1b2bdab4edec5a6b683d66a29e0436c734d67518be29",
+      "published_sha256": "ce381dde5fb9fbbf3d4b1b2bdab4edec5a6b683d66a29e0436c734d67518be29",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\decode_registry_typeinfo.py",
+      "target": "tools/case_studies/dkbi/decode_registry_typeinfo.py",
+      "source_sha256": "43d94258ed1310783263bbb002d8d85a6ed001005dc56c9bc44c020344aa2a96",
+      "published_sha256": "43d94258ed1310783263bbb002d8d85a6ed001005dc56c9bc44c020344aa2a96",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\ecs_registry_probe.py",
+      "target": "tools/case_studies/dkbi/ecs_registry_probe.py",
+      "source_sha256": "652e3709cdcf48123910bcf69668af7fbac417e02e74131c7a8baeadb96cb759",
+      "published_sha256": "652e3709cdcf48123910bcf69668af7fbac417e02e74131c7a8baeadb96cb759",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\expand_field_children.py",
+      "target": "tools/case_studies/dkbi/expand_field_children.py",
+      "source_sha256": "3c89d0085cbd334a9f1ddb3d3556c338a3b697b8ec282715a80450284dc44d6e",
+      "published_sha256": "3c89d0085cbd334a9f1ddb3d3556c338a3b697b8ec282715a80450284dc44d6e",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\extract_first_terrain_native.py",
+      "target": "tools/case_studies/dkbi/extract_first_terrain_native.py",
+      "source_sha256": "180d8fde9e1b29b1c0376f1d3b4f507e8bd3facd4c271996c63e882ab4f3910f",
+      "published_sha256": "180d8fde9e1b29b1c0376f1d3b4f507e8bd3facd4c271996c63e882ab4f3910f",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\fetch_entities_reference.py",
+      "target": "tools/case_studies/dkbi/fetch_entities_reference.py",
+      "source_sha256": "3a6cbefd2ad944bff0321ba18bfe7b366c6588b8dde9a19e51da34d34e6a67a3",
+      "published_sha256": "3a6cbefd2ad944bff0321ba18bfe7b366c6588b8dde9a19e51da34d34e6a67a3",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\hash_probe.py",
+      "target": "tools/case_studies/dkbi/hash_probe.py",
+      "source_sha256": "f9421bd0db6639307cc3af9a27b1fb8b0fda05c2395699509f3372407083c610",
+      "published_sha256": "f9421bd0db6639307cc3af9a27b1fb8b0fda05c2395699509f3372407083c610",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\inspect_field_render_hooks.py",
+      "target": "tools/case_studies/dkbi/inspect_field_render_hooks.py",
+      "source_sha256": "c0f950f3e0c86d3d9a0087457427187916b27daa725c2c97c82fdb35026196a5",
+      "published_sha256": "c0f950f3e0c86d3d9a0087457427187916b27daa725c2c97c82fdb35026196a5",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\inspect_shader_compatibility.py",
+      "target": "tools/case_studies/dkbi/inspect_shader_compatibility.py",
+      "source_sha256": "a5a4cf449b185220886cbe0732f0bbd52dceedcdbc7060c324d56bc7022df2e3",
+      "published_sha256": "a5a4cf449b185220886cbe0732f0bbd52dceedcdbc7060c324d56bc7022df2e3",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\narrow_tables.py",
+      "target": "tools/case_studies/dkbi/narrow_tables.py",
+      "source_sha256": "7d83e11a0c602b047aade78c8c8e53145fa3a15bbb6278b058e0cdf307d35f23",
+      "published_sha256": "7d83e11a0c602b047aade78c8c8e53145fa3a15bbb6278b058e0cdf307d35f23",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\probe_chunk_layout.py",
+      "target": "tools/case_studies/dkbi/probe_chunk_layout.py",
+      "source_sha256": "df5c586e34093691aeec9c29475bc7dc27f7539087968bffd2e3134ba6137a30",
+      "published_sha256": "df5c586e34093691aeec9c29475bc7dc27f7539087968bffd2e3134ba6137a30",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\probe_chunk_scene_refs.py",
+      "target": "tools/case_studies/dkbi/probe_chunk_scene_refs.py",
+      "source_sha256": "4a2cc5f66372e3d042f91ebbb15a56967752670ff3fa2ab2fe91a628a024cc80",
+      "published_sha256": "4a2cc5f66372e3d042f91ebbb15a56967752670ff3fa2ab2fe91a628a024cc80",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\probe_field_child_scene.py",
+      "target": "tools/case_studies/dkbi/probe_field_child_scene.py",
+      "source_sha256": "66e477e35bc0bcbc3731fa70e8855647421fea9a0fec2f8d8dd7c19ff87d1b72",
+      "published_sha256": "66e477e35bc0bcbc3731fa70e8855647421fea9a0fec2f8d8dd7c19ff87d1b72",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\probe_selected_ecs.py",
+      "target": "tools/case_studies/dkbi/probe_selected_ecs.py",
+      "source_sha256": "1dcdbbcd47c27268346853e42145a46f03d41e9964593865990c15661b3a874e",
+      "published_sha256": "1dcdbbcd47c27268346853e42145a46f03d41e9964593865990c15661b3a874e",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\recover_child_typeinfo.py",
+      "target": "tools/case_studies/dkbi/recover_child_typeinfo.py",
+      "source_sha256": "dac4b60ada4bc331f269eddc4f7da6c2876bab4927416b3a80c940bca0f77d43",
+      "published_sha256": "dac4b60ada4bc331f269eddc4f7da6c2876bab4927416b3a80c940bca0f77d43",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\recover_configs_graphs.py",
+      "target": "tools/case_studies/dkbi/recover_configs_graphs.py",
+      "source_sha256": "edc3db81c2e8f3e8a5c4243a6d9f2208cfd75815ce85610b2637b25532f7d6dc",
+      "published_sha256": "edc3db81c2e8f3e8a5c4243a6d9f2208cfd75815ce85610b2637b25532f7d6dc",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\recover_field_package.py",
+      "target": "tools/case_studies/dkbi/recover_field_package.py",
+      "source_sha256": "b19321517eedfb2adb072576c86c952a6b4059ad85736683b56abf0bd2cf9535",
+      "published_sha256": "b19321517eedfb2adb072576c86c952a6b4059ad85736683b56abf0bd2cf9535",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\recover_registry_order.py",
+      "target": "tools/case_studies/dkbi/recover_registry_order.py",
+      "source_sha256": "40565228298d8b617892c427adfc893548f870c85df3fb516e8d0186fbfedb54",
+      "published_sha256": "40565228298d8b617892c427adfc893548f870c85df3fb516e8d0186fbfedb54",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\recover_urp_schema_candidates.py",
+      "target": "tools/case_studies/dkbi/recover_urp_schema_candidates.py",
+      "source_sha256": "86d142af4ec25583a583f1eecc7882fe6031d420f8dbba4a6fb3f3825ea6bb68",
+      "published_sha256": "86d142af4ec25583a583f1eecc7882fe6031d420f8dbba4a6fb3f3825ea6bb68",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\run_limited.py",
+      "target": "tools/case_studies/dkbi/run_limited.py",
+      "source_sha256": "4971df042571c536aea7b9cb9e1892bda8fb0aa3cf9391ac6d53ca5f6c39e716",
+      "published_sha256": "4971df042571c536aea7b9cb9e1892bda8fb0aa3cf9391ac6d53ca5f6c39e716",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\select_urp_metadata.py",
+      "target": "tools/case_studies/dkbi/select_urp_metadata.py",
+      "source_sha256": "c446050d0c6d432aeb9dfe89a5f25bbc3a4bec1b4bdc65eb3e9bcf6dca951e52",
+      "published_sha256": "c446050d0c6d432aeb9dfe89a5f25bbc3a4bec1b4bdc65eb3e9bcf6dca951e52",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\select_visual_metadata.py",
+      "target": "tools/case_studies/dkbi/select_visual_metadata.py",
+      "source_sha256": "b18da850bbd8d6d71bcf6c59b7be27b732590aa87e88e858acfb5ec3c6998497",
+      "published_sha256": "b18da850bbd8d6d71bcf6c59b7be27b732590aa87e88e858acfb5ec3c6998497",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\summarize_field_children.py",
+      "target": "tools/case_studies/dkbi/summarize_field_children.py",
+      "source_sha256": "31c25ebd87909bce6f4b54d50664d12c6422155201c61187bd021b52c678b25b",
+      "published_sha256": "31c25ebd87909bce6f4b54d50664d12c6422155201c61187bd021b52c678b25b",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\verify_field_children_export.py",
+      "target": "tools/case_studies/dkbi/verify_field_children_export.py",
+      "source_sha256": "5d20469efba4368ab2e47c5d0625824a71bc22cd1502ae0796a85edaccd3e928",
+      "published_sha256": "5d20469efba4368ab2e47c5d0625824a71bc22cd1502ae0796a85edaccd3e928",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\verify_shared_bindings.py",
+      "target": "tools/case_studies/dkbi/verify_shared_bindings.py",
+      "source_sha256": "a61728c65e0511211630a941a0205725e84c8aaae7ee100fe37c9b5eb9f50741",
+      "published_sha256": "a61728c65e0511211630a941a0205725e84c8aaae7ee100fe37c9b5eb9f50741",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\verify_transform_hashes.py",
+      "target": "tools/case_studies/dkbi/verify_transform_hashes.py",
+      "source_sha256": "bc3784d225a10471d96d28209dfcbfe1db840f05748f9d1215036f101cf3b5eb",
+      "published_sha256": "bc3784d225a10471d96d28209dfcbfe1db840f05748f9d1215036f101cf3b5eb",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\verify_urp_candidates.py",
+      "target": "tools/case_studies/dkbi/verify_urp_candidates.py",
+      "source_sha256": "a6881e3bcaebc7acf8a4eb822d32cff786403c3ad66af3e36bbeba881859f000",
+      "published_sha256": "a6881e3bcaebc7acf8a4eb822d32cff786403c3ad66af3e36bbeba881859f000",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\catalog_exports.py",
+      "target": "tools/case_studies/hatintime/catalog_exports.py",
+      "source_sha256": "5eba26a7a05908d1cae3bdfda44e732b796548e5fc5055c812456754eceeba99",
+      "published_sha256": "5eba26a7a05908d1cae3bdfda44e732b796548e5fc5055c812456754eceeba99",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\convert_catlady.py",
+      "target": "tools/case_studies/hatintime/convert_catlady.py",
+      "source_sha256": "4afcb53810f5cd602745a2f78aba5d9f8ee10fc05952d3288b6123d97d9f8660",
+      "published_sha256": "4afcb53810f5cd602745a2f78aba5d9f8ee10fc05952d3288b6123d97d9f8660",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\convert_hatkid.py",
+      "target": "tools/case_studies/hatintime/convert_hatkid.py",
+      "source_sha256": "17ec92a9edc34d622c01f3a06ef6bc5800f68239f38ee7bfa0f57f8ed275fec9",
+      "published_sha256": "17ec92a9edc34d622c01f3a06ef6bc5800f68239f38ee7bfa0f57f8ed275fec9",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\convert_hatkid_v2.py",
+      "target": "tools/case_studies/hatintime/convert_hatkid_v2.py",
+      "source_sha256": "b286684cbed539227bf009be8788ee4743d4650f53a802c59b2ffb01159a7087",
+      "published_sha256": "b286684cbed539227bf009be8788ee4743d4650f53a802c59b2ffb01159a7087",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\debug_blend.py",
+      "target": "tools/case_studies/hatintime/debug_blend.py",
+      "source_sha256": "3c79d04bb631b28d8760ae403cb6badf8cf71ec6f3d97f52c2d3ff919f2dcf5f",
+      "published_sha256": "798932b22ddbcdbf3a366e9fb0bddc9183843dd1d5193d1cbf92b75dfe6ef1ea",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\decode_scale_tracks.py",
+      "target": "tools/case_studies/hatintime/decode_scale_tracks.py",
+      "source_sha256": "d3076ff71e4a86d651fb917dbf37e4826435a5fe9427aa71358d563e71545d7f",
+      "published_sha256": "d3076ff71e4a86d651fb917dbf37e4826435a5fe9427aa71358d563e71545d7f",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\enhance_all.py",
+      "target": "tools/case_studies/hatintime/enhance_all.py",
+      "source_sha256": "2f2df22e6b6a9a3dde79761c05647ec6e2c97083dd80e300e37e1eb2f1aaf433",
+      "published_sha256": "2f2df22e6b6a9a3dde79761c05647ec6e2c97083dd80e300e37e1eb2f1aaf433",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\extract_all.py",
+      "target": "tools/case_studies/hatintime/extract_all.py",
+      "source_sha256": "78e602573e8064bcb9c1ab8f0c799ca02de6351f2f2fc4c69b93889d157e52d5",
+      "published_sha256": "78e602573e8064bcb9c1ab8f0c799ca02de6351f2f2fc4c69b93889d157e52d5",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\finalize_blends.py",
+      "target": "tools/case_studies/hatintime/finalize_blends.py",
+      "source_sha256": "cbbf95f6f179af60a0dba07a9cdaf722e6f437424c99de85137e1189709646ea",
+      "published_sha256": "cbbf95f6f179af60a0dba07a9cdaf722e6f437424c99de85137e1189709646ea",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\patch_motion_sidecar.py",
+      "target": "tools/case_studies/hatintime/patch_motion_sidecar.py",
+      "source_sha256": "f1c648a8b30c178ce21ec3671fd9b1a10f0608bd6937b354a0881c419449228b",
+      "published_sha256": "f1c648a8b30c178ce21ec3671fd9b1a10f0608bd6937b354a0881c419449228b",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\test_scale_decoder.py",
+      "target": "tools/case_studies/hatintime/test_scale_decoder.py",
+      "source_sha256": "323a35409fdc8a7085c1fb6407efedbdfec1e8bb9819c7e097e6f7938073bd26",
+      "published_sha256": "323a35409fdc8a7085c1fb6407efedbdfec1e8bb9819c7e097e6f7938073bd26",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\validate_catlady.py",
+      "target": "tools/case_studies/hatintime/validate_catlady.py",
+      "source_sha256": "d0f5245be5715094f4eb23d2082a1d721582d6efe89baa5f4517627864a7d3bf",
+      "published_sha256": "d0f5245be5715094f4eb23d2082a1d721582d6efe89baa5f4517627864a7d3bf",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\validate_hatkid.py",
+      "target": "tools/case_studies/hatintime/validate_hatkid.py",
+      "source_sha256": "87b85c19cfebc91fa802056a10ac7be554fbf4b477ad2be99347064d4a093359",
+      "published_sha256": "87b85c19cfebc91fa802056a10ac7be554fbf4b477ad2be99347064d4a093359",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\export_jar_subset.py",
+      "target": "tools/case_studies/royalsmash/stabilize_rope_jar_20260929/export_jar_subset.py",
+      "source_sha256": "6e7d4aa5c77b14daaf2569992abba1c4ea058c170e9f7d02fefff27bb7e67fb9",
+      "published_sha256": "6e7d4aa5c77b14daaf2569992abba1c4ea058c170e9f7d02fefff27bb7e67fb9",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\extract_rope.py",
+      "target": "tools/case_studies/royalsmash/stabilize_rope_jar_20260929/extract_rope.py",
+      "source_sha256": "fef0dc53afb6cfb4b2c64c5f93e4faf1c97a2e84b5877900da05813222db7bfb",
+      "published_sha256": "fef0dc53afb6cfb4b2c64c5f93e4faf1c97a2e84b5877900da05813222db7bfb",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\inspect_extra.py",
+      "target": "tools/case_studies/royalsmash/stabilize_rope_jar_20260929/inspect_extra.py",
+      "source_sha256": "3dd3968936d82db43aa75a12046b541fcb8620aaa7e937bc915a5024184b587c",
+      "published_sha256": "3dd3968936d82db43aa75a12046b541fcb8620aaa7e937bc915a5024184b587c",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\native_helpers.py",
+      "target": "tools/case_studies/royalsmash/stabilize_rope_jar_20260929/native_helpers.py",
+      "source_sha256": "170f1d55202a7b1917550f3cb470c165258976991318ecdb5ebb7f724d67af82",
+      "published_sha256": "170f1d55202a7b1917550f3cb470c165258976991318ecdb5ebb7f724d67af82",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_royalsmash\\stabilize_rope_jar_20260929\\validate_handoff.py",
+      "target": "tools/case_studies/royalsmash/stabilize_rope_jar_20260929/validate_handoff.py",
+      "source_sha256": "4e125825d9d41cfdfe6391ac2d38e27e4dbd87b796853368e87a72b5962a1f5a",
+      "published_sha256": "4e125825d9d41cfdfe6391ac2d38e27e4dbd87b796853368e87a72b5962a1f5a",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\levelscope\\ANALYSIS_KNOWHOW.md",
+      "target": "docs/reference-cases/legacy-working-copy/ANALYSIS_KNOWHOW.md",
+      "source_sha256": "3d446ba07b9d149e0e34439acc7a63d68d57d7d93b230dae9052472fe4f4e34c",
+      "published_sha256": "5702bcddbffc5f1602b186c8b3bd0106c93f4806a46cb794db5e8097cec8df85",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\levelscope\\EXTRACTION_HISTORY.md",
+      "target": "docs/reference-cases/legacy-working-copy/EXTRACTION_HISTORY.md",
+      "source_sha256": "82797f39c51bb833b26426edda94000bc79c97f358b7c15e839de0372399c280",
+      "published_sha256": "1b205543b6990d9e8a376e46df62608745bd933e6576072546dc09ba8890dad1",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\levelscope\\MEMORY.md",
+      "target": "docs/reference-cases/legacy-working-copy/MEMORY.md",
+      "source_sha256": "1a5d4837aafd9e4220a30e857c1722958108ff59d9f0f6c1ce45e8258a380f8b",
+      "published_sha256": "afd7d99ad32487ba31cd0a54df4bd4bc87192d5af2cf50b4ab3178a131a669f1",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\levelscope\\HANDOFF.md",
+      "target": "docs/reference-cases/legacy-working-copy/HANDOFF.md",
+      "source_sha256": "4e5b44ebea8654c2fdaa1e1481300ae7449f72445e428551050730c8d2e53efc",
+      "published_sha256": "3716c2614ea6340d72bdece45cc9e18730c1b3f4eb4cfd7f4b76e1515f8de86a",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\README.txt",
+      "target": "docs/reference-cases/out_dkbi/README.md",
+      "source_sha256": "71212963b1ed1443d5bced05ac7b102a67810752dbfa9b3bad26b3815a708335",
+      "published_sha256": "bff8d155aa7deb5e69779047d3740533edcc661ecb7002c1a8b82d9eef7cdb76",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\shader_source\\COMPATIBILITY_FOLLOWUP.txt",
+      "target": "docs/reference-cases/out_dkbi/shader_source/COMPATIBILITY_FOLLOWUP.md",
+      "source_sha256": "3f81686496ba0ed9047bbc46d6be58c2c1a81c745d57612fc61c2597b19ca764",
+      "published_sha256": "3f81686496ba0ed9047bbc46d6be58c2c1a81c745d57612fc61c2597b19ca764",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\shader_source\\HANDOFF.txt",
+      "target": "docs/reference-cases/out_dkbi/shader_source/HANDOFF.md",
+      "source_sha256": "240c4a7ee0ccbb25580402370f1ac36d463bff75c31faa6924b8d3c082f9f754",
+      "published_sha256": "240c4a7ee0ccbb25580402370f1ac36d463bff75c31faa6924b8d3c082f9f754",
+      "kind": "note"
+    },
+    {
+      "source": "D:\\99.기타\\out_dkbi\\systems_recovery_20261008\\urp\\HANDOFF.txt",
+      "target": "docs/reference-cases/out_dkbi/urp/HANDOFF.md",
+      "source_sha256": "25173866b2f7f64fd3d2d26e864c5e0034e636249b423a740453f8744013f192",
+      "published_sha256": "25173866b2f7f64fd3d2d26e864c5e0034e636249b423a740453f8744013f192",
+      "kind": "note"
+    },
+    {
+      "target": "docs/reference-cases/out_goodshunt/_reference/play_capture_20261014/README.md",
+      "published_sha256": "f9d8bc3eab3c49ec43341fbe4dd56e9ec5e7c6881e615409141650f2e5cad6cc",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\play_capture_20261014\\README.md",
+      "source_sha256": "b05b6bd273bea4d96ca31ca7183198d2e2857294bc33ee7ddb4c826e46e7cae3"
+    },
+    {
+      "target": "docs/reference-cases/out_goodshunt/_reference/prop_native_chain_20261014/README.md",
+      "published_sha256": "4f75e523e9ef12748c7a5a61196bdfc7151783d37910dfa07bfb52b64b5b897c",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_goodshunt\\_reference\\prop_native_chain_20261014\\README.md",
+      "source_sha256": "5080af8082378ab6b35ec1521171ff5ee156df73b6e8b6a7a253a053dcdc18f5"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/ball_revision_review_20260916/README.md",
+      "published_sha256": "cc96260bf63c0bb9275d963703fb2b772549531a05fab6d9a2cd14ef3e001a03",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\ball_revision_review_20260916\\README.md",
+      "source_sha256": "cc96260bf63c0bb9275d963703fb2b772549531a05fab6d9a2cd14ef3e001a03"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/cannon_animation_20260929/README.md",
+      "published_sha256": "fe9cfeac1f4055e42a152bbce26bbc0c3d2308cbf42c18eef2c4bdb44d2f8422",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\cannon_animation_20260929\\README.md",
+      "source_sha256": "fe9cfeac1f4055e42a152bbce26bbc0c3d2308cbf42c18eef2c4bdb44d2f8422"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/cannon_ball_vfx_20260929/README.md",
+      "published_sha256": "1ff6aa5253fca3d8e3304619ba935ea2432b0343e5fb3b75ffb8c249a3d0d457",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\cannon_ball_vfx_20260929\\README.md",
+      "source_sha256": "1ff6aa5253fca3d8e3304619ba935ea2432b0343e5fb3b75ffb8c249a3d0d457"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/cannon_ball_vfx_20260929/REPLY_bmum6e13b-f.md",
+      "published_sha256": "650de434c4c9e23270fe5a90137581b04f718c1cfd79eafe31f0bba1d75be000",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\cannon_ball_vfx_20260929\\REPLY_bmum6e13b-f.md",
+      "source_sha256": "650de434c4c9e23270fe5a90137581b04f718c1cfd79eafe31f0bba1d75be000"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/cannon_particle_sprites_20260929/README.md",
+      "published_sha256": "d7d60eae15fcaaf1dfbf3082f43809ea4fb78cbf2a1b501939184aab803e83e2",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\cannon_particle_sprites_20260929\\README.md",
+      "source_sha256": "d7d60eae15fcaaf1dfbf3082f43809ea4fb78cbf2a1b501939184aab803e83e2"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/cdn_extracted/README.md",
+      "published_sha256": "1d7833458b0f8bcf2103c15d5ac76a8541efd345560af5823a16fb81522e524e",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\cdn_extracted\\README.md",
+      "source_sha256": "1d7833458b0f8bcf2103c15d5ac76a8541efd345560af5823a16fb81522e524e"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/first_contact_verification/README.md",
+      "published_sha256": "1c976eea481158ecf09bd40a3f3e89cb682cacfd979d35643e2ad7f11a539c48",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\first_contact_verification\\README.md",
+      "source_sha256": "1c976eea481158ecf09bd40a3f3e89cb682cacfd979d35643e2ad7f11a539c48"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/presentation_fixes_20260929/README.md",
+      "published_sha256": "0c31a761e762b6502edd25de8da8ec5bc5decf50c68388db553185c03717878c",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\presentation_fixes_20260929\\README.md",
+      "source_sha256": "0c31a761e762b6502edd25de8da8ec5bc5decf50c68388db553185c03717878c"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/presentation_fixes_20260929/REPLY_bmumbz3iz-1d.md",
+      "published_sha256": "a639f11bfa5a6863b8096ea9302befc960a79df8b449774e557e68314de03957",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\presentation_fixes_20260929\\REPLY_bmumbz3iz-1d.md",
+      "source_sha256": "a639f11bfa5a6863b8096ea9302befc960a79df8b449774e557e68314de03957"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/unity_bridge_20260928/README.md",
+      "published_sha256": "8667bd1518c3fefdcc9907a4df66b164c3aeb9e58b0902f1c9aa8542eb0a8e27",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\unity_bridge_20260928\\README.md",
+      "source_sha256": "956b069a0d7e3bdaed6dd3e00b3a414bd833157e69e4c5e55ae003d0d5b573b4"
+    },
+    {
+      "target": "docs/reference-cases/out_royalsmash/visual_reference_review/README.md",
+      "published_sha256": "2e62aa481d4909d7d3ac7f1c4b5f222c1614989c7505d7f95ba536bf8c056d42",
+      "kind": "note",
+      "source": "D:\\99.기타\\out_royalsmash\\visual_reference_review\\README.md",
+      "source_sha256": "2e62aa481d4909d7d3ac7f1c4b5f222c1614989c7505d7f95ba536bf8c056d42"
+    }
+  ],
+  "excluded_manual_review": [
+    {
+      "path": "D:\\99.기타\\out_goodshunt\\_reference\\build_report.py",
+      "reason": "binary_or_embedded_asset"
+    }
+  ],
+  "policy": "authored .md/.py only; extracted resources not included; syntax check is not runtime replay",
+  "text_encoding": "UTF-8 LF; original input SHA separate from published canonical text SHA"
+}

@@ -104,3 +104,14 @@ Royal Smash 경로는 `../out_royalsmash/` 기준이다. 다음 문서는 검토
 반복되는 판독은 공통 기능, 특정 게임의 구조는 설정/플러그인, 실패 사례는 진단/회귀 검사로 축적한다. 분석가가 별도 스크립트로 해결한 결과와 일반 CLI가 자동 처리하는 기능을 구분한다.
 
 REA6.4.0은 로컬 선택형 호출 도구로 시험했다. 작은 JS2파일의 정적 관계와 capabilities만 실제 검증했다. native engine은 미설정이고 IL2CPP metadata 자동 해독 기능이 아니다. 웹/네이티브/managed 실제 게임 분석 전체를 완료한 것으로 표현하지 않는다. 로컬 어댑터·설치본은 이번 문서 커밋 밖에 남긴다.
+## 2026-10-16 후속 사례·연구 코드 게시
+
+APK 언패킹·미니앱 이식 노하우 전체 보존 요청으로 [추가 공통 사례](docs/APK_MINIAPP_KNOWHOW_20261016.md),
+[원문160건 전체 색인](docs/REFERENCE_CASES_ALL.md), [직접 작성한 분석/검사 스크립트110개](tools/case_studies/README.md)를 정리했다.
+Royal Smash/MiniApp의 runtime old/new overlap·공통 데이터 팩토리·물리/실패 상태, Goods Hunt의 trigger/성장/목표/UI/FX,
+DKBI ECS/셰이더 import 경계, Hat in Time scale/동명 export/다중 bind 검증을 추가했다.
+기존 작업 폴더의 이력 문서도 legacy-working-copy로 보존했으며 오래된 성공/실패는 최신 정정과 함께 읽는다.
+문서/스크립트 전수 약1.47MB, 리소스와 복원 테이블·바이너리는 제외했다. 게시용 스크립트110개는 Python 문법 컴파일 통과,
+원작 전체 재추출을 새로 수행한 것은 아니다. 범용 CLI와 입력 의존적인 사례 연구 스크립트를 구분한다.
+이전 2026-10-13 문서의 REA native 미설정 상태는 과거 기록이며 10/14 이후 검증은 최신 MEMORY/HANDOFF와 REA 문서를 따른다.
+

@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-10-16 독립 모션 리타게팅 도구
+
+후속0.2: 자동/수동 접지 구간·foot lock·평면/메시 지면·골반 reach projection·궤적 필터·루프 이음,
+소스 object TRS→루트·적응형 중간점 샘플링을 추가했다. FK/IK/pole/IK-FK 속성 프로필과
+제약/driver ID 재연결·변형 본 위치/회전/스케일 검사, 분절 B-Bone 선형 스킨의 정점 대조 export를
+UI/CLI로 연결했다. Python556개/skip3/실패0와 합성·실제 HatKid 리그 회귀 통과.
+컨트롤러 프로필 검토·접지 임계값 설정이 필요하며 범용 자동 호환성이나 연속 전체시간 동등성은 주장하지 않는다.
+
+`tools/motion_remap/`에 Blender 5.x용 JSON 본 매핑·참조 자세 보정·루트 이동/제자리·
+선택 위치/스케일·2본 IK·다중 Action/Slot bake와 GLB/Blend 출력을 추가했다.
+원본 리그를 복제하고 예외 시 입력 상태를 복구한다. Auto-Rig Pro 구현/프리셋 의존은 없다.
+소수 프레임 원본 키를 정규 샘플과 함께 보존해 실제 HatKid identity 오차를 수정했다.
+합성 Blender 검사 및 HatKid Body70본/5동작/1,050행렬 표본·저장 재열기 검증 통과.
+일반 추출 CLI는 변경하지 않았다. 위 초기 기능에 후속0.2의 명시 프로필 기반 컨트롤 리그·접지 보정을 추가했으며 무설정 자동 호환은 보증하지 않는다.
+사용법과 검증 한계는 `tools/motion_remap/README.md`, `docs/MOTION_REMAP_KNOWHOW.md` 참고.
+
+추가 검증 주의: Blend 원본 소수 키/커브 보존과 GLB 내보내기의 실제 시간키 보존은 별개다.
+Multi에서 `NLA_TRACKS + force_sampling=False`도 24fps 재샘플을 관찰했으므로
+현재 도구의 GLB 구조·클립 수 검사를 native 시간키 보존 근거로 확대하지 않는다.
+생성 캐릭터 손가락·어깨 스키닝 후보5종은 실패로 보존하고 적용하지 않았다.
+후속 연구 상태는 `docs/MULTI_SKINNING_RESUME_20261016.md`에 기록했다.
+
+---
+
 ## 2026-10-14 선택형 REA 연동
 
 `tools/rea_bridge.py`로 정적 JS/.NET/native 분석, 저장 Evidence 요약·페이지·버전 비교,

@@ -1,0 +1,13 @@
+{
+  "version":1,
+  "approved":false,
+  "properties":[{"bone":"thigh_parent.L", "name":"IK_FK", "value":0}],
+  "fk":[{"bone":"pelvis", "control":"torso", "location":true, "rotation":true}],
+  "ik":[{"bone":"foot.L", "control":"foot_ik.L", "location":true, "rotation":true,
+    "rest_offset":true, "pole_control":"thigh_ik_target.L", "pole_distance":1,
+    "chain":{"upper":"thigh.L","lower":"shin.L","end":"foot.L"}}],
+  "verify_bones":[{"reference":"foot.L", "target":"DEF-foot.L"}],
+  "max_position_error":0.01,
+  "max_rotation_error_degrees":2,
+  "strict":true
+}

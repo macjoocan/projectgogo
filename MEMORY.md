@@ -2,7 +2,47 @@
 
 
 
-갱신: 2026-10-13. 이 파일은 두 도구가 읽는 공유 프로젝트 메모리다.
+갱신: 2026-10-16. 이 파일은 두 도구가 읽는 공유 프로젝트 메모리다.
+
+## 최신 상태 — 독립 모션 리타게팅 (2026-10-16)
+
+### 후속 0.2 보강 완료
+
+- `contacts/postprocess/sampling/controls/deform_export`를 추가했다. 자동/수동 발 접촉·foot lock,
+  평면/메시 지면 raycast·경사 정렬, 골반 reach projection·궤적 필터·루프 이음, 소스 object TRS→루트,
+  적응형 키, 명시적 FK/IK/pole/IK-FK 속성 프로필·평가 오차 검사, 제약/B-Bone 일반 선형 스킨 export 지원.
+- FK 복제 시 self-target/다중 Armature 제약/Object 및 Armature-data driver ID를 복제본으로 재연결.
+  위치/회전/스케일·미검증 deform 본을 보고한다. B-Bone은 세그먼트 행렬/인접 가중치를 쓰고 매 샘플 원본 평가 정점 대조.
+- 최종 Python556/skip3/fail0, 기존 Blender11회귀 및 새 합성·CLI 검사 통과. Body5클립 identity 오차3.0518e-5/저장 재열기0 유지.
+  실제 HatKid Legs의 검증용 길이80% 타깃/Idle1080샘플은 최종 실제 포즈 발오차7.3881e-6,
+  pelvis5.1062 이하/유한 스킨/원본SHA·rest 불변. 이는 원작 지면이나 다른 게임의 검증이 아니다.
+- 주요 수정 노하우: 스무딩 뒤 hard reach 재투영, 목표 계산과 최종 TRS 포즈 오차 분리,
+  acos(dot) 대신 상대 quaternion atan2 회전 오차, 소스 adaptive 중간점 오차와 타깃 최종 오차 구분.
+  자세한 범위는 `docs/MOTION_REMAP_KNOWHOW.md`. 보고서 정본은 `out/motion_remap/controls_scale_release`,
+  `ik_scale_release`, `hat_v2_identity`, `hat_contacts_release`, `control_cli_release`, `deform_cli_release`.
+- 설치 ZIP `out/motion_remap/Levelscope_Motion_Remap_0.2.0.zip`, SHA256
+  `219901de2cff2aa7456985c7ff255cbd99b09916e86eaf7c6d396dea8ace38f3`(코드/문서만14파일).
+- 한계: 프로필/임계값 검토 필수, arbitrary rig 자동 의미 판독·자동 리깅·동적 지면 물리·전체시간 동등성 보증 없음.
+  기본 리타게팅의 비균일/반사/shear 및 평가 export의 PreserveVolume/envelope/shapeKey/추가 modifier는 명시적 거부.
+  사용자 지시로 Multi와 game-dev-team_ver04 두 세션에 0.2 코드/ZIP/노하우/검증/한계를 MCP 전달 완료.
+  양쪽 도구 영수증 `전달됐습니다`, 별도 적용 답장은 미관찰. `out/motion_remap/delivery_receipts_0.2.0.json` 보존.
+
+- 사용자 지시로 공개 ARP Remap의 기능 흐름을 참고해 `tools/motion_remap/`를 독립 구현했다.
+  ARP 코드/전용 프리셋/설치 의존 없음. 본 매핑 JSON/검토 승인/참조 자세/스케일 비율/루트/제자리/
+  선택 위치·스케일/2본 IK/Blender5 다중Action·Slot/batch CLI/GLB·Blend 출력 지원.
+- 원본을 복제해 작업하며 source pose/action/slot/NLA/time은 복구한다. 비균일·반사·전단·애니메이션
+  object transform, 타깃 제약/driver/control rig는 거부한다. 접지 자동탐지·foot lock은 미구현.
+- 소수 프레임 키 누락으로 HatKid identity 중간 표본 오차0.865829를 재현했고, 원본 키+정규 샘플 합집합으로
+  최대0.0000305176까지 수정했다. Body70본/5동작/1,050행렬 표본; Blend 저장 재열기 오차0,
+  GLB skin1/animation5 존재. 별도 head/legs를 한 뼈대로 합친 검증이나 다른 캐릭터 시각 품질 검증은 아니다.
+- 전체 Python549개/skip3/실패0, Blender 합성11개 체크 통과, 실제 HatKid Walk batch CLI 통과.
+  Hat 검사 최고커밋1.117GiB/상한2.5GiB/51.34초. 원본 추출 Blend SHA 불변.
+- 사용법 `tools/motion_remap/README.md`, 노하우 `docs/MOTION_REMAP_KNOWHOW.md`.
+  로컬 설치 ZIP `out/motion_remap/Levelscope_Motion_Remap_0.1.0.zip`(게임 자산 미포함).
+  Hat 원본 추출/파서 확장은 별도 로컬 `../out_hatintime/_reference/README.md`가 정본.
+- 사용자 지정 전달 대상 `01a13903-609c-7691-a258-9a890e01beb7`(Multi)에 코드/설치ZIP/검증/노하우와
+  지원 한계를 MCP로 전달했다. 발신 `01a143df-3dfe-7cf2-89e9-4094e6e9bf40`, 도구 영수증 `전달됐습니다`.
+  상대의 별도 적용/수신 답장은 아직 없으며 커밋/푸시는 수행하지 않았다.
 
 ## 최신 상태 — DKBI 조사와 공통 기능 정리 (2026-10-13)
 
@@ -670,3 +710,17 @@ Role_AK/Role2D 머티리얼/16x16 atlas 연결 확인. character_test에 신규B
 - 게시에는 원격 main의 Hades/Graveyard Keeper/DKBI 문서를 보존한 별도 worktree `../levelscope-publish-20261014`를 사용한다. 원래 로컬 작업 폴더의 미커밋 변경/백업은 그대로 남긴다. 최신 기능 사용은 원격 main 또는 게시 worktree를 기준으로 한다.
 
 - 게시 worktree 검증: `python -m unittest discover -s tests -t .` 541개 실행 / 3개 skipped / 실패0 (8.645초). 기존 원격 테스트까지 합친 범위이며 앞선 로컬517개와 구분한다.
+## 최신 재개 메모 — 2026-10-16 / Multi 손가락·어깨 보정
+
+- 사용자 요청: 결과뿐 아니라 실패 원인·지원 범위·재개 지점까지 기억. 상세 정본 `docs/MULTI_SKINNING_RESUME_20261016.md`, 독립 연구 `../out_hatintime/_reference/skinning_research_20261016/README.md`.
+- 보정 후보 5개 모두 미채택. 현행 OriginalRetry 유지. 손가락은 분리/구동되지만 손바닥 변형 실패, 어깨 국소 재가중치는 회귀. finite/4weights/rest 보존을 시각 합격으로 읽지 않는다.
+- 다음 승인 범위: 고정 70본에 맞춘 손바닥·손가락 기저부 continuous cage/굴곡 topology 독립 연구. 아직 후속 cage 구현을 시작하지 않았다. Multi 코드·라이브 Blender·원본은 읽기 전용, D: 복사본에서만 실행. 생성/과금 없음.
+- 중요 정정: Blend의 원본 5곡선 해시 exact와 GLB native 시간키 보존은 별개. NLA_TRACKS+force_sampling=False도 24fps 재샘플됐다는 Multi 보고를 반영; 기존 GLB 70joint/5clip 구조 검사를 native-key 보존 근거로 확대 금지.
+- Multi 최신 native 출력/278모션 라이브러리는 상대 소유. 최신 문서 C:/00.SVN/Multi/web/docs/43-character-skinning-knowhow.md와 final/original-retry-native.blend/.glb를 읽고 재개. 대시보드 중복 개발 금지.
+- 전달 대상 01a13903-609c-7691-a258-9a890e01beb7(Multi), 01a13d31-184e-7960-9eac-fed37eccf181, 사용자 추가 대상 01a13d2d-374a-7363-b819-4db64e27e540. queued와 delivered/상대 ACK 구분. Multi는 bmvaxm4pf-c로 연구 반환 수신·미채택 기록 확인.
+- 도구 수준 판단: 추출·모션 보존·검증 기반은 있으나 범용 자동 스킨 보정은 연구 단계. 사례 수보다 다양한 체형의 실패/해결 쌍과 동일 회귀 검사가 중요. 형상/가중치/웹 검증을 분리하고 지원 범위를 명시한다.
+
+## 2026-10-16 전체 코드·언패킹 노하우 게시 범위
+
+사용자가 github.com/macjoocan/projectgogo에 리소스를 제외한 기능/아트 외 성과/APK·미니앱 언패킹 노하우 모두 커밋·푸시 명시 승인. 게시 worktree origin 확인 및 fetch, HEAD와 origin/main 차이0에서 시작. Motion Remap0.2 코드/테스트/문서와 사례 원문160건/연구 스크립트110개를 함께 준비했다. 약1.47MB 텍스트, 원작 리소스/추출 테이블/GLB/Blend/PNG/오디오/바이너리/캐시는 제외. 스크립트110개 문법 검사, 제한된 자격증명 패턴0건. 전체 Python556개/skip3/실패0(8.949초). 최신 공통 노하우 docs/APK_MINIAPP_KNOWHOW_20261016.md와 docs/REFERENCE_CASES_ALL.md, tools/case_studies/publication_manifest.json 참조. Git remote/최종 commit 상태는 실제 git log를 정본으로 확인한다. 새로운 cage 개선은 여전히 미구현/미해결이며 게시 완료로 연구 해결을 주장하지 않는다.
+

@@ -175,3 +175,14 @@
 - CLI 설치/capabilities/종료 성공/관계 복원/실행 동등성은 서로 다른 결과다. 원문 stdout·stderr·종료코드·input identity·시간·메모리·제한을 남기고 외부 도구의 inferred/unknown을 보존한다.
 - 큰 JSON을 보고서 생성을 위해 다시 통째 읽지 않는다. 파일 보존과 제한된 요약을 분리한다. 메모리는 런처 하나가 아니라 프로세스 자손 전체를 재고, 이미 별도로 실행된 서버는 감시 범위 밖임을 표시한다.
 - 원본 렌더 데이터를 확보해 파생 HLSL을 작성하더라도 편집 가능한 원작 소스를 회수했다고 쓰지 않는다. 시각·GPU 검증 전 원작 화면 동일성 판단을 보류한다.
+## 11. 누적 APK·미니앱 사례와 추가 정정 — 2026-10-16
+
+구체적인 후속 원칙은 [APK_MINIAPP_KNOWHOW_20261016.md](docs/APK_MINIAPP_KNOWHOW_20261016.md),
+원문 설명160건은 [전체 사례 색인](docs/REFERENCE_CASES_ALL.md), 연구 코드110개는
+[case_studies](tools/case_studies/README.md)를 본다. 실제 리소스/추출 데이터는 Git에 포함하지 않는다.
+
+- 저장 값→소비 식→상태 전환→실제 검증을 잇는다. Unity angularDrag를 다른 물리 엔진 damping으로 숫자만 복사하거나 prefab root pose를 placement와 이중 합성하면 기존 검사가 통과해도 플레이에서 실패할 수 있다.
+- 자동 물리의 파기 지연/트랜스폼 동기화와 수동 스텝 프로브의 관측 차이를 분리한다. Scene→런타임 배치 전환은 동일 팩토리와 실제 전환 경로로 검사한다.
+- UI/파티클은 원본 참조와 실제 emission/renderer/camera/좌표 단위를 연결한다. live particle count와 픽셀 가시성, 저장 키워드와 GPU 식, Blend 커브와 GLB 시간키는 각각 별도 검사다.
+- 이름 충돌은 file/PPtr 또는 export index로 보존하고, MD5처럼 표현하지 못하는 정보는 sidecar를 둔다. 게임별 스크립트의 성공을 범용 CLI 지원으로 과장하지 않는다.
+

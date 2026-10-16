@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "approved": false,
+  "root": "pelvis",
+  "target_mode": "deform_proxy",
+  "object_motion": "root",
+  "scale_ratio": "auto",
+  "alignment_wxyz": [1, 0, 0, 0],
+  "in_place_axes": [],
+  "bones": [
+    {"source": "Hips", "target": "pelvis"},
+    {"source": "LeftUpLeg", "target": "thigh.L"},
+    {"source": "LeftLeg", "target": "shin.L"},
+    {"source": "LeftFoot", "target": "foot.L"}
+  ],
+  "ik_chains": [{"upper": "thigh.L", "lower": "shin.L", "end": "foot.L"}],
+  "adaptive": {"position_tolerance": 0.002, "rotation_tolerance_degrees": 0.5, "scale_tolerance": 0.002, "max_depth": 4, "strict": false},
+  "postprocess": {
+    "feet": [{"end": "foot.L", "sole_offset": 0.05, "lock_rotation": true, "up_axis": [0,0,1],
+      "contact": {"mode":"auto", "height":0.03, "speed":0.1, "min_duration":0.08, "max_gap":0.04, "blend_frames":2}}],
+    "ground": {"height":0, "objects":[], "ray_distance":10, "align_feet":true, "max_tilt_degrees":30},
+    "pelvis": {"bone":"pelvis", "max_shift":0.3, "axes":["X","Y","Z"], "iterations":12, "smoothness":1},
+    "trajectory": {"axes":["X","Y"], "smoothness":1, "max_deviation":0.02}
+  }
+}

@@ -27,6 +27,19 @@ py -m levelscope survey --input <아무 apk> --configs configs
 
 ## 설치 (Windows)
 
+APK·언패킹·미니앱 이식의 누적 방법은 [공통 노하우](ANALYSIS_KNOWHOW.md),
+[전체 추출 이력](EXTRACTION_HISTORY.md), [최신 APK·미니앱 정리](docs/APK_MINIAPP_KNOWHOW_20261016.md),
+[사례별 원문 전체 색인](docs/REFERENCE_CASES_ALL.md)에서 확인할 수 있습니다.
+직접 작성한 [사례 연구 스크립트](tools/case_studies/README.md)도 보존했으며,
+게임 리소스와 추출 데이터는 포함하지 않습니다.
+
+추출한 스킨·뼈대 모션을 다른 캐릭터에 옮기는 독립 Blender 도구는
+[Motion Remap 사용법](tools/motion_remap/README.md)을 참고하세요.
+원본 보존형 자세 참조·본 매핑·일괄 bake·2본 IK·접지 잠금·지면/골반 보정과
+컨트롤 리그/B-Bone 평가 스킨 내보내기를 제공하며,
+[검증 범위와 보정 노하우](docs/MOTION_REMAP_KNOWHOW.md)를 별도로 기록합니다.
+일반 데이터 추출 CLI와 분리된 선택 기능입니다.
+
 ```bat
 py -m pip install -r requirements.txt
 ```

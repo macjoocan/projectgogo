@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path(__file__).resolve().parent;s=(p/'validate_hatkid.py').read_text(encoding='utf-8');ls=s.splitlines();ls.insert(1,"sources=p/'raw/Maps/DLC_CatMetro/DLC_Metro/DLC_Metro';dest=p/'preview_catlady'");s='\n'.join(ls).replace('HatKid_five_motions','CatLady_scale_motion');exec(compile(s,str(p/'validate_hatkid.py'),'exec'),dict(__file__=str(p/'validate_hatkid.py'),__name__='__main__'))

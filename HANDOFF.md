@@ -4,6 +4,84 @@ See `out/heroll/FOLLOWUP.md`. Dates: 1216 scalar values and 261 empty arrays mat
 
 # Shared Work Handoff
 
+## Motion Remap 0.2 — remaining technique implementation (2026-10-16)
+
+User requested implementation of the remaining techniques and delivery to both Multi
+`01a13903-609c-7691-a258-9a890e01beb7` and game-dev-team_ver04
+`01a13d31-184e-7960-9eac-fed37eccf181` when done.
+Code remains in `tools/motion_remap/`; detailed current scope/fixtures are in its README and
+`docs/MOTION_REMAP_KNOWHOW.md`. 0.1 limitations below are historical where superseded.
+
+New modules: pure contacts + bounded tridiagonal smoothing, postprocess contact locking/plane or
+evaluated mesh ground/pelvis reach projection/trajectory/loop, source midpoint adaptive sampling,
+explicit FK/IK/pole/custom-property control adapter, sampled constrained/B-Bone linear skin export.
+Panel + CLI both connected. Original control constraints/drivers stay intact; copied Object/data
+driver IDs and multi-target Armature/self-target pointers are remapped to the working copy.
+Control output verifies configured deform bone position/rotation/scale and lists unverified bones.
+B-Bone proxy uses N+1 joints for N segments and adjacent weights; every sampled original/proxy
+evaluated vertex is compared. Unsupported skin mechanisms/shear fail explicitly rather than guessing.
+
+Fixes discovered: smoothing can relax planted-foot constraints, so reproject reach afterwards;
+check actual pose after matrix decomposition (not just analytic goals); use relative-quaternion
+atan2 instead of float32 acos-dot noise; keep config/profile snapshots immutable in reports.
+Adaptive source-midpoint tolerance is not a final target continuous-time error certificate.
+
+Final evidence: Python556 tests/skipped3/fail0; base Blender11 checks; new advanced/control/B-Bone
+suites and actual CLI paths passed. Hat Body70/5clips/1050 samples still max3.0518e-5/reload0.
+Actual Hat Legs shortened80% fixture Idle1080 samples: final-pose contact error7.3881e-6,
+pelvis shift5.1062 native numeric units, source SHA/rest preserved, finite skin. Ground/sole/contact
+settings are explicitly derived fixture settings, not original game ground. Peak commit final
+Hat identity1.121GiB/50.21s and contact0.885GiB/98.56s (2.5GiB tree guard).
+Synthetic B-Bone skin max world vertex error2.3889e-7, IK endpoint about7.25e-7.
+
+Artifacts under ignored `out/motion_remap/`: `controls_scale_release/verification.json`,
+`ik_scale_release/verification.json`, `hat_v2_identity/verification.json`,
+`hat_contacts_release/verification.json`, `control_cli_release/remapped.json`,
+`deform_cli_release/remapped.json`, `unittest_v2.log`. Earlier failed fixtures/logs preserved.
+Source-only addon ZIP `Levelscope_Motion_Remap_0.2.0.zip` SHA256
+`219901de2cff2aa7456985c7ff255cbd99b09916e86eaf7c6d396dea8ace38f3`.
+No game-source modifications, original game execution, installation, commit or push.
+Both requested sessions received the 0.2 handoff according to MCP delivered receipts; recipient
+application/independent ACK is not yet observed. Receipts: `out/motion_remap/delivery_receipts_0.2.0.json`.
+
+Not universal support: reviewed profiles/thresholds/sole offsets required; no arbitrary rig semantic
+inference, auto rigging, moving-platform contact physics, or continuous-time/pixel/runtime equality.
+Nonuniform/reflected/sheared object transforms rejected by direct retarget; PreserveVolume/envelopes/
+shape keys/extra modifiers/animated rest shape rejected by evaluated skin export. Intermediate
+deform_proxy B-Bones are straightened explicitly; final curved skin uses control adapter + segment export.
+
+## Motion Remap independent implementation — 2026-10-16
+
+User requested independent functionality inspired by public ARP Remap docs and delivery of validated
+correction know-how to Multi session `01a13903-609c-7691-a258-9a890e01beb7`.
+Implementation is `tools/motion_remap/` (core/engine/ui/batch/packager/fixtures), tests in
+`tests/test_motion_remap.py`; no ARP code, proprietary preset or addon installation used.
+See `tools/motion_remap/README.md` and `docs/MOTION_REMAP_KNOWHOW.md` for operation and scope.
+
+Implemented: conservative mapping draft + explicit approval, non-destructive orientation reference,
+root motion/in-place/auto length ratio, local translations/scales, quaternion bake, analytic 2-bone
+IK with pole fallback/unreachable clamping/descendant propagation, multi-action/Blender5 slots,
+input restoration and output rollback, GLB/Blend with actual exported animation/skin count check.
+Unsupported control rigs/target constraints/drivers/segmented B-Bones/nonuniform or animated object
+transforms fail explicitly. No contact detection/automatic foot lock or original game runtime equivalence.
+
+Validation: Python549 tests, skip3, failure0. Blender5.2.1 LTS synthetic11 checks passed. HatKid Body
+70 bones/5 clips/1050 sampled matrices maxabs3.0517578125e-5; saved Blend reload difference0;
+finite deformed skin and unchanged source rest/input SHA. GLB5 animations/1skin existence verified;
+not a continuous-time GLB vertex parity certificate. Initial integer-only bake failed0.865829;
+preserving fractional source key times fixed it (failed diagnostic logs retained).
+Working set guard2.5GiB; successful Hat process peak1.117GiB/51.34s. Actual Walk batch CLI passed
+(1animation/1skin). Earlier CLI fixture request referenced a purged no-user Run action and correctly
+failed empty selection; actual retained Hat action was used for positive CLI validation.
+
+Local artifacts: `out/motion_remap/{synthetic_v2,hat,cli_hat}/`, full Python log at
+`out/motion_remap/unittest.log`; process receipts at `../out_hatintime/_reference/remap_*`.
+Source-only addon ZIP `out/motion_remap/Levelscope_Motion_Remap_0.1.0.zip`, SHA256
+`7a0adf9ace43680f09860642e506248784378ad12069bc12f5e967420824cac1`.
+Changes are local only; no commit/push for this task. Game extraction outputs are not Git inputs.
+MCP session_send reported delivered to the requested Multi session from sender
+`01a143df-3dfe-7cf2-89e9-4094e6e9bf40`; independent recipient application/ACK not yet observed.
+
 ## Current handoff — 2026-10-13
 
 Read [docs/DKBI_HISTORY.md](docs/DKBI_HISTORY.md) and the latest block at the top of [MEMORY.md](MEMORY.md) first. Dated sections below retain historical evidence and superseded failures.
@@ -630,3 +708,11 @@ Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 
 - 게시에는 원격 main의 Hades/Graveyard Keeper/DKBI 문서를 보존한 별도 worktree `../levelscope-publish-20261014`를 사용한다. 원래 로컬 작업 폴더의 미커밋 변경/백업은 그대로 남긴다. 최신 기능 사용은 원격 main 또는 게시 worktree를 기준으로 한다.
 
 - 게시 worktree 검증: `python -m unittest discover -s tests -t .` 541개 실행 / 3개 skipped / 실패0 (8.645초). 기존 원격 테스트까지 합친 범위이며 앞선 로컬517개와 구분한다.
+## 2026-10-16 최신 인계 — Multi 독립 스키닝 연구
+
+사용자 메모리 보존 요청 반영. 최신 상태/검사/실패/시간키 정정/전달 ACK/다음 승인 범위를 `docs/MULTI_SKINNING_RESUME_20261016.md` 및 MEMORY.md 최신 날짜 항목에 기록했다. 연구 정본은 `../out_hatintime/_reference/skinning_research_20261016/README.md`. 후보5개 모두 미채택, 현행 OriginalRetry 유지. 후속 continuous cage는 승인됐으나 아직 구현 시작 전. Multi 원본/라이브 Blender/코드 읽기 전용, D: 연구 복사본만 사용한다. 해당 메모리 기록 당시에는 커밋/푸시하지 않았으며 이후 별도 사용자 지시로 리소스를 제외한 게시를 진행한다.
+
+## 2026-10-16 리소스 제외 전체 지식 게시
+
+추가 사용자 지시로 Motion Remap 외 APK/미니앱 노하우까지 게시 범위를 확장했다. 직접 작성한 설명160건(과거 작업 폴더 이력 포함)/연구 Python110개를 선별, 원본 리소스·복구 데이터·게임 바이너리·컴파일 셰이더·Blender/GLB/이미지 제외. 공개 실행형 범용 CLI가 아닌 연구 스크립트는 입력 의존성/import시 실행 주의를 명시했다. 게시 코드 문법 검증과 기존 전체556test/skip3 통과. 원작 재실행/전체 재추출/Unity 검사를 새로 하지 않았다. 문서/스크립트 출처 및 해시는 tools/case_studies/publication_manifest.json. 최신 MEMORY/EXTRACTION_HISTORY/ANALYSIS_KNOWHOW 링크를 추가했다.
+

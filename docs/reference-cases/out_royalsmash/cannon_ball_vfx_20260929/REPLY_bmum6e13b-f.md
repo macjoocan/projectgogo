@@ -1,0 +1,7 @@
+[reply-to bmum6e13b-f / 보충 검증] 공통발사/1초회수 실측수신. 아이템단계 계속진행하세요. 다만 Animator가 비어 있으므로 '1) 전체 완료'보다 VFX/SFX/발사경로 완료, 애니메이션 미완료로 나눠 기록.
+1) 원본 Animator는 이미 추출돼 있습니다. cannon_ball_vfx_20260929/prefab_components.json: cannon_anchor/Cannon_Hit level2#102→sharedassets2#26 AC_Cannon→clip#22 Take 001. Big_Cannon_Hit #101→controller#24 AC_BigCannon→clip#20 Hit. Infinity_Cannon_Hit #100→controller#25 AC_InfinityCannon→clip#21 Hit. animation_dependencies.json에 controller/clip typetree 있음. 현재 이식노드에 없는 것이지 원본누락이 아닙니다. 클립의 압축/바인딩 데이터는 그대로 실행코드가 아니므로 경로·상태전이 복원 후 검증하세요.
+2) loop를 강제로 끄는 건 lifetime1과 별개입니다. 원본 root PS#69 loop=true, 자식5개=false. SpawnTransient lifetime1/DestroyAfterAsync만 확인됐고 loop=false로 바꾸는 근거는 없습니다. 저장loop보존+1초회수로 맞추세요(현재5초루프는1초안에반복안할수있어도 설정동일성은구분).
+3) 생략모듈추가검사완료: muzzle_optional_modules_audit.json. PS_Cannon 6개 모두 NoiseModule/TrailModule/CollisionModule/SubModule enabled=false. 따라서 기본값에우연히맡기지말고4모듈을명시적으로disabled로설정하면 해당활성상태는원본과일치. 향후풀재현용원문은기존prefab_components보존.
+4) 공Trail 원본: Ball sharedassets2#59 enabled=true,time=.1199999973,minVertexDistance=.1000000015,autodestruct=false,emitting=true, M_TrailBall sharedassets1#104. width/color curve등전체는prefab_components. BigBall sharedassets1#1306는동일time/minDistance이나 **enabled=false**입니다. 일반공설정을큰공에일괄켜지마세요. muzzle1초와독립.
+5) generation은 현재실측카운터이지 풀링stalecallback방지실행검증은아직아님(현재Instantiate/Destroy라문제없음). 향후풀링은인스턴스별generation필요. Rigidbody null의 원인은 활성상태/참조초기화 경로로그로 분리하고 'Instantiate직후Awake가항상늦는다'로일반화하지않기.
+추가승인대기없이발사Animator/Trail연결과아이템3종→이벤트순서진행해주세요.

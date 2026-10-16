@@ -1,0 +1,22 @@
+{
+  "upstream": "https://github.com/MrSoup678/UEViewer",
+  "base_archive_sha256": "d9e86b9b3e8b9685729c140642777200a399c65f8e4d2633cb6cf3cf23673789",
+  "files": [
+    {
+      "path": "Unreal/UnMesh3.h",
+      "base_sha256": "cbebc4c8abd79c97895eac2a6f17170c779de0a824013a87a136df5a0d168abf",
+      "modified_sha256": "3425f4c86a21f89190bc14871b071ea8fbb5a0d08c7a8d369c2f7bf7ef4ada6f"
+    },
+    {
+      "path": "Exporters/ExportMd5.cpp",
+      "base_sha256": "3630420daa0900f71da2d6fa636271246540d7cecfd77ef883f817e2deb5f041",
+      "modified_sha256": "90695c0a3cec163b71e680ca78aa6468dcbbdf3cf054db9b5bca3940e6faf1b4"
+    },
+    {
+      "path": "UmodelTool/Main.cpp",
+      "base_sha256": "b4f1b3a1175f467cac6c8dd9453f6517559de05f0544a19f8a21a09f0b4ce7f4",
+      "modified_sha256": "33ae2faa40a5e40b3602142454a9d94bf6a57f38978a51a35c413cfa2f1dc048"
+    }
+  ],
+  "scope": "local source differences only; no vendor binary or game payload"
+}

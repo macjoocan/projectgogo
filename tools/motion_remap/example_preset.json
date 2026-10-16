@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "approved": false,
+  "root": "pelvis",
+  "scale_ratio": "auto",
+  "alignment_wxyz": [1, 0, 0, 0],
+  "in_place_axes": ["X", "Y"],
+  "bones": [
+    {"source": "Hips", "target": "pelvis", "translation": true},
+    {"source": "LeftUpLeg", "target": "thigh.L"},
+    {"source": "LeftLeg", "target": "shin.L"},
+    {"source": "LeftFoot", "target": "foot.L"}
+  ],
+  "ik_chains": [
+    {"upper": "thigh.L", "lower": "shin.L", "end": "foot.L", "pole_mode": "source", "pole": [0, -1, 0]}
+  ]
+}
