@@ -186,3 +186,11 @@
 - UI/파티클은 원본 참조와 실제 emission/renderer/camera/좌표 단위를 연결한다. live particle count와 픽셀 가시성, 저장 키워드와 GPU 식, Blend 커브와 GLB 시간키는 각각 별도 검사다.
 - 이름 충돌은 file/PPtr 또는 export index로 보존하고, MD5처럼 표현하지 못하는 정보는 sidecar를 둔다. 게임별 스크립트의 성공을 범용 CLI 지원으로 과장하지 않는다.
 
+### 11.1 미연결 Action 저장 및 국소 회귀 검사
+
+`libraries.write({scene}, fake_user=True)`가 사용하지 않는 Action까지 저장한다는 보장은 없다.
+native5종을 muted NLA로 연결하고 `{scene,*actions}`를 명시 저장한 후 별도 프로세스에서
+5종/3,500곡선/459,900키 해시를 대조했다. Blend 성공을 GLB sampler 보존으로 확대하지 않는다.
+v4 후속에서 최대 손 간선은22.34→18.07mm로 줄었으나 Idle 최소 삼각형 면적비가
+.075→.014로 악화됐다. 최대값 하나를 개선해도 클립별/국소 지표·실제 렌더가 회귀하면 탈락한다.
+연구 정본 [v4 후속](docs/MULTI_HAND_V4_FOLLOWUP_20261016.md) 참조.

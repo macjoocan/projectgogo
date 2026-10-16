@@ -719,3 +719,7 @@ Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 
 ## 2026-10-16 README 최신화
 
 사용자 추가 요청으로 README 첫 화면에 공통 추출/누적 노하우/APK·미니앱 사례/연구 코드/REA/Motion Remap 진입점을 정리했다. 설명160건·연구 스크립트110개·556tests/skip3과 리소스 제외 정책, 연구 코드와 범용 CLI 차이, GLB 시간키 및 스키닝 미해결을 명시했다. 과거4종/347test 표는 초기 기준치로 한정하고 TypeTree native 우선·폴백 실패 검증 안내와 실제 bat 진입점을 정정했다. 문서 변경이며 원작 재실행/추가 추출은 하지 않았다.
+## 2026-10-16 v4 독립 후속 반환
+
+정본 docs/MULTI_HAND_V4_FOLLOWUP_20261016.md. 전체125표본 maximum은 개선됐지만 Idle국소면적붕괴가악화돼 미채택. 원본/라이브/기본모델/70본 변경없음. Action저장함정재검증으로5/3500/459900 exact, 손외weights/geometry/UV exact확인. 신규코드는독립연구용3파일이며최대영향4. 원문Blend/렌더/JSON fixture는D로컬에만보존. Multi/game-dev-team전달확인,추가13d2d는bridge수신메시지와queued receipt를구분. 웹/GLB나전체278모션최종외형검증을하지않았다.
+

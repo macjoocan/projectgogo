@@ -15,7 +15,7 @@ Unity 모바일 게임을 위한 공통 CLI를 중심으로, PC 게임·ECS·셰
 | APK 언패킹·데이터 추출 | APK/XAPK/split/OBB/PAD·Addressables 탐색, 코덱 체인, FlatBuffers·FibMatrix, 레벨/설정/리소스/계층 출력 | [전체 작업 순서](GUIDE.md), [명령 매뉴얼](MANUAL.md) |
 | 언패킹·분석 노하우 | 원본 식별, PPtr·64bit ID, native TypeTree/IL2CPP 폴백, 소비 코드 추적, 프로세스 메모리 감시, 실패/정정 기록 | [공통 노하우](ANALYSIS_KNOWHOW.md), [전체 추출 이력](EXTRACTION_HISTORY.md) |
 | APK·미니앱 이식 사례 | Royal Smash/MiniApp의 런타임 배치·물리·시스템·UI, Goods Hunt의 trigger·성장·목표·FX, DKBI ECS·셰이더 및 기타 사례 | [최신 사례 요약](docs/APK_MINIAPP_KNOWHOW_20261016.md), [원문 전체 색인](docs/REFERENCE_CASES_ALL.md) |
-| 사례 재현 코드 | 직접 작성한 분석·참조 연결·검사 Python 스크립트110개, UEViewer scale/sidecar/export-index 소스 변경 패치 | [연구 코드와 실행 주의](tools/case_studies/README.md) |
+| 사례 재현 코드 | 직접 작성한 분석·참조 연결·검사 Python 스크립트113개, UEViewer scale/sidecar/export-index 소스 변경 패치 | [연구 코드와 실행 주의](tools/case_studies/README.md) |
 | 선택형 코드 분석 | REA 기반 JS/managed/native 정적 분석 및 저장 결과 요약·비교 | [REA 사용법과 검증 범위](tools/REA_INTEGRATION.md) |
 | 모션 보정 | 독립 Blender Motion Remap0.2: 본 매핑·참조 자세·루트·2본 IK·접지·골반·명시 컨트롤 프로필·평가 스킨 export | [사용법](tools/motion_remap/README.md), [모션 노하우](docs/MOTION_REMAP_KNOWHOW.md) |
 
@@ -23,13 +23,17 @@ Unity 모바일 게임을 위한 공통 CLI를 중심으로, PC 게임·ECS·셰
 연구 스크립트 일부는 로컬 경로를 사용하거나 import 때 실행하므로 먼저 읽고 독립 입력/출력으로
 실행해야 합니다. **게임 리소스·추출 테이블·원본 바이너리·Blend/GLB·이미지·음원은 저장소에 포함하지 않습니다.**
 
-현재 검증: Python 전체 **556개 실행, 3개 건너뜀, 실패0**. 게시한 사례 스크립트110개는
+현재 검증: Python 전체 **556개 실행, 3개 건너뜀, 실패0**. 게시한 사례 스크립트113개는
 Python 문법 검사, UEViewer 변경 패치는 기준 소스에 `git apply --check`를 통과했습니다.
 원작 전체 재추출이나 모든 게임의 플레이·GPU 정합성을 새로 검증한 결과는 아닙니다.
 
 현재 미해결인 생성 캐릭터 손바닥·어깨 보정은 [독립 연구 상태](docs/MULTI_SKINNING_RESUME_20261016.md)에
 분리했습니다. 실패 후보5개는 미채택이며, Blend 원본 커브 보존을 GLB native 시간키 보존으로
 확대하지 않습니다. 원작 서버 규칙·실행 화면 동등성도 데이터 추출 성공과 별개입니다.
+
+후속 [v4 가중치 분리 검사](docs/MULTI_HAND_V4_FOLLOWUP_20261016.md)도 최대 늘어남은 개선됐지만
+Idle의 국소 면적 붕괴가 악화돼 미채택했습니다. native5 Action의 저장·재열기 검증 노하우와
+실패 원인을 함께 보존합니다.
 
 ## 빠른 시작
 

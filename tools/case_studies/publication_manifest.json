@@ -1889,6 +1889,27 @@
       "kind": "note",
       "source": "D:\\99.기타\\out_royalsmash\\visual_reference_review\\README.md",
       "source_sha256": "2e62aa481d4909d7d3ac7f1c4b5f222c1614989c7505d7f95ba536bf8c056d42"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\skinning_research_20261016\\intake_v4.py",
+      "target": "tools/case_studies/skinning/intake_v4.py",
+      "source_sha256": "77bda483f72eec045707f6c6c49c82c296cebc81ef334e4df1ef15854c8e9ddf",
+      "published_sha256": "77bda483f72eec045707f6c6c49c82c296cebc81ef334e4df1ef15854c8e9ddf",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\skinning_research_20261016\\harmonic_v4.py",
+      "target": "tools/case_studies/skinning/harmonic_v4.py",
+      "source_sha256": "1d97b678e5ffc1fd35bdac40b2f1408d4ccb49828ac6fc56c19775d94c7230a6",
+      "published_sha256": "1d97b678e5ffc1fd35bdac40b2f1408d4ccb49828ac6fc56c19775d94c7230a6",
+      "kind": "script"
+    },
+    {
+      "source": "D:\\99.기타\\out_hatintime\\_reference\\skinning_research_20261016\\check_v4_preservation.py",
+      "target": "tools/case_studies/skinning/check_v4_preservation.py",
+      "source_sha256": "4dae91d5a6d14b76dce299e2b4c3dbb5f6a1f2bb211a89bc465d52e451c3debd",
+      "published_sha256": "4dae91d5a6d14b76dce299e2b4c3dbb5f6a1f2bb211a89bc465d52e451c3debd",
+      "kind": "script"
     }
   ],
   "excluded_manual_review": [

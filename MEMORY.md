@@ -724,3 +724,7 @@ Role_AK/Role2D 머티리얼/16x16 atlas 연결 확인. character_test에 신규B
 
 사용자가 github.com/macjoocan/projectgogo에 리소스를 제외한 기능/아트 외 성과/APK·미니앱 언패킹 노하우 모두 커밋·푸시 명시 승인. 게시 worktree origin 확인 및 fetch, HEAD와 origin/main 차이0에서 시작. Motion Remap0.2 코드/테스트/문서와 사례 원문160건/연구 스크립트110개를 함께 준비했다. 약1.47MB 텍스트, 원작 리소스/추출 테이블/GLB/Blend/PNG/오디오/바이너리/캐시는 제외. 스크립트110개 문법 검사, 제한된 자격증명 패턴0건. 전체 Python556개/skip3/실패0(8.949초). 최신 공통 노하우 docs/APK_MINIAPP_KNOWHOW_20261016.md와 docs/REFERENCE_CASES_ALL.md, tools/case_studies/publication_manifest.json 참조. Git remote/최종 commit 상태는 실제 git log를 정본으로 확인한다. 새로운 cage 개선은 여전히 미구현/미해결이며 게시 완료로 연구 해결을 주장하지 않는다.
 
+## 2026-10-16 v4 후속 검사 완료 — 미채택
+
+Multi bmvazfn4f-g 수신 후 최신 native/v4 입력6개 선별 복사. D독립 harmonic 소유 가중치 A/B로 geometry/topology/UV 고정. 동일125skin hand edge22.340569→18.073967mm, arm21.595862동일이나 Idle min triangle area/rest .075055→.013671 회귀, 합성curl도소폭악화. 후보 미채택/GLB·웹 단계 미진행. 재열기 native5/3500curves/459900keys+handles/interpolation hash exact,70rest·UV·형상·손밖weights exact,C입력SHA불변. mutedNLA+{scene,*actions} 명시저장. 결과 docs/MULTI_HAND_V4_FOLLOWUP_20261016.md 및 ../out_hatintime/_reference/skinning_research_20261016/v4_followup/README.md. 실제렌더4장,peak.731GiB/재열기.452GiB. Multi/game-dev-team MCP delivered,13d2d queued이나사용자브리지 bmvazqdxu-j로내용수신확인. 다음은기저부굴곡topology/두께이며이번harmonic검사는가중치분리실험,topology해결이아니다. 리소스없이추가연구코드3개/정정문서만게시한다.
+
