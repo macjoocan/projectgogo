@@ -194,3 +194,10 @@ native5종을 muted NLA로 연결하고 `{scene,*actions}`를 명시 저장한 �
 v4 후속에서 최대 손 간선은22.34→18.07mm로 줄었으나 Idle 최소 삼각형 면적비가
 .075→.014로 악화됐다. 최대값 하나를 개선해도 클립별/국소 지표·실제 렌더가 회귀하면 탈락한다.
 연구 정본 [v4 후속](docs/MULTI_HAND_V4_FOLLOWUP_20261016.md) 참조.
+### 11.2 표정 alpha와 기본 열림 Scene
+
+Blender에서 보이는 색/alpha와 GLB의 실제 COLOR_0/COLOR_1을 대조한다. 의도한 표시 필드가
+두 번째 채널로 나가고 첫 채널이 흰색이면 웹 소비 결과가 달라질 수 있다. material alphaMode/cutoff와
+primitive attribute/accessor를 실제 파일에서 확인하고 Blender/브라우저 검사를 분리한다.
+Action곡선이 저장돼도 defaultScene이 비어 보일 수 있으므로 수동 Scene 선택 없는 재열기와 모델
+존재 확인을 추가한다. [표정 export 사례](docs/MULTI_EXPRESSION_EXPORT_KNOWHOW_20261016.md) 참조.

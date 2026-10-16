@@ -723,3 +723,6 @@ Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 
 
 정본 docs/MULTI_HAND_V4_FOLLOWUP_20261016.md. 전체125표본 maximum은 개선됐지만 Idle국소면적붕괴가악화돼 미채택. 원본/라이브/기본모델/70본 변경없음. Action저장함정재검증으로5/3500/459900 exact, 손외weights/geometry/UV exact확인. 신규코드는독립연구용3파일이며최대영향4. 원문Blend/렌더/JSON fixture는D로컬에만보존. Multi/game-dev-team전달확인,추가13d2d는bridge수신메시지와queued receipt를구분. 웹/GLB나전체278모션최종외형검증을하지않았다.
 
+## 2026-10-16 표정 export 노하우 보존
+
+Multi 보고 bmvb1gbqk-l 수신. 문서/QA 읽기+최종GLB/Blend SHA 스트리밍+작은JSON구조만 독립검사했다. docs/MULTI_EXPRESSION_EXPORT_KNOWHOW_20261016.md에 COLOR_0승격과 alphaMode, 기본Scene재열기를 별도 게이트로 보존. 상대 GPU/오프라인검증값과 자체헤더검사를 분리. 사람검수미승인/손curl미해결/라이브원본읽기전용 유지. 리소스나표정원화·프롬프트·모델은게시하지않고문서/메모리만 갱신한다.

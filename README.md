@@ -35,6 +35,10 @@ Python 문법 검사, UEViewer 변경 패치는 기준 소스에 `git apply --ch
 Idle의 국소 면적 붕괴가 악화돼 미채택했습니다. native5 Action의 저장·재열기 검증 노하우와
 실패 원인을 함께 보존합니다.
 
+[표정 export 후속 노하우](docs/MULTI_EXPRESSION_EXPORT_KNOWHOW_20261016.md)에는
+COLOR 채널·alpha 설정과 기본 Scene 재열기 검사를 추가했습니다. 담당 세션의 표정 구현/QA와
+이 저장소 세션의 읽기 전용 파일 확인을 구분하며, 최종 사람 승인은 아직입니다.
+
 ## 빠른 시작
 
 처음 보는 게임을 처음부터 끝까지 뜯는 순서는 **[GUIDE.md](GUIDE.md)** 에 있습니다 —

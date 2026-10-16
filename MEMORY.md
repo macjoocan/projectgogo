@@ -728,3 +728,7 @@ Role_AK/Role2D 머티리얼/16x16 atlas 연결 확인. character_test에 신규B
 
 Multi bmvazfn4f-g 수신 후 최신 native/v4 입력6개 선별 복사. D독립 harmonic 소유 가중치 A/B로 geometry/topology/UV 고정. 동일125skin hand edge22.340569→18.073967mm, arm21.595862동일이나 Idle min triangle area/rest .075055→.013671 회귀, 합성curl도소폭악화. 후보 미채택/GLB·웹 단계 미진행. 재열기 native5/3500curves/459900keys+handles/interpolation hash exact,70rest·UV·형상·손밖weights exact,C입력SHA불변. mutedNLA+{scene,*actions} 명시저장. 결과 docs/MULTI_HAND_V4_FOLLOWUP_20261016.md 및 ../out_hatintime/_reference/skinning_research_20261016/v4_followup/README.md. 실제렌더4장,peak.731GiB/재열기.452GiB. Multi/game-dev-team MCP delivered,13d2d queued이나사용자브리지 bmvazqdxu-j로내용수신확인. 다음은기저부굴곡topology/두께이며이번harmonic검사는가중치분리실험,topology해결이아니다. 리소스없이추가연구코드3개/정정문서만게시한다.
 
+## 2026-10-16 Multi 표정 보고·읽기 전용 인계
+
+bmvb1gbqk-l:5표정+blink 검수용 구현/atlas1회(상대승인)/추가3D0,최종아트미승인. 문서45/43 및 face-expressions-v9 README/qa-summary 읽음. 독립확인은2파일SHA와GLB JSON만: expressions-native.glb11650612B/5c907a6a..6a2d,Blend11608737B/5ff4f12e..98f 일치;7mesh/70bones/5clip/COLOR_0/MASKcutoff.15 확인. 브라우저/Blender 재실행 없음. 보고값125poses7meshesfinite/head3.70e-7m/native597870float/Blend3500curves459900keys/HTML286asset 등은상대QA로구분. 중요노하우:표시alpha COLOR_1 vs기존흰COLOR_0,실제accessor검사후승격; Action보존과defaultScene표시는별개,save_as_mainfile+수동Scene선택없이재열기. rig.update_tag/viewlayer갱신. docs/MULTI_EXPRESSION_EXPORT_KNOWHOW_20261016.md 정본. 머리경계/특수모션/강한curl/Idle면적회귀/최종미승인 유지. C프로젝트/라이브/원본변경없음.
+
