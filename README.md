@@ -45,6 +45,11 @@ COLOR 채널·alpha 설정과 기본 Scene 재열기 검사를 추가했습니�
 
 ## 빠른 시작
 
+다음 캐릭터 제작은 [제작 절차](docs/CHARACTER_PRODUCTION_WORKFLOW.md)와
+[입력 템플릿](docs/templates/character-production-brief.md)을 사용합니다. 기준 리그부터 고르고
+기존 얼굴 형태를 보존하며, 새 모델의 검사 결과와 사람 외형 판정을 따로 남깁니다.
+절차 문서 추가만으로 새 생성·모델 교체를 시작한 것은 아닙니다.
+
 처음 보는 게임을 처음부터 끝까지 뜯는 순서는 **[GUIDE.md](GUIDE.md)** 에 있습니다 —
 어떤 명령을 어떤 순서로, 무엇을 확인하고, 어디서 막히는지까지.
 

@@ -736,3 +736,7 @@ bmvb1gbqk-l:5표정+blink 검수용 구현/atlas1회(상대승인)/추가3D0,최
 
 Multi bmvejnrqv-o 지식동기화. human-feedback.json/validation.json/문서43후속 읽음. 사람은기존얼굴선호,Multi가Idle근접에서코·볼·입입체감/윤곽변화를관찰했다고보고. 기본대시보드/단일HTML은OriginalRetry얼굴,표정후보비교OFF,review study.motion-first.face-expressions@1=revise(삭제/최종승인아님). 원본/모델/weights/native모션/atlas변경0·추가생성0보고. 기존얼굴확대가능,후속방향기존형태보존. 이번검사는4조합전환·기본5종15자세표본finite/오프라인기본·후보·복귀·빌드,전체278재검사아님. 신규독립실험/중복구현/추가생성지시없으므로실행하지않음. 손curl/Idle면적회귀/헤어·특수모션미해결과파티서빙0/3게이트유지. 정본 docs/MULTI_FACE_FEEDBACK_20261019.md. 과거10/16표정기술검증을사람아트승인으로읽지말것.
 
+## 2026-10-19 제작 절차 동기화 — 신규 작업 지시 아님
+
+Multi bmvekravm-q:문서46-character-production-workflow.md/제작brief템플릿읽음. 순서=모션rig→GPT원화→이미지Standard→UV보존연결/축소·체형·스키닝→기존코볼턱입입체감/윤곽보존→표정OFF/중립동일조건→실제GLB키/재질·Blend기본열기→웹·사람외형판정. 고정출력rig와heat보조rig구분,손기저부topology/두께·Idle면적회귀검사,새모델에기존수치승계금지. 공통문서 docs/CHARACTER_PRODUCTION_WORKFLOW.md 및 docs/templates/character-production-brief.md로절차만동기화. Multi의29링크/rig존재/상태JSON·GLB해시확인은상대보고이며독립재실행아님. 신규모델·기존얼굴유지표정개선미착수,생성/모델/rig/웹코드/라이브변경0. OriginalRetry기본/표정OFFrevise·파티서빙3/0/3/사람게이트유지. 새실험/생성/중복구현요청아니므로시작하지않는다.
+
