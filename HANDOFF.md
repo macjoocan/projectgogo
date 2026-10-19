@@ -726,3 +726,6 @@ Heroll GitHub 전달 완료: macjoocan/projectgogo main, commit 4a40d59. 분석 
 ## 2026-10-16 표정 export 노하우 보존
 
 Multi 보고 bmvb1gbqk-l 수신. 문서/QA 읽기+최종GLB/Blend SHA 스트리밍+작은JSON구조만 독립검사했다. docs/MULTI_EXPRESSION_EXPORT_KNOWHOW_20261016.md에 COLOR_0승격과 alphaMode, 기본Scene재열기를 별도 게이트로 보존. 상대 GPU/오프라인검증값과 자체헤더검사를 분리. 사람검수미승인/손curl미해결/라이브원본읽기전용 유지. 리소스나표정원화·프롬프트·모델은게시하지않고문서/메모리만 갱신한다.
+## 2026-10-19 얼굴 피드백 지식동기화
+
+Multi사용자얼굴선호반영회신을읽고문서/메모리만최신화했다. 표정후보revise·비교OFF,기본OriginalRetry복원. 독립실험/원본변경/Blender/브라우저추가실행/추가생성없음. 이번상대검증은5종15자세표본/4조합·오프라인·빌드이며278전수재검사아니다. docs/MULTI_FACE_FEEDBACK_20261019.md 및10/16표정문서정정,README최신피드백을연결했다. 기술QA통과와사람외형승인을독립판정으로기억한다.

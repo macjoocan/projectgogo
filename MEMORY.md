@@ -732,3 +732,7 @@ Multi bmvazfn4f-g 수신 후 최신 native/v4 입력6개 선별 복사. D독립 
 
 bmvb1gbqk-l:5표정+blink 검수용 구현/atlas1회(상대승인)/추가3D0,최종아트미승인. 문서45/43 및 face-expressions-v9 README/qa-summary 읽음. 독립확인은2파일SHA와GLB JSON만: expressions-native.glb11650612B/5c907a6a..6a2d,Blend11608737B/5ff4f12e..98f 일치;7mesh/70bones/5clip/COLOR_0/MASKcutoff.15 확인. 브라우저/Blender 재실행 없음. 보고값125poses7meshesfinite/head3.70e-7m/native597870float/Blend3500curves459900keys/HTML286asset 등은상대QA로구분. 중요노하우:표시alpha COLOR_1 vs기존흰COLOR_0,실제accessor검사후승격; Action보존과defaultScene표시는별개,save_as_mainfile+수동Scene선택없이재열기. rig.update_tag/viewlayer갱신. docs/MULTI_EXPRESSION_EXPORT_KNOWHOW_20261016.md 정본. 머리경계/특수모션/강한curl/Idle면적회귀/최종미승인 유지. C프로젝트/라이브/원본변경없음.
 
+## 최신 얼굴 상태 — 2026-10-19 / 사람 피드백 revise
+
+Multi bmvejnrqv-o 지식동기화. human-feedback.json/validation.json/문서43후속 읽음. 사람은기존얼굴선호,Multi가Idle근접에서코·볼·입입체감/윤곽변화를관찰했다고보고. 기본대시보드/단일HTML은OriginalRetry얼굴,표정후보비교OFF,review study.motion-first.face-expressions@1=revise(삭제/최종승인아님). 원본/모델/weights/native모션/atlas변경0·추가생성0보고. 기존얼굴확대가능,후속방향기존형태보존. 이번검사는4조합전환·기본5종15자세표본finite/오프라인기본·후보·복귀·빌드,전체278재검사아님. 신규독립실험/중복구현/추가생성지시없으므로실행하지않음. 손curl/Idle면적회귀/헤어·특수모션미해결과파티서빙0/3게이트유지. 정본 docs/MULTI_FACE_FEEDBACK_20261019.md. 과거10/16표정기술검증을사람아트승인으로읽지말것.
+
