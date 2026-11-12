@@ -4,6 +4,40 @@ See `out/heroll/FOLLOWUP.md`. Dates: 1216 scalar values and 261 empty arrays mat
 
 # Shared Work Handoff
 
+## 2026-11-13 — 전투 모션 및 3D 아트 검토 게시
+
+- 사용자 Git 푸시 요청에 따라 이번 세션의 메모리·인계와 `docs/UNITY_ART_PIPELINE_REFERENCE_20261113.md`를 게시 대상으로 정리했다. 최신 원격 커밋을 기반으로 별도 작업 폴더를 사용해 기존 미커밋 작업을 보존했다.
+- 생성 이미지·도트 프레임·대시보드·추출 리소스는 로컬 `out/`에만 유지한다. 아래 로컬 경로는 이 PC에서 확인하는 근거이며 GitHub에 포함된 산출물이 아니다. 기존 FMOD 도구와 로컬 설정 변경은 포함하지 않았다.
+- 문서만 변경했다. 게시 파일 목록·UTF-8·공백 오류를 검사하며, 코어 테스트나 브라우저 검증을 새로 수행한 것으로 보고하지 않는다. 아래 단계별 미게시 기록은 각 작업 당시의 상태다.
+
+## 2026-11-13 — Unity 그래픽 영상의 3D 파이프라인 활용 검토
+
+- User asked whether YouTube fBQvL5YR3eg can inform3D art workflow. Assessment saved out/unity_art_reference_20261113/ASSESSMENT.md. Checked publicchaptermetadata plusUnityofficialdocs/GraphicsContext7; YouTubepagebodylimited, nofullvideo/transcriptreviewclaim.
+- Proposed PBR/material normalization, shader-specific channel packing, reusable environment trim materials, lighting/probe reference scene and fixed-camera/performancecomparison. Fits after existing3Dgeneration/Blendercleanup; doesnotfixrigs/motion. URP/HDRP/platformchoice remains project-specific. Noinstalledskill/engineprojectchanges,paidgeneration,ornewrenderexperiment.
+
+## 2026-11-13 — 새 캐릭터 도트 모션 샘플
+
+- V3 latest: user rejected diagonal poke as slash. Authored explicit16pose wrist/blade guide, conditioned built-in image_gen with master+guide instead of earlier failed sheet. New generated16F then actual96px/commonV2palette conversion. Visualcontact confirms behind/up/forward/down/opposite-side blade progression. Same790ms total with340prep/170cut/280return. Dashboardroot nowV2-16Fleft/V3-16Fright; compare-v2.html preserves earlier8F/16Fcomparison. Source/prompt/guide/mapping/outputunderfinal/pipeline-v3. Blade guide degrees are targetdata, not measured outputangles.
+- V3pixel-contract16PASS; generic sprite-qa shapeIoU0.36 at07.png failure and island/holewarnings, no jitterwarning. All16visuallyinspected; torsorotation/forcechainremainweak, humanmotionapprovalpending. verification.jsonrecords PNGcell/unique/WebP790ms/HTTPchecks; browserunverified. Extend existingobservation0045 for this same motion-invariant failure, do not create duplicate or edit installedskills.
+
+- Latest V2 user steering: generate GPT master illustration, derive coherent sprite sheets, then actually quantize into pixel sprites; user additionally requested smoother second set. Created new illustrated master plus8F/16F sheets with built-in image_gen, corrected8F overhead blade clipping, converted24frames to96x96/shared16colors/binaryalpha. Both790ms. Original and derived stages preserved under final/pipeline-v2 with prompts/mapping/hash/README. Baseline8F and16F are separately generated variants, not exact interpolation of identical anchors.
+- Root dashboard replaced with synchronized side-by-side8F/16F, frame selection, common scrubber, slow playback, mirror, source-stage links; old dashboard retained as sample-v1.html. All35referenced resourcesHTTP200, sheet/cell24exact,8/16uniqueframes,WebPdurations exact; JSsyntaxPASS. Pixel-contract24PASS but sprite-qa16F reports shapeIoUfailure06.png and jitter/hole warnings. Visual inspection24poses confirms no clipping but sharp sword-angle jump07→08remains. Do not present as fully approved smooth production motion. Browser host remains unavailable; no new UI-render claim.
+- Server restart using Stop-Process failed with NullReference; second process exitedEADDRINUSE. Verified originalnodePID24076stillserves8876, restoredpidfile. EmbeddedCSSinindex viaassemble_dashboard.cjs avoids oldserver'sCSSMIME gap; server source corrected for future starts. No otherprocesskilled. Outputsunderout; core/installedskillsunchanged.
+
+- Dashboard follow-up: started hidden localhost-only Node server on127.0.0.1:8876 serving final/ exclusively, script serve-dashboard.cjs. HTTP200 for index/motion/player/sheet/WebP. Chrome createBrowserTab failed because browser access host unavailable; provided live HTTP URL, no claim of visible browser opening or UI validation. No new observation: delivery change uses existing sample, no distinct skill defect identified.
+
+- User clarified new character art, not a playable reuse of original REPLACED sprites. Superseded scratch prototype: out/combat_motion_sample_20261113. Final entry: out/new_character_combat_20261113/final/index.html; README/PROMPT/source_v2/prepare.py/verify.py in parent.
+- Built-in image_gen produced original teal-jacket swordsman, eight attack poses. Initial detailed version failed spatial pixel contract; revised flatter version passed8/8. Shared16colors, binaryalpha,96square cells,384x192sheet. Same whole-sheet scale and common -6px vertical translation; no weapon-bbox horizontal recentering. Reference timing/phase ideas only; new artwork and authored timing.
+- Final PNG cells match individual frames byte-for-byte including normalized transparent RGB. Both animation formats decode8frames; WebP790ms exact, GIF780ms from45ms→40ms quantization. All8pose contact sheet visually inspected. JSsyntax and5local references pass. final/verification.json and pixel_qa record evidence. Native browser state timeout/host unavailable: interactive playback and screen layout unverified. Motion approval and production integration remain pending; sword/grip/return continuity may need hand cleanup.
+- Output-only scripts/assets plus memory/handoff updates; no core changes, commit/push/upload, or installed skill edits. Prior unrelated dirty files retained. Existing observation0095 from reference task remains logged; no new distinct observation for this sample.
+
+## 2026-11-12 — 2D 도트 액션 전투 모션 레퍼런스 점검
+
+- Local-reference-only request. Created `out/combat_motion_reference_20261112/REPORT.md`, `index.html`, `manifest.json`, 23 contact sheets and 369 frame PNGs. Selected 15 REPLACED HeroCombat clips from 134 named objects, 8 SANABI numeric-filename families, and preserved 8 Hades SJSON animation definitions. No original game launch or new package extraction.
+- REPLACED frame links use serialized file + path ID; original PNG hashes, raw clip fields and managed-reference events retained. Playback estimate is duration/(animSpeed*phaseSpeed); no FSM/root/target/FX/shader execution. Zero-duration Deflect-Active first frame contains four events and must not be silently dropped. State0 remains distinct; active state is not proof of hitbox/i-frame windows.
+- SANABI image order and bottom alignment are display-only, with no original clip timing/pivot reconstruction. `_2`, `_M`, `_A` variants not mixed. SNB ExcDash is a partial/dark layer, excluded as a complete-body quality reference. Hades settings are structural references, not visually reviewed character motion.
+- Reviewed 9 complete contact sheets visually (listed in REPORT). 369 frame PNG CRCs, local paths and `node --check` PASS; browser host unavailable, so no interactive playback/render claim. `verification.json` records scope. No core/product/installed-skill modifications, tests, commit, push or upload; prior dirty files preserved.
+
 ## Motion Remap 0.2 — remaining technique implementation (2026-10-16)
 
 User requested implementation of the remaining techniques and delivery to both Multi
